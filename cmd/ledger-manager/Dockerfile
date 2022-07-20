@@ -2,10 +2,10 @@ FROM uhub.service.ucloud.cn/entropypool/alpine:3.16
 
 WORKDIR /app
 
-COPY appuser-manager /app
+COPY ledger-manager /app
 
-ENTRYPOINT ["./appuser-manager"]
+ENTRYPOINT ["./ledger-manager"]
 
-EXPOSE 50280 50281 50282
+EXPOSE 50330 50331 50332 50333
 
 CMD ["run"]
