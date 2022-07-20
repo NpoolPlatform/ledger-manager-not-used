@@ -5,8 +5,8 @@ package runtime
 import (
 	"context"
 
-	"github.com/NpoolPlatform/service-template/pkg/db/ent/schema"
-	"github.com/NpoolPlatform/service-template/pkg/db/ent/template"
+	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/general"
+	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/schema"
 	"github.com/google/uuid"
 
 	"entgo.io/ent"
@@ -17,42 +17,66 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
-	templateMixin := schema.Template{}.Mixin()
-	template.Policy = privacy.NewPolicies(templateMixin[0], schema.Template{})
-	template.Hooks[0] = func(next ent.Mutator) ent.Mutator {
+	generalMixin := schema.General{}.Mixin()
+	general.Policy = privacy.NewPolicies(generalMixin[0], schema.General{})
+	general.Hooks[0] = func(next ent.Mutator) ent.Mutator {
 		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-			if err := template.Policy.EvalMutation(ctx, m); err != nil {
+			if err := general.Policy.EvalMutation(ctx, m); err != nil {
 				return nil, err
 			}
 			return next.Mutate(ctx, m)
 		})
 	}
-	templateMixinFields0 := templateMixin[0].Fields()
-	_ = templateMixinFields0
-	templateFields := schema.Template{}.Fields()
-	_ = templateFields
-	// templateDescCreatedAt is the schema descriptor for created_at field.
-	templateDescCreatedAt := templateMixinFields0[0].Descriptor()
-	// template.DefaultCreatedAt holds the default value on creation for the created_at field.
-	template.DefaultCreatedAt = templateDescCreatedAt.Default.(func() uint32)
-	// templateDescUpdatedAt is the schema descriptor for updated_at field.
-	templateDescUpdatedAt := templateMixinFields0[1].Descriptor()
-	// template.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	template.DefaultUpdatedAt = templateDescUpdatedAt.Default.(func() uint32)
-	// template.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	template.UpdateDefaultUpdatedAt = templateDescUpdatedAt.UpdateDefault.(func() uint32)
-	// templateDescDeletedAt is the schema descriptor for deleted_at field.
-	templateDescDeletedAt := templateMixinFields0[2].Descriptor()
-	// template.DefaultDeletedAt holds the default value on creation for the deleted_at field.
-	template.DefaultDeletedAt = templateDescDeletedAt.Default.(func() uint32)
-	// templateDescAge is the schema descriptor for age field.
-	templateDescAge := templateFields[2].Descriptor()
-	// template.DefaultAge holds the default value on creation for the age field.
-	template.DefaultAge = templateDescAge.Default.(uint32)
-	// templateDescID is the schema descriptor for id field.
-	templateDescID := templateFields[0].Descriptor()
-	// template.DefaultID holds the default value on creation for the id field.
-	template.DefaultID = templateDescID.Default.(func() uuid.UUID)
+	generalMixinFields0 := generalMixin[0].Fields()
+	_ = generalMixinFields0
+	generalFields := schema.General{}.Fields()
+	_ = generalFields
+	// generalDescCreatedAt is the schema descriptor for created_at field.
+	generalDescCreatedAt := generalMixinFields0[0].Descriptor()
+	// general.DefaultCreatedAt holds the default value on creation for the created_at field.
+	general.DefaultCreatedAt = generalDescCreatedAt.Default.(func() uint32)
+	// generalDescUpdatedAt is the schema descriptor for updated_at field.
+	generalDescUpdatedAt := generalMixinFields0[1].Descriptor()
+	// general.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	general.DefaultUpdatedAt = generalDescUpdatedAt.Default.(func() uint32)
+	// general.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	general.UpdateDefaultUpdatedAt = generalDescUpdatedAt.UpdateDefault.(func() uint32)
+	// generalDescDeletedAt is the schema descriptor for deleted_at field.
+	generalDescDeletedAt := generalMixinFields0[2].Descriptor()
+	// general.DefaultDeletedAt holds the default value on creation for the deleted_at field.
+	general.DefaultDeletedAt = generalDescDeletedAt.Default.(func() uint32)
+	// generalDescAppID is the schema descriptor for app_id field.
+	generalDescAppID := generalFields[1].Descriptor()
+	// general.DefaultAppID holds the default value on creation for the app_id field.
+	general.DefaultAppID = generalDescAppID.Default.(func() uuid.UUID)
+	// generalDescUserID is the schema descriptor for user_id field.
+	generalDescUserID := generalFields[2].Descriptor()
+	// general.DefaultUserID holds the default value on creation for the user_id field.
+	general.DefaultUserID = generalDescUserID.Default.(func() uuid.UUID)
+	// generalDescCoinTypeID is the schema descriptor for coin_type_id field.
+	generalDescCoinTypeID := generalFields[3].Descriptor()
+	// general.DefaultCoinTypeID holds the default value on creation for the coin_type_id field.
+	general.DefaultCoinTypeID = generalDescCoinTypeID.Default.(func() uuid.UUID)
+	// generalDescIncoming is the schema descriptor for incoming field.
+	generalDescIncoming := generalFields[4].Descriptor()
+	// general.DefaultIncoming holds the default value on creation for the incoming field.
+	general.DefaultIncoming = generalDescIncoming.Default.(uint64)
+	// generalDescLocked is the schema descriptor for locked field.
+	generalDescLocked := generalFields[5].Descriptor()
+	// general.DefaultLocked holds the default value on creation for the locked field.
+	general.DefaultLocked = generalDescLocked.Default.(uint64)
+	// generalDescOutcoming is the schema descriptor for outcoming field.
+	generalDescOutcoming := generalFields[6].Descriptor()
+	// general.DefaultOutcoming holds the default value on creation for the outcoming field.
+	general.DefaultOutcoming = generalDescOutcoming.Default.(uint64)
+	// generalDescSpendable is the schema descriptor for spendable field.
+	generalDescSpendable := generalFields[7].Descriptor()
+	// general.DefaultSpendable holds the default value on creation for the spendable field.
+	general.DefaultSpendable = generalDescSpendable.Default.(uint64)
+	// generalDescID is the schema descriptor for id field.
+	generalDescID := generalFields[0].Descriptor()
+	// general.DefaultID holds the default value on creation for the id field.
+	general.DefaultID = generalDescID.Default.(func() uuid.UUID)
 }
 
 const (

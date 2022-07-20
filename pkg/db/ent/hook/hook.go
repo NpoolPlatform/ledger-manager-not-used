@@ -6,18 +6,18 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/NpoolPlatform/service-template/pkg/db/ent"
+	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent"
 )
 
-// The TemplateFunc type is an adapter to allow the use of ordinary
-// function as Template mutator.
-type TemplateFunc func(context.Context, *ent.TemplateMutation) (ent.Value, error)
+// The GeneralFunc type is an adapter to allow the use of ordinary
+// function as General mutator.
+type GeneralFunc func(context.Context, *ent.GeneralMutation) (ent.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f TemplateFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	mv, ok := m.(*ent.TemplateMutation)
+func (f GeneralFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.GeneralMutation)
 	if !ok {
-		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.TemplateMutation", m)
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.GeneralMutation", m)
 	}
 	return f(ctx, mv)
 }

@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/NpoolPlatform/service-template/pkg/db/ent/template"
+	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/template"
 	"github.com/google/uuid"
 )
 

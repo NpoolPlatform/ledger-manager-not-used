@@ -8,8 +8,8 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/NpoolPlatform/service-template/pkg/db/ent/predicate"
-	"github.com/NpoolPlatform/service-template/pkg/db/ent/template"
+	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/general"
+	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/predicate"
 	"github.com/google/uuid"
 
 	"entgo.io/ent"
@@ -24,11 +24,11 @@ const (
 	OpUpdateOne = ent.OpUpdateOne
 
 	// Node types.
-	TypeTemplate = "Template"
+	TypeGeneral = "General"
 )
 
-// TemplateMutation represents an operation that mutates the Template nodes in the graph.
-type TemplateMutation struct {
+// GeneralMutation represents an operation that mutates the General nodes in the graph.
+type GeneralMutation struct {
 	config
 	op            Op
 	typ           string
@@ -39,26 +39,34 @@ type TemplateMutation struct {
 	addupdated_at *int32
 	deleted_at    *uint32
 	adddeleted_at *int32
-	name          *string
-	age           *uint32
-	addage        *int32
+	app_id        *uuid.UUID
+	user_id       *uuid.UUID
+	coin_type_id  *uuid.UUID
+	incoming      *uint64
+	addincoming   *int64
+	locked        *uint64
+	addlocked     *int64
+	outcoming     *uint64
+	addoutcoming  *int64
+	spendable     *uint64
+	addspendable  *int64
 	clearedFields map[string]struct{}
 	done          bool
-	oldValue      func(context.Context) (*Template, error)
-	predicates    []predicate.Template
+	oldValue      func(context.Context) (*General, error)
+	predicates    []predicate.General
 }
 
-var _ ent.Mutation = (*TemplateMutation)(nil)
+var _ ent.Mutation = (*GeneralMutation)(nil)
 
-// templateOption allows management of the mutation configuration using functional options.
-type templateOption func(*TemplateMutation)
+// generalOption allows management of the mutation configuration using functional options.
+type generalOption func(*GeneralMutation)
 
-// newTemplateMutation creates new mutation for the Template entity.
-func newTemplateMutation(c config, op Op, opts ...templateOption) *TemplateMutation {
-	m := &TemplateMutation{
+// newGeneralMutation creates new mutation for the General entity.
+func newGeneralMutation(c config, op Op, opts ...generalOption) *GeneralMutation {
+	m := &GeneralMutation{
 		config:        c,
 		op:            op,
-		typ:           TypeTemplate,
+		typ:           TypeGeneral,
 		clearedFields: make(map[string]struct{}),
 	}
 	for _, opt := range opts {
@@ -67,20 +75,20 @@ func newTemplateMutation(c config, op Op, opts ...templateOption) *TemplateMutat
 	return m
 }
 
-// withTemplateID sets the ID field of the mutation.
-func withTemplateID(id uuid.UUID) templateOption {
-	return func(m *TemplateMutation) {
+// withGeneralID sets the ID field of the mutation.
+func withGeneralID(id uuid.UUID) generalOption {
+	return func(m *GeneralMutation) {
 		var (
 			err   error
 			once  sync.Once
-			value *Template
+			value *General
 		)
-		m.oldValue = func(ctx context.Context) (*Template, error) {
+		m.oldValue = func(ctx context.Context) (*General, error) {
 			once.Do(func() {
 				if m.done {
 					err = errors.New("querying old values post mutation is not allowed")
 				} else {
-					value, err = m.Client().Template.Get(ctx, id)
+					value, err = m.Client().General.Get(ctx, id)
 				}
 			})
 			return value, err
@@ -89,10 +97,10 @@ func withTemplateID(id uuid.UUID) templateOption {
 	}
 }
 
-// withTemplate sets the old Template of the mutation.
-func withTemplate(node *Template) templateOption {
-	return func(m *TemplateMutation) {
-		m.oldValue = func(context.Context) (*Template, error) {
+// withGeneral sets the old General of the mutation.
+func withGeneral(node *General) generalOption {
+	return func(m *GeneralMutation) {
+		m.oldValue = func(context.Context) (*General, error) {
 			return node, nil
 		}
 		m.id = &node.ID
@@ -101,7 +109,7 @@ func withTemplate(node *Template) templateOption {
 
 // Client returns a new `ent.Client` from the mutation. If the mutation was
 // executed in a transaction (ent.Tx), a transactional client is returned.
-func (m TemplateMutation) Client() *Client {
+func (m GeneralMutation) Client() *Client {
 	client := &Client{config: m.config}
 	client.init()
 	return client
@@ -109,7 +117,7 @@ func (m TemplateMutation) Client() *Client {
 
 // Tx returns an `ent.Tx` for mutations that were executed in transactions;
 // it returns an error otherwise.
-func (m TemplateMutation) Tx() (*Tx, error) {
+func (m GeneralMutation) Tx() (*Tx, error) {
 	if _, ok := m.driver.(*txDriver); !ok {
 		return nil, errors.New("ent: mutation is not running in a transaction")
 	}
@@ -119,14 +127,14 @@ func (m TemplateMutation) Tx() (*Tx, error) {
 }
 
 // SetID sets the value of the id field. Note that this
-// operation is only accepted on creation of Template entities.
-func (m *TemplateMutation) SetID(id uuid.UUID) {
+// operation is only accepted on creation of General entities.
+func (m *GeneralMutation) SetID(id uuid.UUID) {
 	m.id = &id
 }
 
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *TemplateMutation) ID() (id uuid.UUID, exists bool) {
+func (m *GeneralMutation) ID() (id uuid.UUID, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -137,7 +145,7 @@ func (m *TemplateMutation) ID() (id uuid.UUID, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *TemplateMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
+func (m *GeneralMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
@@ -146,20 +154,20 @@ func (m *TemplateMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
-		return m.Client().Template.Query().Where(m.predicates...).IDs(ctx)
+		return m.Client().General.Query().Where(m.predicates...).IDs(ctx)
 	default:
 		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
 	}
 }
 
 // SetCreatedAt sets the "created_at" field.
-func (m *TemplateMutation) SetCreatedAt(u uint32) {
+func (m *GeneralMutation) SetCreatedAt(u uint32) {
 	m.created_at = &u
 	m.addcreated_at = nil
 }
 
 // CreatedAt returns the value of the "created_at" field in the mutation.
-func (m *TemplateMutation) CreatedAt() (r uint32, exists bool) {
+func (m *GeneralMutation) CreatedAt() (r uint32, exists bool) {
 	v := m.created_at
 	if v == nil {
 		return
@@ -167,10 +175,10 @@ func (m *TemplateMutation) CreatedAt() (r uint32, exists bool) {
 	return *v, true
 }
 
-// OldCreatedAt returns the old "created_at" field's value of the Template entity.
-// If the Template object wasn't provided to the builder, the object is fetched from the database.
+// OldCreatedAt returns the old "created_at" field's value of the General entity.
+// If the General object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *TemplateMutation) OldCreatedAt(ctx context.Context) (v uint32, err error) {
+func (m *GeneralMutation) OldCreatedAt(ctx context.Context) (v uint32, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
 	}
@@ -185,7 +193,7 @@ func (m *TemplateMutation) OldCreatedAt(ctx context.Context) (v uint32, err erro
 }
 
 // AddCreatedAt adds u to the "created_at" field.
-func (m *TemplateMutation) AddCreatedAt(u int32) {
+func (m *GeneralMutation) AddCreatedAt(u int32) {
 	if m.addcreated_at != nil {
 		*m.addcreated_at += u
 	} else {
@@ -194,7 +202,7 @@ func (m *TemplateMutation) AddCreatedAt(u int32) {
 }
 
 // AddedCreatedAt returns the value that was added to the "created_at" field in this mutation.
-func (m *TemplateMutation) AddedCreatedAt() (r int32, exists bool) {
+func (m *GeneralMutation) AddedCreatedAt() (r int32, exists bool) {
 	v := m.addcreated_at
 	if v == nil {
 		return
@@ -203,19 +211,19 @@ func (m *TemplateMutation) AddedCreatedAt() (r int32, exists bool) {
 }
 
 // ResetCreatedAt resets all changes to the "created_at" field.
-func (m *TemplateMutation) ResetCreatedAt() {
+func (m *GeneralMutation) ResetCreatedAt() {
 	m.created_at = nil
 	m.addcreated_at = nil
 }
 
 // SetUpdatedAt sets the "updated_at" field.
-func (m *TemplateMutation) SetUpdatedAt(u uint32) {
+func (m *GeneralMutation) SetUpdatedAt(u uint32) {
 	m.updated_at = &u
 	m.addupdated_at = nil
 }
 
 // UpdatedAt returns the value of the "updated_at" field in the mutation.
-func (m *TemplateMutation) UpdatedAt() (r uint32, exists bool) {
+func (m *GeneralMutation) UpdatedAt() (r uint32, exists bool) {
 	v := m.updated_at
 	if v == nil {
 		return
@@ -223,10 +231,10 @@ func (m *TemplateMutation) UpdatedAt() (r uint32, exists bool) {
 	return *v, true
 }
 
-// OldUpdatedAt returns the old "updated_at" field's value of the Template entity.
-// If the Template object wasn't provided to the builder, the object is fetched from the database.
+// OldUpdatedAt returns the old "updated_at" field's value of the General entity.
+// If the General object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *TemplateMutation) OldUpdatedAt(ctx context.Context) (v uint32, err error) {
+func (m *GeneralMutation) OldUpdatedAt(ctx context.Context) (v uint32, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
 	}
@@ -241,7 +249,7 @@ func (m *TemplateMutation) OldUpdatedAt(ctx context.Context) (v uint32, err erro
 }
 
 // AddUpdatedAt adds u to the "updated_at" field.
-func (m *TemplateMutation) AddUpdatedAt(u int32) {
+func (m *GeneralMutation) AddUpdatedAt(u int32) {
 	if m.addupdated_at != nil {
 		*m.addupdated_at += u
 	} else {
@@ -250,7 +258,7 @@ func (m *TemplateMutation) AddUpdatedAt(u int32) {
 }
 
 // AddedUpdatedAt returns the value that was added to the "updated_at" field in this mutation.
-func (m *TemplateMutation) AddedUpdatedAt() (r int32, exists bool) {
+func (m *GeneralMutation) AddedUpdatedAt() (r int32, exists bool) {
 	v := m.addupdated_at
 	if v == nil {
 		return
@@ -259,19 +267,19 @@ func (m *TemplateMutation) AddedUpdatedAt() (r int32, exists bool) {
 }
 
 // ResetUpdatedAt resets all changes to the "updated_at" field.
-func (m *TemplateMutation) ResetUpdatedAt() {
+func (m *GeneralMutation) ResetUpdatedAt() {
 	m.updated_at = nil
 	m.addupdated_at = nil
 }
 
 // SetDeletedAt sets the "deleted_at" field.
-func (m *TemplateMutation) SetDeletedAt(u uint32) {
+func (m *GeneralMutation) SetDeletedAt(u uint32) {
 	m.deleted_at = &u
 	m.adddeleted_at = nil
 }
 
 // DeletedAt returns the value of the "deleted_at" field in the mutation.
-func (m *TemplateMutation) DeletedAt() (r uint32, exists bool) {
+func (m *GeneralMutation) DeletedAt() (r uint32, exists bool) {
 	v := m.deleted_at
 	if v == nil {
 		return
@@ -279,10 +287,10 @@ func (m *TemplateMutation) DeletedAt() (r uint32, exists bool) {
 	return *v, true
 }
 
-// OldDeletedAt returns the old "deleted_at" field's value of the Template entity.
-// If the Template object wasn't provided to the builder, the object is fetched from the database.
+// OldDeletedAt returns the old "deleted_at" field's value of the General entity.
+// If the General object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *TemplateMutation) OldDeletedAt(ctx context.Context) (v uint32, err error) {
+func (m *GeneralMutation) OldDeletedAt(ctx context.Context) (v uint32, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldDeletedAt is only allowed on UpdateOne operations")
 	}
@@ -297,7 +305,7 @@ func (m *TemplateMutation) OldDeletedAt(ctx context.Context) (v uint32, err erro
 }
 
 // AddDeletedAt adds u to the "deleted_at" field.
-func (m *TemplateMutation) AddDeletedAt(u int32) {
+func (m *GeneralMutation) AddDeletedAt(u int32) {
 	if m.adddeleted_at != nil {
 		*m.adddeleted_at += u
 	} else {
@@ -306,7 +314,7 @@ func (m *TemplateMutation) AddDeletedAt(u int32) {
 }
 
 // AddedDeletedAt returns the value that was added to the "deleted_at" field in this mutation.
-func (m *TemplateMutation) AddedDeletedAt() (r int32, exists bool) {
+func (m *GeneralMutation) AddedDeletedAt() (r int32, exists bool) {
 	v := m.adddeleted_at
 	if v == nil {
 		return
@@ -315,137 +323,487 @@ func (m *TemplateMutation) AddedDeletedAt() (r int32, exists bool) {
 }
 
 // ResetDeletedAt resets all changes to the "deleted_at" field.
-func (m *TemplateMutation) ResetDeletedAt() {
+func (m *GeneralMutation) ResetDeletedAt() {
 	m.deleted_at = nil
 	m.adddeleted_at = nil
 }
 
-// SetName sets the "name" field.
-func (m *TemplateMutation) SetName(s string) {
-	m.name = &s
+// SetAppID sets the "app_id" field.
+func (m *GeneralMutation) SetAppID(u uuid.UUID) {
+	m.app_id = &u
 }
 
-// Name returns the value of the "name" field in the mutation.
-func (m *TemplateMutation) Name() (r string, exists bool) {
-	v := m.name
+// AppID returns the value of the "app_id" field in the mutation.
+func (m *GeneralMutation) AppID() (r uuid.UUID, exists bool) {
+	v := m.app_id
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldName returns the old "name" field's value of the Template entity.
-// If the Template object wasn't provided to the builder, the object is fetched from the database.
+// OldAppID returns the old "app_id" field's value of the General entity.
+// If the General object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *TemplateMutation) OldName(ctx context.Context) (v string, err error) {
+func (m *GeneralMutation) OldAppID(ctx context.Context) (v uuid.UUID, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldName is only allowed on UpdateOne operations")
+		return v, errors.New("OldAppID is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldName requires an ID field in the mutation")
+		return v, errors.New("OldAppID requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldName: %w", err)
+		return v, fmt.Errorf("querying old value for OldAppID: %w", err)
 	}
-	return oldValue.Name, nil
+	return oldValue.AppID, nil
 }
 
-// ResetName resets all changes to the "name" field.
-func (m *TemplateMutation) ResetName() {
-	m.name = nil
+// ClearAppID clears the value of the "app_id" field.
+func (m *GeneralMutation) ClearAppID() {
+	m.app_id = nil
+	m.clearedFields[general.FieldAppID] = struct{}{}
 }
 
-// SetAge sets the "age" field.
-func (m *TemplateMutation) SetAge(u uint32) {
-	m.age = &u
-	m.addage = nil
+// AppIDCleared returns if the "app_id" field was cleared in this mutation.
+func (m *GeneralMutation) AppIDCleared() bool {
+	_, ok := m.clearedFields[general.FieldAppID]
+	return ok
 }
 
-// Age returns the value of the "age" field in the mutation.
-func (m *TemplateMutation) Age() (r uint32, exists bool) {
-	v := m.age
+// ResetAppID resets all changes to the "app_id" field.
+func (m *GeneralMutation) ResetAppID() {
+	m.app_id = nil
+	delete(m.clearedFields, general.FieldAppID)
+}
+
+// SetUserID sets the "user_id" field.
+func (m *GeneralMutation) SetUserID(u uuid.UUID) {
+	m.user_id = &u
+}
+
+// UserID returns the value of the "user_id" field in the mutation.
+func (m *GeneralMutation) UserID() (r uuid.UUID, exists bool) {
+	v := m.user_id
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldAge returns the old "age" field's value of the Template entity.
-// If the Template object wasn't provided to the builder, the object is fetched from the database.
+// OldUserID returns the old "user_id" field's value of the General entity.
+// If the General object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *TemplateMutation) OldAge(ctx context.Context) (v uint32, err error) {
+func (m *GeneralMutation) OldUserID(ctx context.Context) (v uuid.UUID, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldAge is only allowed on UpdateOne operations")
+		return v, errors.New("OldUserID is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldAge requires an ID field in the mutation")
+		return v, errors.New("OldUserID requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldAge: %w", err)
+		return v, fmt.Errorf("querying old value for OldUserID: %w", err)
 	}
-	return oldValue.Age, nil
+	return oldValue.UserID, nil
 }
 
-// AddAge adds u to the "age" field.
-func (m *TemplateMutation) AddAge(u int32) {
-	if m.addage != nil {
-		*m.addage += u
+// ClearUserID clears the value of the "user_id" field.
+func (m *GeneralMutation) ClearUserID() {
+	m.user_id = nil
+	m.clearedFields[general.FieldUserID] = struct{}{}
+}
+
+// UserIDCleared returns if the "user_id" field was cleared in this mutation.
+func (m *GeneralMutation) UserIDCleared() bool {
+	_, ok := m.clearedFields[general.FieldUserID]
+	return ok
+}
+
+// ResetUserID resets all changes to the "user_id" field.
+func (m *GeneralMutation) ResetUserID() {
+	m.user_id = nil
+	delete(m.clearedFields, general.FieldUserID)
+}
+
+// SetCoinTypeID sets the "coin_type_id" field.
+func (m *GeneralMutation) SetCoinTypeID(u uuid.UUID) {
+	m.coin_type_id = &u
+}
+
+// CoinTypeID returns the value of the "coin_type_id" field in the mutation.
+func (m *GeneralMutation) CoinTypeID() (r uuid.UUID, exists bool) {
+	v := m.coin_type_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCoinTypeID returns the old "coin_type_id" field's value of the General entity.
+// If the General object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *GeneralMutation) OldCoinTypeID(ctx context.Context) (v uuid.UUID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCoinTypeID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCoinTypeID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCoinTypeID: %w", err)
+	}
+	return oldValue.CoinTypeID, nil
+}
+
+// ClearCoinTypeID clears the value of the "coin_type_id" field.
+func (m *GeneralMutation) ClearCoinTypeID() {
+	m.coin_type_id = nil
+	m.clearedFields[general.FieldCoinTypeID] = struct{}{}
+}
+
+// CoinTypeIDCleared returns if the "coin_type_id" field was cleared in this mutation.
+func (m *GeneralMutation) CoinTypeIDCleared() bool {
+	_, ok := m.clearedFields[general.FieldCoinTypeID]
+	return ok
+}
+
+// ResetCoinTypeID resets all changes to the "coin_type_id" field.
+func (m *GeneralMutation) ResetCoinTypeID() {
+	m.coin_type_id = nil
+	delete(m.clearedFields, general.FieldCoinTypeID)
+}
+
+// SetIncoming sets the "incoming" field.
+func (m *GeneralMutation) SetIncoming(u uint64) {
+	m.incoming = &u
+	m.addincoming = nil
+}
+
+// Incoming returns the value of the "incoming" field in the mutation.
+func (m *GeneralMutation) Incoming() (r uint64, exists bool) {
+	v := m.incoming
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIncoming returns the old "incoming" field's value of the General entity.
+// If the General object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *GeneralMutation) OldIncoming(ctx context.Context) (v uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIncoming is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIncoming requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIncoming: %w", err)
+	}
+	return oldValue.Incoming, nil
+}
+
+// AddIncoming adds u to the "incoming" field.
+func (m *GeneralMutation) AddIncoming(u int64) {
+	if m.addincoming != nil {
+		*m.addincoming += u
 	} else {
-		m.addage = &u
+		m.addincoming = &u
 	}
 }
 
-// AddedAge returns the value that was added to the "age" field in this mutation.
-func (m *TemplateMutation) AddedAge() (r int32, exists bool) {
-	v := m.addage
+// AddedIncoming returns the value that was added to the "incoming" field in this mutation.
+func (m *GeneralMutation) AddedIncoming() (r int64, exists bool) {
+	v := m.addincoming
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// ResetAge resets all changes to the "age" field.
-func (m *TemplateMutation) ResetAge() {
-	m.age = nil
-	m.addage = nil
+// ClearIncoming clears the value of the "incoming" field.
+func (m *GeneralMutation) ClearIncoming() {
+	m.incoming = nil
+	m.addincoming = nil
+	m.clearedFields[general.FieldIncoming] = struct{}{}
 }
 
-// Where appends a list predicates to the TemplateMutation builder.
-func (m *TemplateMutation) Where(ps ...predicate.Template) {
+// IncomingCleared returns if the "incoming" field was cleared in this mutation.
+func (m *GeneralMutation) IncomingCleared() bool {
+	_, ok := m.clearedFields[general.FieldIncoming]
+	return ok
+}
+
+// ResetIncoming resets all changes to the "incoming" field.
+func (m *GeneralMutation) ResetIncoming() {
+	m.incoming = nil
+	m.addincoming = nil
+	delete(m.clearedFields, general.FieldIncoming)
+}
+
+// SetLocked sets the "locked" field.
+func (m *GeneralMutation) SetLocked(u uint64) {
+	m.locked = &u
+	m.addlocked = nil
+}
+
+// Locked returns the value of the "locked" field in the mutation.
+func (m *GeneralMutation) Locked() (r uint64, exists bool) {
+	v := m.locked
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLocked returns the old "locked" field's value of the General entity.
+// If the General object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *GeneralMutation) OldLocked(ctx context.Context) (v uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLocked is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLocked requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLocked: %w", err)
+	}
+	return oldValue.Locked, nil
+}
+
+// AddLocked adds u to the "locked" field.
+func (m *GeneralMutation) AddLocked(u int64) {
+	if m.addlocked != nil {
+		*m.addlocked += u
+	} else {
+		m.addlocked = &u
+	}
+}
+
+// AddedLocked returns the value that was added to the "locked" field in this mutation.
+func (m *GeneralMutation) AddedLocked() (r int64, exists bool) {
+	v := m.addlocked
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearLocked clears the value of the "locked" field.
+func (m *GeneralMutation) ClearLocked() {
+	m.locked = nil
+	m.addlocked = nil
+	m.clearedFields[general.FieldLocked] = struct{}{}
+}
+
+// LockedCleared returns if the "locked" field was cleared in this mutation.
+func (m *GeneralMutation) LockedCleared() bool {
+	_, ok := m.clearedFields[general.FieldLocked]
+	return ok
+}
+
+// ResetLocked resets all changes to the "locked" field.
+func (m *GeneralMutation) ResetLocked() {
+	m.locked = nil
+	m.addlocked = nil
+	delete(m.clearedFields, general.FieldLocked)
+}
+
+// SetOutcoming sets the "outcoming" field.
+func (m *GeneralMutation) SetOutcoming(u uint64) {
+	m.outcoming = &u
+	m.addoutcoming = nil
+}
+
+// Outcoming returns the value of the "outcoming" field in the mutation.
+func (m *GeneralMutation) Outcoming() (r uint64, exists bool) {
+	v := m.outcoming
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldOutcoming returns the old "outcoming" field's value of the General entity.
+// If the General object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *GeneralMutation) OldOutcoming(ctx context.Context) (v uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldOutcoming is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldOutcoming requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldOutcoming: %w", err)
+	}
+	return oldValue.Outcoming, nil
+}
+
+// AddOutcoming adds u to the "outcoming" field.
+func (m *GeneralMutation) AddOutcoming(u int64) {
+	if m.addoutcoming != nil {
+		*m.addoutcoming += u
+	} else {
+		m.addoutcoming = &u
+	}
+}
+
+// AddedOutcoming returns the value that was added to the "outcoming" field in this mutation.
+func (m *GeneralMutation) AddedOutcoming() (r int64, exists bool) {
+	v := m.addoutcoming
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearOutcoming clears the value of the "outcoming" field.
+func (m *GeneralMutation) ClearOutcoming() {
+	m.outcoming = nil
+	m.addoutcoming = nil
+	m.clearedFields[general.FieldOutcoming] = struct{}{}
+}
+
+// OutcomingCleared returns if the "outcoming" field was cleared in this mutation.
+func (m *GeneralMutation) OutcomingCleared() bool {
+	_, ok := m.clearedFields[general.FieldOutcoming]
+	return ok
+}
+
+// ResetOutcoming resets all changes to the "outcoming" field.
+func (m *GeneralMutation) ResetOutcoming() {
+	m.outcoming = nil
+	m.addoutcoming = nil
+	delete(m.clearedFields, general.FieldOutcoming)
+}
+
+// SetSpendable sets the "spendable" field.
+func (m *GeneralMutation) SetSpendable(u uint64) {
+	m.spendable = &u
+	m.addspendable = nil
+}
+
+// Spendable returns the value of the "spendable" field in the mutation.
+func (m *GeneralMutation) Spendable() (r uint64, exists bool) {
+	v := m.spendable
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSpendable returns the old "spendable" field's value of the General entity.
+// If the General object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *GeneralMutation) OldSpendable(ctx context.Context) (v uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSpendable is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSpendable requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSpendable: %w", err)
+	}
+	return oldValue.Spendable, nil
+}
+
+// AddSpendable adds u to the "spendable" field.
+func (m *GeneralMutation) AddSpendable(u int64) {
+	if m.addspendable != nil {
+		*m.addspendable += u
+	} else {
+		m.addspendable = &u
+	}
+}
+
+// AddedSpendable returns the value that was added to the "spendable" field in this mutation.
+func (m *GeneralMutation) AddedSpendable() (r int64, exists bool) {
+	v := m.addspendable
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearSpendable clears the value of the "spendable" field.
+func (m *GeneralMutation) ClearSpendable() {
+	m.spendable = nil
+	m.addspendable = nil
+	m.clearedFields[general.FieldSpendable] = struct{}{}
+}
+
+// SpendableCleared returns if the "spendable" field was cleared in this mutation.
+func (m *GeneralMutation) SpendableCleared() bool {
+	_, ok := m.clearedFields[general.FieldSpendable]
+	return ok
+}
+
+// ResetSpendable resets all changes to the "spendable" field.
+func (m *GeneralMutation) ResetSpendable() {
+	m.spendable = nil
+	m.addspendable = nil
+	delete(m.clearedFields, general.FieldSpendable)
+}
+
+// Where appends a list predicates to the GeneralMutation builder.
+func (m *GeneralMutation) Where(ps ...predicate.General) {
 	m.predicates = append(m.predicates, ps...)
 }
 
 // Op returns the operation name.
-func (m *TemplateMutation) Op() Op {
+func (m *GeneralMutation) Op() Op {
 	return m.op
 }
 
-// Type returns the node type of this mutation (Template).
-func (m *TemplateMutation) Type() string {
+// Type returns the node type of this mutation (General).
+func (m *GeneralMutation) Type() string {
 	return m.typ
 }
 
 // Fields returns all fields that were changed during this mutation. Note that in
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
-func (m *TemplateMutation) Fields() []string {
-	fields := make([]string, 0, 5)
+func (m *GeneralMutation) Fields() []string {
+	fields := make([]string, 0, 10)
 	if m.created_at != nil {
-		fields = append(fields, template.FieldCreatedAt)
+		fields = append(fields, general.FieldCreatedAt)
 	}
 	if m.updated_at != nil {
-		fields = append(fields, template.FieldUpdatedAt)
+		fields = append(fields, general.FieldUpdatedAt)
 	}
 	if m.deleted_at != nil {
-		fields = append(fields, template.FieldDeletedAt)
+		fields = append(fields, general.FieldDeletedAt)
 	}
-	if m.name != nil {
-		fields = append(fields, template.FieldName)
+	if m.app_id != nil {
+		fields = append(fields, general.FieldAppID)
 	}
-	if m.age != nil {
-		fields = append(fields, template.FieldAge)
+	if m.user_id != nil {
+		fields = append(fields, general.FieldUserID)
+	}
+	if m.coin_type_id != nil {
+		fields = append(fields, general.FieldCoinTypeID)
+	}
+	if m.incoming != nil {
+		fields = append(fields, general.FieldIncoming)
+	}
+	if m.locked != nil {
+		fields = append(fields, general.FieldLocked)
+	}
+	if m.outcoming != nil {
+		fields = append(fields, general.FieldOutcoming)
+	}
+	if m.spendable != nil {
+		fields = append(fields, general.FieldSpendable)
 	}
 	return fields
 }
@@ -453,18 +811,28 @@ func (m *TemplateMutation) Fields() []string {
 // Field returns the value of a field with the given name. The second boolean
 // return value indicates that this field was not set, or was not defined in the
 // schema.
-func (m *TemplateMutation) Field(name string) (ent.Value, bool) {
+func (m *GeneralMutation) Field(name string) (ent.Value, bool) {
 	switch name {
-	case template.FieldCreatedAt:
+	case general.FieldCreatedAt:
 		return m.CreatedAt()
-	case template.FieldUpdatedAt:
+	case general.FieldUpdatedAt:
 		return m.UpdatedAt()
-	case template.FieldDeletedAt:
+	case general.FieldDeletedAt:
 		return m.DeletedAt()
-	case template.FieldName:
-		return m.Name()
-	case template.FieldAge:
-		return m.Age()
+	case general.FieldAppID:
+		return m.AppID()
+	case general.FieldUserID:
+		return m.UserID()
+	case general.FieldCoinTypeID:
+		return m.CoinTypeID()
+	case general.FieldIncoming:
+		return m.Incoming()
+	case general.FieldLocked:
+		return m.Locked()
+	case general.FieldOutcoming:
+		return m.Outcoming()
+	case general.FieldSpendable:
+		return m.Spendable()
 	}
 	return nil, false
 }
@@ -472,81 +840,135 @@ func (m *TemplateMutation) Field(name string) (ent.Value, bool) {
 // OldField returns the old value of the field from the database. An error is
 // returned if the mutation operation is not UpdateOne, or the query to the
 // database failed.
-func (m *TemplateMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+func (m *GeneralMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
-	case template.FieldCreatedAt:
+	case general.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
-	case template.FieldUpdatedAt:
+	case general.FieldUpdatedAt:
 		return m.OldUpdatedAt(ctx)
-	case template.FieldDeletedAt:
+	case general.FieldDeletedAt:
 		return m.OldDeletedAt(ctx)
-	case template.FieldName:
-		return m.OldName(ctx)
-	case template.FieldAge:
-		return m.OldAge(ctx)
+	case general.FieldAppID:
+		return m.OldAppID(ctx)
+	case general.FieldUserID:
+		return m.OldUserID(ctx)
+	case general.FieldCoinTypeID:
+		return m.OldCoinTypeID(ctx)
+	case general.FieldIncoming:
+		return m.OldIncoming(ctx)
+	case general.FieldLocked:
+		return m.OldLocked(ctx)
+	case general.FieldOutcoming:
+		return m.OldOutcoming(ctx)
+	case general.FieldSpendable:
+		return m.OldSpendable(ctx)
 	}
-	return nil, fmt.Errorf("unknown Template field %s", name)
+	return nil, fmt.Errorf("unknown General field %s", name)
 }
 
 // SetField sets the value of a field with the given name. It returns an error if
 // the field is not defined in the schema, or if the type mismatched the field
 // type.
-func (m *TemplateMutation) SetField(name string, value ent.Value) error {
+func (m *GeneralMutation) SetField(name string, value ent.Value) error {
 	switch name {
-	case template.FieldCreatedAt:
+	case general.FieldCreatedAt:
 		v, ok := value.(uint32)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetCreatedAt(v)
 		return nil
-	case template.FieldUpdatedAt:
+	case general.FieldUpdatedAt:
 		v, ok := value.(uint32)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetUpdatedAt(v)
 		return nil
-	case template.FieldDeletedAt:
+	case general.FieldDeletedAt:
 		v, ok := value.(uint32)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetDeletedAt(v)
 		return nil
-	case template.FieldName:
-		v, ok := value.(string)
+	case general.FieldAppID:
+		v, ok := value.(uuid.UUID)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetName(v)
+		m.SetAppID(v)
 		return nil
-	case template.FieldAge:
-		v, ok := value.(uint32)
+	case general.FieldUserID:
+		v, ok := value.(uuid.UUID)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetAge(v)
+		m.SetUserID(v)
+		return nil
+	case general.FieldCoinTypeID:
+		v, ok := value.(uuid.UUID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCoinTypeID(v)
+		return nil
+	case general.FieldIncoming:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIncoming(v)
+		return nil
+	case general.FieldLocked:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLocked(v)
+		return nil
+	case general.FieldOutcoming:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetOutcoming(v)
+		return nil
+	case general.FieldSpendable:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSpendable(v)
 		return nil
 	}
-	return fmt.Errorf("unknown Template field %s", name)
+	return fmt.Errorf("unknown General field %s", name)
 }
 
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
-func (m *TemplateMutation) AddedFields() []string {
+func (m *GeneralMutation) AddedFields() []string {
 	var fields []string
 	if m.addcreated_at != nil {
-		fields = append(fields, template.FieldCreatedAt)
+		fields = append(fields, general.FieldCreatedAt)
 	}
 	if m.addupdated_at != nil {
-		fields = append(fields, template.FieldUpdatedAt)
+		fields = append(fields, general.FieldUpdatedAt)
 	}
 	if m.adddeleted_at != nil {
-		fields = append(fields, template.FieldDeletedAt)
+		fields = append(fields, general.FieldDeletedAt)
 	}
-	if m.addage != nil {
-		fields = append(fields, template.FieldAge)
+	if m.addincoming != nil {
+		fields = append(fields, general.FieldIncoming)
+	}
+	if m.addlocked != nil {
+		fields = append(fields, general.FieldLocked)
+	}
+	if m.addoutcoming != nil {
+		fields = append(fields, general.FieldOutcoming)
+	}
+	if m.addspendable != nil {
+		fields = append(fields, general.FieldSpendable)
 	}
 	return fields
 }
@@ -554,16 +976,22 @@ func (m *TemplateMutation) AddedFields() []string {
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
-func (m *TemplateMutation) AddedField(name string) (ent.Value, bool) {
+func (m *GeneralMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
-	case template.FieldCreatedAt:
+	case general.FieldCreatedAt:
 		return m.AddedCreatedAt()
-	case template.FieldUpdatedAt:
+	case general.FieldUpdatedAt:
 		return m.AddedUpdatedAt()
-	case template.FieldDeletedAt:
+	case general.FieldDeletedAt:
 		return m.AddedDeletedAt()
-	case template.FieldAge:
-		return m.AddedAge()
+	case general.FieldIncoming:
+		return m.AddedIncoming()
+	case general.FieldLocked:
+		return m.AddedLocked()
+	case general.FieldOutcoming:
+		return m.AddedOutcoming()
+	case general.FieldSpendable:
+		return m.AddedSpendable()
 	}
 	return nil, false
 }
@@ -571,126 +999,207 @@ func (m *TemplateMutation) AddedField(name string) (ent.Value, bool) {
 // AddField adds the value to the field with the given name. It returns an error if
 // the field is not defined in the schema, or if the type mismatched the field
 // type.
-func (m *TemplateMutation) AddField(name string, value ent.Value) error {
+func (m *GeneralMutation) AddField(name string, value ent.Value) error {
 	switch name {
-	case template.FieldCreatedAt:
+	case general.FieldCreatedAt:
 		v, ok := value.(int32)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddCreatedAt(v)
 		return nil
-	case template.FieldUpdatedAt:
+	case general.FieldUpdatedAt:
 		v, ok := value.(int32)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddUpdatedAt(v)
 		return nil
-	case template.FieldDeletedAt:
+	case general.FieldDeletedAt:
 		v, ok := value.(int32)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddDeletedAt(v)
 		return nil
-	case template.FieldAge:
-		v, ok := value.(int32)
+	case general.FieldIncoming:
+		v, ok := value.(int64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.AddAge(v)
+		m.AddIncoming(v)
+		return nil
+	case general.FieldLocked:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddLocked(v)
+		return nil
+	case general.FieldOutcoming:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddOutcoming(v)
+		return nil
+	case general.FieldSpendable:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddSpendable(v)
 		return nil
 	}
-	return fmt.Errorf("unknown Template numeric field %s", name)
+	return fmt.Errorf("unknown General numeric field %s", name)
 }
 
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
-func (m *TemplateMutation) ClearedFields() []string {
-	return nil
+func (m *GeneralMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(general.FieldAppID) {
+		fields = append(fields, general.FieldAppID)
+	}
+	if m.FieldCleared(general.FieldUserID) {
+		fields = append(fields, general.FieldUserID)
+	}
+	if m.FieldCleared(general.FieldCoinTypeID) {
+		fields = append(fields, general.FieldCoinTypeID)
+	}
+	if m.FieldCleared(general.FieldIncoming) {
+		fields = append(fields, general.FieldIncoming)
+	}
+	if m.FieldCleared(general.FieldLocked) {
+		fields = append(fields, general.FieldLocked)
+	}
+	if m.FieldCleared(general.FieldOutcoming) {
+		fields = append(fields, general.FieldOutcoming)
+	}
+	if m.FieldCleared(general.FieldSpendable) {
+		fields = append(fields, general.FieldSpendable)
+	}
+	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
 // cleared in this mutation.
-func (m *TemplateMutation) FieldCleared(name string) bool {
+func (m *GeneralMutation) FieldCleared(name string) bool {
 	_, ok := m.clearedFields[name]
 	return ok
 }
 
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
-func (m *TemplateMutation) ClearField(name string) error {
-	return fmt.Errorf("unknown Template nullable field %s", name)
+func (m *GeneralMutation) ClearField(name string) error {
+	switch name {
+	case general.FieldAppID:
+		m.ClearAppID()
+		return nil
+	case general.FieldUserID:
+		m.ClearUserID()
+		return nil
+	case general.FieldCoinTypeID:
+		m.ClearCoinTypeID()
+		return nil
+	case general.FieldIncoming:
+		m.ClearIncoming()
+		return nil
+	case general.FieldLocked:
+		m.ClearLocked()
+		return nil
+	case general.FieldOutcoming:
+		m.ClearOutcoming()
+		return nil
+	case general.FieldSpendable:
+		m.ClearSpendable()
+		return nil
+	}
+	return fmt.Errorf("unknown General nullable field %s", name)
 }
 
 // ResetField resets all changes in the mutation for the field with the given name.
 // It returns an error if the field is not defined in the schema.
-func (m *TemplateMutation) ResetField(name string) error {
+func (m *GeneralMutation) ResetField(name string) error {
 	switch name {
-	case template.FieldCreatedAt:
+	case general.FieldCreatedAt:
 		m.ResetCreatedAt()
 		return nil
-	case template.FieldUpdatedAt:
+	case general.FieldUpdatedAt:
 		m.ResetUpdatedAt()
 		return nil
-	case template.FieldDeletedAt:
+	case general.FieldDeletedAt:
 		m.ResetDeletedAt()
 		return nil
-	case template.FieldName:
-		m.ResetName()
+	case general.FieldAppID:
+		m.ResetAppID()
 		return nil
-	case template.FieldAge:
-		m.ResetAge()
+	case general.FieldUserID:
+		m.ResetUserID()
+		return nil
+	case general.FieldCoinTypeID:
+		m.ResetCoinTypeID()
+		return nil
+	case general.FieldIncoming:
+		m.ResetIncoming()
+		return nil
+	case general.FieldLocked:
+		m.ResetLocked()
+		return nil
+	case general.FieldOutcoming:
+		m.ResetOutcoming()
+		return nil
+	case general.FieldSpendable:
+		m.ResetSpendable()
 		return nil
 	}
-	return fmt.Errorf("unknown Template field %s", name)
+	return fmt.Errorf("unknown General field %s", name)
 }
 
 // AddedEdges returns all edge names that were set/added in this mutation.
-func (m *TemplateMutation) AddedEdges() []string {
+func (m *GeneralMutation) AddedEdges() []string {
 	edges := make([]string, 0, 0)
 	return edges
 }
 
 // AddedIDs returns all IDs (to other nodes) that were added for the given edge
 // name in this mutation.
-func (m *TemplateMutation) AddedIDs(name string) []ent.Value {
+func (m *GeneralMutation) AddedIDs(name string) []ent.Value {
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
-func (m *TemplateMutation) RemovedEdges() []string {
+func (m *GeneralMutation) RemovedEdges() []string {
 	edges := make([]string, 0, 0)
 	return edges
 }
 
 // RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
 // the given name in this mutation.
-func (m *TemplateMutation) RemovedIDs(name string) []ent.Value {
+func (m *GeneralMutation) RemovedIDs(name string) []ent.Value {
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
-func (m *TemplateMutation) ClearedEdges() []string {
+func (m *GeneralMutation) ClearedEdges() []string {
 	edges := make([]string, 0, 0)
 	return edges
 }
 
 // EdgeCleared returns a boolean which indicates if the edge with the given name
 // was cleared in this mutation.
-func (m *TemplateMutation) EdgeCleared(name string) bool {
+func (m *GeneralMutation) EdgeCleared(name string) bool {
 	return false
 }
 
 // ClearEdge clears the value of the edge with the given name. It returns an error
 // if that edge is not defined in the schema.
-func (m *TemplateMutation) ClearEdge(name string) error {
-	return fmt.Errorf("unknown Template unique edge %s", name)
+func (m *GeneralMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown General unique edge %s", name)
 }
 
 // ResetEdge resets all changes to the edge with the given name in this mutation.
 // It returns an error if the edge is not defined in the schema.
-func (m *TemplateMutation) ResetEdge(name string) error {
-	return fmt.Errorf("unknown Template edge %s", name)
+func (m *GeneralMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown General edge %s", name)
 }

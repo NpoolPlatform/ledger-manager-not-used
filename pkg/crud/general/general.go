@@ -1,47 +1,62 @@
-package template
+package general
 
 import (
 	"context"
 	"fmt"
 	"time"
 
-	constant "github.com/NpoolPlatform/service-template/pkg/message/const"
+	constant "github.com/NpoolPlatform/ledger-manager/pkg/message/const"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/trace"
 
+	"github.com/NpoolPlatform/ledger-manager/pkg/db"
+	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent"
+	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/general"
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
-	npool "github.com/NpoolPlatform/message/npool/servicetmpl/template"
-	"github.com/NpoolPlatform/service-template/pkg/db"
-	"github.com/NpoolPlatform/service-template/pkg/db/ent"
-	"github.com/NpoolPlatform/service-template/pkg/db/ent/template"
+	npool "github.com/NpoolPlatform/message/npool/ledgermgr/general"
 	"github.com/google/uuid"
 )
 
-func TemplateSpanAttributes(span trace.Span, in *npool.TemplateReq) trace.Span {
+func trace(span trace.Span, in *npool.GeneralReq, index int) trace.Span {
 	span.SetAttributes(
 		attribute.String("ID", in.GetID()),
-		attribute.String("Name", in.GetName()),
-		attribute.Int("age", int(in.GetAge())),
+		attribute.String("AppID", in.GetAppID()),
+		attribute.String("UserID", in.GetUserID()),
+		attribute.String("CoinTypeID", in.GetCoinTypeID()),
+		attribute.Float64("Incoming", in.GetIncoming()),
+		attribute.Float64("Locked", in.GetLocked()),
+		attribute.Float64("Outcoming", in.GetOutcoming()),
+		attribute.Float64("Spendable", in.GetSpendable()),
 	)
 	return span
 }
 
-func TemplateCondsSpanAttributes(span trace.Span, in *npool.Conds) trace.Span {
+func traceConds(span trace.Span, in *npool.Conds) trace.Span {
 	span.SetAttributes(
-		attribute.String("ID.Op", in.GetID().Op),
-		attribute.String("ID.Val", in.GetID().Value),
-		attribute.String("Name.Op", in.GetName().Op),
-		attribute.String("Name.Val", in.GetName().Value),
-		attribute.String("Age.Op", in.GetAge().Op),
-		attribute.Int("Age.Val", int(in.GetAge().Value)),
+		attribute.String("ID.Op", in.GetID().GetOp()),
+		attribute.String("ID.Value", in.GetID().GetValue()),
+		attribute.String("AppID.Op", in.GetAppID().GetOp()),
+		attribute.String("AppID.Value", in.GetAppID().GetValue()),
+		attribute.String("UserID.Op", in.GetUserID().GetOp()),
+		attribute.String("UserID.Value", in.GetUserID().GetValue()),
+		attribute.String("CoinTypeID.Op", in.GetCoinTypeID().GetOp()),
+		attribute.String("CoinTypeID.Value", in.GetCoinTypeID().GetValue()),
+		attribute.String("Incoming.Op", in.GetIncoming().GetOp()),
+		attribute.Float64("Incoming.Value", in.GetIncoming().GetValue()),
+		attribute.String("Locked.Op", in.GetLocked().GetOp()),
+		attribute.Float64("Locked.Value", in.GetLocked().GetValue()),
+		attribute.String("Outcoming.Op", in.GetOutcoming().GetOp()),
+		attribute.Float64("Outcoming.Value", in.GetOutcoming().GetValue()),
+		attribute.String("Spendable.Op", in.GetSpendable().GetOp()),
+		attribute.Float64("Spendable.Value", in.GetSpendable().GetValue()),
 	)
 	return span
 }
 
-func Create(ctx context.Context, in *npool.TemplateReq) (*ent.Template, error) {
-	var info *ent.Template
+func Create(ctx context.Context, in *npool.GeneralReq) (*ent.General, error) {
+	var info *ent.General
 	var err error
 
 	_, span := otel.Tracer(constant.ServiceName).Start(ctx, "Create")
@@ -54,19 +69,24 @@ func Create(ctx context.Context, in *npool.TemplateReq) (*ent.Template, error) {
 		}
 	}()
 
-	span = TemplateSpanAttributes(span, in)
+	span = trace(span, in, 0)
 
 	err = db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
-		c := cli.Template.Create()
+		c := cli.General.Create()
+
 		if in.ID != nil {
 			c.SetID(uuid.MustParse(in.GetID()))
 		}
-		if in.Name != nil {
-			c.SetName(in.GetName())
+		if in.AppID != nil {
+			c.SetAppID(uuid.MustParse(in.GetAppID()))
 		}
-		if in.Age != nil {
-			c.SetAge(in.GetAge())
+		if in.UserID != nil {
+			c.SetUserID(uuid.MustParse(in.GetUserID()))
 		}
+		if in.CoinTypeID != nil {
+			c.SetCoinTypeID(uuid.MustParse(in.GetCoinTypeID()))
+		}
+
 		info, err = c.Save(_ctx)
 		return err
 	})
@@ -77,7 +97,7 @@ func Create(ctx context.Context, in *npool.TemplateReq) (*ent.Template, error) {
 	return info, nil
 }
 
-func CreateBulk(ctx context.Context, in []*npool.TemplateReq) ([]*ent.Template, error) {
+func CreateBulk(ctx context.Context, in []*npool.GeneralReq) ([]*ent.General, error) {
 	var err error
 
 	_, span := otel.Tracer(constant.ServiceName).Start(ctx, "CreateBulk")
@@ -90,33 +110,29 @@ func CreateBulk(ctx context.Context, in []*npool.TemplateReq) ([]*ent.Template, 
 		}
 	}()
 
-	for key, info := range in {
-		span.SetAttributes(
-			attribute.String(fmt.Sprintf("ID.%v", key), info.GetID()),
-			attribute.String(fmt.Sprintf("Name.%v", key), info.GetName()),
-			attribute.String(fmt.Sprintf("Age.%v", key), info.GetName()),
-		)
-		if err != nil {
-			return nil, err
-		}
+	for index, info := range in {
+		span = trace(span, info, index)
 	}
 
-	rows := []*ent.Template{}
+	rows := []*ent.General{}
 	err = db.WithTx(ctx, func(_ctx context.Context, tx *ent.Tx) error {
-		bulk := make([]*ent.TemplateCreate, len(in))
+		bulk := make([]*ent.GeneralCreate, len(in))
 		for i, info := range in {
-			bulk[i] = tx.Template.Create()
+			bulk[i] = tx.General.Create()
 			if info.ID != nil {
-				bulk[i].SetID(uuid.MustParse(info.GetID()))
+				c.SetID(uuid.MustParse(info.GetID()))
 			}
-			if info.Name != nil {
-				bulk[i].SetName(info.GetName())
+			if info.AppID != nil {
+				c.SetAppID(uuid.MustParse(info.GetAppID()))
 			}
-			if info.Age != nil {
-				bulk[i].SetAge(info.GetAge())
+			if info.UserID != nil {
+				c.SetUserID(uuid.MustParse(info.GetUserID()))
+			}
+			if info.CoinTypeID != nil {
+				c.SetCoinTypeID(uuid.MustParse(info.GetCoinTypeID()))
 			}
 		}
-		rows, err = tx.Template.CreateBulk(bulk...).Save(_ctx)
+		rows, err = tx.General.CreateBulk(bulk...).Save(_ctx)
 		return err
 	})
 	if err != nil {
@@ -125,11 +141,11 @@ func CreateBulk(ctx context.Context, in []*npool.TemplateReq) ([]*ent.Template, 
 	return rows, nil
 }
 
-func Update(ctx context.Context, in *npool.TemplateReq) (*ent.Template, error) {
-	var info *ent.Template
+func AddFields(ctx context.Context, in *npool.GeneralReq) (*npool.General, error) {
+	var info *ent.General
 	var err error
 
-	_, span := otel.Tracer(constant.ServiceName).Start(ctx, "Update")
+	_, span := otel.Tracer(constant.ServiceName).Start(ctx, "Create")
 	defer span.End()
 
 	defer func() {
@@ -139,28 +155,17 @@ func Update(ctx context.Context, in *npool.TemplateReq) (*ent.Template, error) {
 		}
 	}()
 
-	span = TemplateSpanAttributes(span, in)
+	span = trace(span, in, 0)
 
-	err = db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
-		u := cli.Template.UpdateOneID(uuid.MustParse(in.GetID()))
-		if in.Name != nil {
-			u.SetName(in.GetName())
-		}
-		if in.Age != nil {
-			u.SetAge(in.GetAge())
-		}
-		info, err = u.Save(_ctx)
-		return err
+	err = db.WithTx(ctx, func(_ctx context.Context, tx *ent.Tx) error {
+
 	})
-	if err != nil {
-		return nil, err
-	}
 
 	return info, nil
 }
 
-func Row(ctx context.Context, id uuid.UUID) (*ent.Template, error) {
-	var info *ent.Template
+func Row(ctx context.Context, id uuid.UUID) (*ent.General, error) {
+	var info *ent.General
 	var err error
 
 	_, span := otel.Tracer(constant.ServiceName).Start(ctx, "Row")
@@ -178,7 +183,7 @@ func Row(ctx context.Context, id uuid.UUID) (*ent.Template, error) {
 	)
 
 	err = db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
-		info, err = cli.Template.Query().Where(template.ID(id)).Only(_ctx)
+		info, err = cli.General.Query().Where(general.ID(id)).Only(_ctx)
 		return err
 	})
 	if err != nil {
@@ -188,47 +193,47 @@ func Row(ctx context.Context, id uuid.UUID) (*ent.Template, error) {
 	return info, nil
 }
 
-func setQueryConds(conds *npool.Conds, cli *ent.Client) (*ent.TemplateQuery, error) {
-	stm := cli.Template.Query()
+func setQueryConds(conds *npool.Conds, cli *ent.Client) (*ent.GeneralQuery, error) {
+	stm := cli.General.Query()
 	if conds.ID != nil {
 		id := uuid.MustParse(conds.GetID().GetValue())
 		switch conds.GetID().GetOp() {
 		case cruder.EQ:
-			stm.Where(template.ID(id))
+			stm.Where(general.ID(id))
 		case cruder.IN:
-			stm.Where(template.IDIn(id))
+			stm.Where(general.IDIn(id))
 		default:
-			return nil, fmt.Errorf("invalid template field")
+			return nil, fmt.Errorf("invalid general field")
 		}
 	}
 	if conds.Name != nil {
 		switch conds.GetName().GetOp() {
 		case cruder.EQ:
-			stm.Where(template.Name(conds.GetName().GetValue()))
+			stm.Where(general.Name(conds.GetName().GetValue()))
 		case cruder.IN:
-			stm.Where(template.NameIn(conds.GetName().GetValue()))
+			stm.Where(general.NameIn(conds.GetName().GetValue()))
 		default:
-			return nil, fmt.Errorf("invalid template field")
+			return nil, fmt.Errorf("invalid general field")
 		}
 	}
 	if conds.Age != nil {
 		switch conds.GetAge().GetOp() {
 		case cruder.EQ:
-			stm.Where(template.Age(conds.GetAge().GetValue()))
+			stm.Where(general.Age(conds.GetAge().GetValue()))
 		case cruder.LT:
-			stm.Where(template.AgeLT(conds.GetAge().GetValue()))
+			stm.Where(general.AgeLT(conds.GetAge().GetValue()))
 		case cruder.GT:
-			stm.Where(template.AgeGT(conds.GetAge().GetValue()))
+			stm.Where(general.AgeGT(conds.GetAge().GetValue()))
 		case cruder.IN:
-			stm.Where(template.AgeIn(conds.GetAge().GetValue()))
+			stm.Where(general.AgeIn(conds.GetAge().GetValue()))
 		default:
-			return nil, fmt.Errorf("invalid template field")
+			return nil, fmt.Errorf("invalid general field")
 		}
 	}
 	return stm, nil
 }
 
-func Rows(ctx context.Context, conds *npool.Conds, offset, limit int) ([]*ent.Template, int, error) {
+func Rows(ctx context.Context, conds *npool.Conds, offset, limit int) ([]*ent.General, int, error) {
 	var err error
 
 	_, span := otel.Tracer(constant.ServiceName).Start(ctx, "Rows")
@@ -241,13 +246,13 @@ func Rows(ctx context.Context, conds *npool.Conds, offset, limit int) ([]*ent.Te
 		}
 	}()
 
-	span = TemplateCondsSpanAttributes(span, conds)
+	span = GeneralCondsSpanAttributes(span, conds)
 	span.SetAttributes(
 		attribute.Int("Offset", offset),
 		attribute.Int("Limit", limit),
 	)
 
-	rows := []*ent.Template{}
+	rows := []*ent.General{}
 	var total int
 	err = db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
 		stm, err := setQueryConds(conds, cli)
@@ -261,7 +266,7 @@ func Rows(ctx context.Context, conds *npool.Conds, offset, limit int) ([]*ent.Te
 
 		rows, err = stm.
 			Offset(offset).
-			Order(ent.Desc(template.FieldUpdatedAt)).
+			Order(ent.Desc(general.FieldUpdatedAt)).
 			Limit(limit).
 			All(_ctx)
 		if err != nil {
@@ -276,8 +281,8 @@ func Rows(ctx context.Context, conds *npool.Conds, offset, limit int) ([]*ent.Te
 	return rows, total, nil
 }
 
-func RowOnly(ctx context.Context, conds *npool.Conds) (*ent.Template, error) {
-	var info *ent.Template
+func RowOnly(ctx context.Context, conds *npool.Conds) (*ent.General, error) {
+	var info *ent.General
 	var err error
 
 	_, span := otel.Tracer(constant.ServiceName).Start(ctx, "RowOnly")
@@ -290,7 +295,7 @@ func RowOnly(ctx context.Context, conds *npool.Conds) (*ent.Template, error) {
 		}
 	}()
 
-	span = TemplateCondsSpanAttributes(span, conds)
+	span = GeneralCondsSpanAttributes(span, conds)
 
 	err = db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
 		stm, err := setQueryConds(conds, cli)
@@ -326,7 +331,7 @@ func Count(ctx context.Context, conds *npool.Conds) (uint32, error) {
 		}
 	}()
 
-	span = TemplateCondsSpanAttributes(span, conds)
+	span = GeneralCondsSpanAttributes(span, conds)
 
 	err = db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
 		stm, err := setQueryConds(conds, cli)
@@ -366,7 +371,7 @@ func Exist(ctx context.Context, id uuid.UUID) (bool, error) {
 	)
 
 	err = db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
-		exist, err = cli.Template.Query().Where(template.ID(id)).Exist(_ctx)
+		exist, err = cli.General.Query().Where(general.ID(id)).Exist(_ctx)
 		return err
 	})
 	if err != nil {
@@ -390,7 +395,7 @@ func ExistConds(ctx context.Context, conds *npool.Conds) (bool, error) {
 		}
 	}()
 
-	span = TemplateCondsSpanAttributes(span, conds)
+	span = GeneralCondsSpanAttributes(span, conds)
 
 	err = db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
 		stm, err := setQueryConds(conds, cli)
@@ -412,8 +417,8 @@ func ExistConds(ctx context.Context, conds *npool.Conds) (bool, error) {
 	return exist, nil
 }
 
-func Delete(ctx context.Context, id uuid.UUID) (*ent.Template, error) {
-	var info *ent.Template
+func Delete(ctx context.Context, id uuid.UUID) (*ent.General, error) {
+	var info *ent.General
 	var err error
 
 	_, span := otel.Tracer(constant.ServiceName).Start(ctx, "Delete")
@@ -431,7 +436,7 @@ func Delete(ctx context.Context, id uuid.UUID) (*ent.Template, error) {
 	)
 
 	err = db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
-		info, err = cli.Template.UpdateOneID(id).
+		info, err = cli.General.UpdateOneID(id).
 			SetDeletedAt(uint32(time.Now().Unix())).
 			Save(_ctx)
 		return err

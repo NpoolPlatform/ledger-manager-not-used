@@ -1,4 +1,4 @@
-package template
+package general
 
 import (
 	"context"
@@ -7,13 +7,13 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/NpoolPlatform/service-template/pkg/db/ent"
+	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent"
 
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 
+	testinit "github.com/NpoolPlatform/ledger-manager/pkg/testinit"
 	val "github.com/NpoolPlatform/message/npool"
-	npool "github.com/NpoolPlatform/message/npool/servicetmpl/template"
-	testinit "github.com/NpoolPlatform/service-template/pkg/test-init"
+	npool "github.com/NpoolPlatform/message/npool/ledgermgr/general"
 	"github.com/google/uuid"
 
 	"github.com/stretchr/testify/assert"
@@ -28,25 +28,25 @@ func init() {
 	}
 }
 
-var entTemplate = ent.Template{
+var entGeneral = ent.General{
 	ID:   uuid.New(),
 	Name: uuid.New().String(),
 	Age:  10,
 }
 
 var (
-	id           = entTemplate.ID.String()
-	templateInfo = npool.TemplateReq{
+	id          = entGeneral.ID.String()
+	generalInfo = npool.GeneralReq{
 		ID:   &id,
-		Name: &entTemplate.Name,
-		Age:  &entTemplate.Age,
+		Name: &entGeneral.Name,
+		Age:  &entGeneral.Age,
 	}
 )
 
-var info *ent.Template
+var info *ent.General
 
-func rowToObject(row *ent.Template) *ent.Template {
-	return &ent.Template{
+func rowToObject(row *ent.General) *ent.General {
+	return &ent.General{
 		ID:   row.ID,
 		Name: row.Name,
 		Age:  row.Age,
@@ -55,18 +55,18 @@ func rowToObject(row *ent.Template) *ent.Template {
 
 func create(t *testing.T) {
 	var err error
-	info, err = Create(context.Background(), &templateInfo)
+	info, err = Create(context.Background(), &generalInfo)
 	if assert.Nil(t, err) {
 		if assert.NotEqual(t, info.ID, uuid.UUID{}.String()) {
-			entTemplate.ID = info.ID
-			entTemplate.CreatedAt = info.CreatedAt
+			entGeneral.ID = info.ID
+			entGeneral.CreatedAt = info.CreatedAt
 		}
-		assert.Equal(t, rowToObject(info), &entTemplate)
+		assert.Equal(t, rowToObject(info), &entGeneral)
 	}
 }
 
 func createBulk(t *testing.T) {
-	entTemplate := []ent.Template{
+	entGeneral := []ent.General{
 		{
 			ID:   uuid.New(),
 			Name: uuid.New().String(),
@@ -79,16 +79,16 @@ func createBulk(t *testing.T) {
 		},
 	}
 
-	templates := []*npool.TemplateReq{}
-	for key := range entTemplate {
-		id := entTemplate[key].ID.String()
-		templates = append(templates, &npool.TemplateReq{
+	generals := []*npool.GeneralReq{}
+	for key := range entGeneral {
+		id := entGeneral[key].ID.String()
+		generals = append(generals, &npool.GeneralReq{
 			ID:   &id,
-			Name: &entTemplate[key].Name,
-			Age:  &entTemplate[key].Age,
+			Name: &entGeneral[key].Name,
+			Age:  &entGeneral[key].Age,
 		})
 	}
-	infos, err := CreateBulk(context.Background(), templates)
+	infos, err := CreateBulk(context.Background(), generals)
 	if assert.Nil(t, err) {
 		assert.Equal(t, len(infos), 2)
 		assert.NotEqual(t, infos[0].ID, uuid.UUID{}.String())
@@ -98,9 +98,9 @@ func createBulk(t *testing.T) {
 
 func update(t *testing.T) {
 	var err error
-	info, err = Update(context.Background(), &templateInfo)
+	info, err = Update(context.Background(), &generalInfo)
 	if assert.Nil(t, err) {
-		assert.Equal(t, rowToObject(info), &entTemplate)
+		assert.Equal(t, rowToObject(info), &entGeneral)
 	}
 }
 
@@ -108,7 +108,7 @@ func row(t *testing.T) {
 	var err error
 	info, err = Row(context.Background(), info.ID)
 	if assert.Nil(t, err) {
-		assert.Equal(t, rowToObject(info), &entTemplate)
+		assert.Equal(t, rowToObject(info), &entGeneral)
 	}
 }
 
@@ -122,7 +122,7 @@ func rows(t *testing.T) {
 		}, 0, 0)
 	if assert.Nil(t, err) {
 		assert.Equal(t, total, 1)
-		assert.Equal(t, rowToObject(infos[0]), &entTemplate)
+		assert.Equal(t, rowToObject(infos[0]), &entGeneral)
 	}
 }
 
@@ -136,7 +136,7 @@ func rowOnly(t *testing.T) {
 			},
 		})
 	if assert.Nil(t, err) {
-		assert.Equal(t, rowToObject(info), &entTemplate)
+		assert.Equal(t, rowToObject(info), &entGeneral)
 	}
 }
 
@@ -178,11 +178,11 @@ func existConds(t *testing.T) {
 func deleteA(t *testing.T) {
 	info, err := Delete(context.Background(), info.ID)
 	if assert.Nil(t, err) {
-		assert.Equal(t, rowToObject(info), &entTemplate)
+		assert.Equal(t, rowToObject(info), &entGeneral)
 	}
 }
 
-func TestMainOrder(t *testing.T) {
+func TestGeneral(t *testing.T) {
 	if runByGithubAction, err := strconv.ParseBool(os.Getenv("RUN_BY_GITHUB_ACTION")); err == nil && runByGithubAction {
 		return
 	}
