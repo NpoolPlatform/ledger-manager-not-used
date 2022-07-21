@@ -16,7 +16,7 @@ import (
 
 var timeout = 10 * time.Second
 
-type handler func(context.Context, npool.GeneralClient) (cruder.Any, error)
+type handler func(context.Context, npool.LedgerGeneralClient) (cruder.Any, error)
 
 func withCRUD(ctx context.Context, handler handler) (cruder.Any, error) {
 	_ctx, cancel := context.WithTimeout(ctx, timeout)
@@ -29,13 +29,13 @@ func withCRUD(ctx context.Context, handler handler) (cruder.Any, error) {
 
 	defer conn.Close()
 
-	cli := npool.NewGeneralClient(conn)
+	cli := npool.NewLedgerGeneralClient(conn)
 
 	return handler(_ctx, cli)
 }
 
 func CreateGeneral(ctx context.Context, in *npool.GeneralReq) (*npool.General, error) {
-	info, err := withCRUD(ctx, func(_ctx context.Context, cli npool.GeneralClient) (cruder.Any, error) {
+	info, err := withCRUD(ctx, func(_ctx context.Context, cli npool.LedgerGeneralClient) (cruder.Any, error) {
 		resp, err := cli.CreateGeneral(ctx, &npool.CreateGeneralRequest{
 			Info: in,
 		})
@@ -51,7 +51,7 @@ func CreateGeneral(ctx context.Context, in *npool.GeneralReq) (*npool.General, e
 }
 
 func CreateGenerals(ctx context.Context, in []*npool.GeneralReq) ([]*npool.General, error) {
-	infos, err := withCRUD(ctx, func(_ctx context.Context, cli npool.GeneralClient) (cruder.Any, error) {
+	infos, err := withCRUD(ctx, func(_ctx context.Context, cli npool.LedgerGeneralClient) (cruder.Any, error) {
 		resp, err := cli.CreateGenerals(ctx, &npool.CreateGeneralsRequest{
 			Infos: in,
 		})
@@ -66,13 +66,13 @@ func CreateGenerals(ctx context.Context, in []*npool.GeneralReq) ([]*npool.Gener
 	return infos.([]*npool.General), nil
 }
 
-func UpdateGeneral(ctx context.Context, in *npool.GeneralReq) (*npool.General, error) {
-	info, err := withCRUD(ctx, func(_ctx context.Context, cli npool.GeneralClient) (cruder.Any, error) {
-		resp, err := cli.UpdateGeneral(ctx, &npool.UpdateGeneralRequest{
+func AddGeneral(ctx context.Context, in *npool.GeneralReq) (*npool.General, error) {
+	info, err := withCRUD(ctx, func(_ctx context.Context, cli npool.LedgerGeneralClient) (cruder.Any, error) {
+		resp, err := cli.AddGeneral(ctx, &npool.AddGeneralRequest{
 			Info: in,
 		})
 		if err != nil {
-			return nil, fmt.Errorf("fail update general: %v", err)
+			return nil, fmt.Errorf("fail add general: %v", err)
 		}
 		return resp.GetInfo(), nil
 	})
@@ -83,7 +83,7 @@ func UpdateGeneral(ctx context.Context, in *npool.GeneralReq) (*npool.General, e
 }
 
 func GetGeneral(ctx context.Context, id string) (*npool.General, error) {
-	info, err := withCRUD(ctx, func(_ctx context.Context, cli npool.GeneralClient) (cruder.Any, error) {
+	info, err := withCRUD(ctx, func(_ctx context.Context, cli npool.LedgerGeneralClient) (cruder.Any, error) {
 		resp, err := cli.GetGeneral(ctx, &npool.GetGeneralRequest{
 			ID: id,
 		})
@@ -99,7 +99,7 @@ func GetGeneral(ctx context.Context, id string) (*npool.General, error) {
 }
 
 func GetGeneralOnly(ctx context.Context, conds *npool.Conds) (*npool.General, error) {
-	info, err := withCRUD(ctx, func(_ctx context.Context, cli npool.GeneralClient) (cruder.Any, error) {
+	info, err := withCRUD(ctx, func(_ctx context.Context, cli npool.LedgerGeneralClient) (cruder.Any, error) {
 		resp, err := cli.GetGeneralOnly(ctx, &npool.GetGeneralOnlyRequest{
 			Conds: conds,
 		})
@@ -116,7 +116,7 @@ func GetGeneralOnly(ctx context.Context, conds *npool.Conds) (*npool.General, er
 
 func GetGenerals(ctx context.Context, conds *npool.Conds, limit, offset int32) ([]*npool.General, uint32, error) {
 	var total uint32
-	infos, err := withCRUD(ctx, func(_ctx context.Context, cli npool.GeneralClient) (cruder.Any, error) {
+	infos, err := withCRUD(ctx, func(_ctx context.Context, cli npool.LedgerGeneralClient) (cruder.Any, error) {
 		resp, err := cli.GetGenerals(ctx, &npool.GetGeneralsRequest{
 			Conds:  conds,
 			Limit:  limit,
@@ -135,7 +135,7 @@ func GetGenerals(ctx context.Context, conds *npool.Conds, limit, offset int32) (
 }
 
 func ExistGeneral(ctx context.Context, id string) (bool, error) {
-	infos, err := withCRUD(ctx, func(_ctx context.Context, cli npool.GeneralClient) (cruder.Any, error) {
+	infos, err := withCRUD(ctx, func(_ctx context.Context, cli npool.LedgerGeneralClient) (cruder.Any, error) {
 		resp, err := cli.ExistGeneral(ctx, &npool.ExistGeneralRequest{
 			ID: id,
 		})
@@ -151,7 +151,7 @@ func ExistGeneral(ctx context.Context, id string) (bool, error) {
 }
 
 func ExistGeneralConds(ctx context.Context, conds *npool.Conds) (bool, error) {
-	infos, err := withCRUD(ctx, func(_ctx context.Context, cli npool.GeneralClient) (cruder.Any, error) {
+	infos, err := withCRUD(ctx, func(_ctx context.Context, cli npool.LedgerGeneralClient) (cruder.Any, error) {
 		resp, err := cli.ExistGeneralConds(ctx, &npool.ExistGeneralCondsRequest{
 			Conds: conds,
 		})
@@ -167,7 +167,7 @@ func ExistGeneralConds(ctx context.Context, conds *npool.Conds) (bool, error) {
 }
 
 func CountGenerals(ctx context.Context, conds *npool.Conds) (uint32, error) {
-	infos, err := withCRUD(ctx, func(_ctx context.Context, cli npool.GeneralClient) (cruder.Any, error) {
+	infos, err := withCRUD(ctx, func(_ctx context.Context, cli npool.LedgerGeneralClient) (cruder.Any, error) {
 		resp, err := cli.CountGenerals(ctx, &npool.CountGeneralsRequest{
 			Conds: conds,
 		})
@@ -183,7 +183,7 @@ func CountGenerals(ctx context.Context, conds *npool.Conds) (uint32, error) {
 }
 
 func DeleteGeneral(ctx context.Context, id string) (*npool.General, error) {
-	infos, err := withCRUD(ctx, func(_ctx context.Context, cli npool.GeneralClient) (cruder.Any, error) {
+	infos, err := withCRUD(ctx, func(_ctx context.Context, cli npool.LedgerGeneralClient) (cruder.Any, error) {
 		resp, err := cli.DeleteGeneral(ctx, &npool.DeleteGeneralRequest{
 			ID: id,
 		})
