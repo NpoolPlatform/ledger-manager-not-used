@@ -3,6 +3,7 @@
 package ent
 
 import (
+	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/detail"
 	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/general"
 
 	"entgo.io/ent/dialect/sql"
@@ -13,8 +14,33 @@ import (
 
 // schemaGraph holds a representation of ent/schema at runtime.
 var schemaGraph = func() *sqlgraph.Schema {
-	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 1)}
+	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 2)}
 	graph.Nodes[0] = &sqlgraph.Node{
+		NodeSpec: sqlgraph.NodeSpec{
+			Table:   detail.Table,
+			Columns: detail.Columns,
+			ID: &sqlgraph.FieldSpec{
+				Type:   field.TypeUUID,
+				Column: detail.FieldID,
+			},
+		},
+		Type: "Detail",
+		Fields: map[string]*sqlgraph.FieldSpec{
+			detail.FieldCreatedAt:       {Type: field.TypeUint32, Column: detail.FieldCreatedAt},
+			detail.FieldUpdatedAt:       {Type: field.TypeUint32, Column: detail.FieldUpdatedAt},
+			detail.FieldDeletedAt:       {Type: field.TypeUint32, Column: detail.FieldDeletedAt},
+			detail.FieldAppID:           {Type: field.TypeUUID, Column: detail.FieldAppID},
+			detail.FieldUserID:          {Type: field.TypeUUID, Column: detail.FieldUserID},
+			detail.FieldCoinTypeID:      {Type: field.TypeUUID, Column: detail.FieldCoinTypeID},
+			detail.FieldIoType:          {Type: field.TypeString, Column: detail.FieldIoType},
+			detail.FieldIoSubType:       {Type: field.TypeString, Column: detail.FieldIoSubType},
+			detail.FieldAmount:          {Type: field.TypeUint64, Column: detail.FieldAmount},
+			detail.FieldFromCoinTypeID:  {Type: field.TypeUUID, Column: detail.FieldFromCoinTypeID},
+			detail.FieldCoinUsdCurrency: {Type: field.TypeUint64, Column: detail.FieldCoinUsdCurrency},
+			detail.FieldIoExtra:         {Type: field.TypeString, Column: detail.FieldIoExtra},
+		},
+	}
+	graph.Nodes[1] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   general.Table,
 			Columns: general.Columns,
@@ -47,6 +73,105 @@ type predicateAdder interface {
 }
 
 // addPredicate implements the predicateAdder interface.
+func (dq *DetailQuery) addPredicate(pred func(s *sql.Selector)) {
+	dq.predicates = append(dq.predicates, pred)
+}
+
+// Filter returns a Filter implementation to apply filters on the DetailQuery builder.
+func (dq *DetailQuery) Filter() *DetailFilter {
+	return &DetailFilter{dq}
+}
+
+// addPredicate implements the predicateAdder interface.
+func (m *DetailMutation) addPredicate(pred func(s *sql.Selector)) {
+	m.predicates = append(m.predicates, pred)
+}
+
+// Filter returns an entql.Where implementation to apply filters on the DetailMutation builder.
+func (m *DetailMutation) Filter() *DetailFilter {
+	return &DetailFilter{m}
+}
+
+// DetailFilter provides a generic filtering capability at runtime for DetailQuery.
+type DetailFilter struct {
+	predicateAdder
+}
+
+// Where applies the entql predicate on the query filter.
+func (f *DetailFilter) Where(p entql.P) {
+	f.addPredicate(func(s *sql.Selector) {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[0].Type, p, s); err != nil {
+			s.AddError(err)
+		}
+	})
+}
+
+// WhereID applies the entql [16]byte predicate on the id field.
+func (f *DetailFilter) WhereID(p entql.ValueP) {
+	f.Where(p.Field(detail.FieldID))
+}
+
+// WhereCreatedAt applies the entql uint32 predicate on the created_at field.
+func (f *DetailFilter) WhereCreatedAt(p entql.Uint32P) {
+	f.Where(p.Field(detail.FieldCreatedAt))
+}
+
+// WhereUpdatedAt applies the entql uint32 predicate on the updated_at field.
+func (f *DetailFilter) WhereUpdatedAt(p entql.Uint32P) {
+	f.Where(p.Field(detail.FieldUpdatedAt))
+}
+
+// WhereDeletedAt applies the entql uint32 predicate on the deleted_at field.
+func (f *DetailFilter) WhereDeletedAt(p entql.Uint32P) {
+	f.Where(p.Field(detail.FieldDeletedAt))
+}
+
+// WhereAppID applies the entql [16]byte predicate on the app_id field.
+func (f *DetailFilter) WhereAppID(p entql.ValueP) {
+	f.Where(p.Field(detail.FieldAppID))
+}
+
+// WhereUserID applies the entql [16]byte predicate on the user_id field.
+func (f *DetailFilter) WhereUserID(p entql.ValueP) {
+	f.Where(p.Field(detail.FieldUserID))
+}
+
+// WhereCoinTypeID applies the entql [16]byte predicate on the coin_type_id field.
+func (f *DetailFilter) WhereCoinTypeID(p entql.ValueP) {
+	f.Where(p.Field(detail.FieldCoinTypeID))
+}
+
+// WhereIoType applies the entql string predicate on the io_type field.
+func (f *DetailFilter) WhereIoType(p entql.StringP) {
+	f.Where(p.Field(detail.FieldIoType))
+}
+
+// WhereIoSubType applies the entql string predicate on the io_sub_type field.
+func (f *DetailFilter) WhereIoSubType(p entql.StringP) {
+	f.Where(p.Field(detail.FieldIoSubType))
+}
+
+// WhereAmount applies the entql uint64 predicate on the amount field.
+func (f *DetailFilter) WhereAmount(p entql.Uint64P) {
+	f.Where(p.Field(detail.FieldAmount))
+}
+
+// WhereFromCoinTypeID applies the entql [16]byte predicate on the from_coin_type_id field.
+func (f *DetailFilter) WhereFromCoinTypeID(p entql.ValueP) {
+	f.Where(p.Field(detail.FieldFromCoinTypeID))
+}
+
+// WhereCoinUsdCurrency applies the entql uint64 predicate on the coin_usd_currency field.
+func (f *DetailFilter) WhereCoinUsdCurrency(p entql.Uint64P) {
+	f.Where(p.Field(detail.FieldCoinUsdCurrency))
+}
+
+// WhereIoExtra applies the entql string predicate on the io_extra field.
+func (f *DetailFilter) WhereIoExtra(p entql.StringP) {
+	f.Where(p.Field(detail.FieldIoExtra))
+}
+
+// addPredicate implements the predicateAdder interface.
 func (gq *GeneralQuery) addPredicate(pred func(s *sql.Selector)) {
 	gq.predicates = append(gq.predicates, pred)
 }
@@ -74,7 +199,7 @@ type GeneralFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *GeneralFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[0].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[1].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
