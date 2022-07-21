@@ -1,6 +1,8 @@
 package general
 
 import (
+	"fmt"
+
 	"go.opentelemetry.io/otel/attribute"
 	trace1 "go.opentelemetry.io/otel/trace"
 
@@ -9,14 +11,14 @@ import (
 
 func trace(span trace1.Span, in *npool.GeneralReq, index int) trace1.Span {
 	span.SetAttributes(
-		attribute.String("ID", in.GetID()),
-		attribute.String("AppID", in.GetAppID()),
-		attribute.String("UserID", in.GetUserID()),
-		attribute.String("CoinTypeID", in.GetCoinTypeID()),
-		attribute.Float64("Incoming", in.GetIncoming()),
-		attribute.Float64("Locked", in.GetLocked()),
-		attribute.Float64("Outcoming", in.GetOutcoming()),
-		attribute.Float64("Spendable", in.GetSpendable()),
+		attribute.String(fmt.Sprintf("ID.%v", index), in.GetID()),
+		attribute.String(fmt.Sprintf("AppID.%v", index), in.GetAppID()),
+		attribute.String(fmt.Sprintf("UserID.%v", index), in.GetUserID()),
+		attribute.String(fmt.Sprintf("CoinTypeID.%v", index), in.GetCoinTypeID()),
+		attribute.Float64(fmt.Sprintf("Incoming.%v", index), in.GetIncoming()),
+		attribute.Float64(fmt.Sprintf("Locked.%v", index), in.GetLocked()),
+		attribute.Float64(fmt.Sprintf("Outcoming.%v", index), in.GetOutcoming()),
+		attribute.Float64(fmt.Sprintf("Spendable.%v", index), in.GetSpendable()),
 	)
 	return span
 }
