@@ -123,8 +123,65 @@ func AddFields(ctx context.Context, in *npool.GeneralReq) (*ent.General, error) 
 	span = tracer.Trace(span, in)
 
 	err = db.WithTx(ctx, func(_ctx context.Context, tx *ent.Tx) error {
+		info, err = tx.General.Query().Where(general.ID(uuid.MustParse(in.GetID()))).ForUpdate().Only(_ctx)
+		if err != nil {
+			return fmt.Errorf("fail query general: %v", err)
+		}
+
+		locked := price.DBPriceToVisualPrice(info.Locked)
+		outcoming := price.DBPriceToVisualPrice(info.Outcoming)
+		incoming := price.DBPriceToVisualPrice(info.Incoming)
+		spendable := price.DBPriceToVisualPrice(info.Spendable)
+
+		if int32(in.GetIncoming()+incoming) < int32(in.GetLocked()+locked+in.GetOutcoming()+outcoming) {
+			return fmt.Errorf("outcoming + locked > incoming")
+		}
+
+		if int32(in.GetIncoming()+incoming) < int32(in.GetLocked()+locked+in.GetSpendable()+spendable) {
+			return fmt.Errorf("spendable + locked > incoming")
+		}
+
+		if locked+in.GetLocked() < 0 {
+			return fmt.Errorf("locked + locked < 0")
+		}
+
+		if in.GetIncoming() < 0 {
+			return fmt.Errorf("incoming < 0")
+		}
+
+		if in.GetOutcoming() < 0 {
+			return fmt.Errorf("outcoming < 0")
+		}
+
+		if spendable+in.GetSpendable() < 0 {
+			return fmt.Errorf("spendable + spendable < 0")
+		}
+
+		stm := info.Update()
+
+		if in.Incoming != nil {
+			stm = stm.AddIncoming(price.VisualPriceToDBSignPrice(in.GetIncoming()))
+		}
+		if in.Outcoming != nil {
+			stm = stm.AddOutcoming(price.VisualPriceToDBSignPrice(in.GetOutcoming()))
+		}
+		if in.Locked != nil {
+			stm = stm.AddLocked(price.VisualPriceToDBSignPrice(in.GetLocked()))
+		}
+		if in.Spendable != nil {
+			stm = stm.AddSpendable(price.VisualPriceToDBSignPrice(in.GetSpendable()))
+		}
+
+		info, err = stm.Save(_ctx)
+		if err != nil {
+			return fmt.Errorf("fail update general: %v", err)
+		}
+
 		return nil
 	})
+	if err != nil {
+		return nil, fmt.Errorf("fail update general: %v", err)
+	}
 
 	return info, nil
 }
