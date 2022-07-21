@@ -5,8 +5,8 @@ import (
 
 	"github.com/NpoolPlatform/ledger-manager/api"
 	db "github.com/NpoolPlatform/ledger-manager/pkg/db"
-	msgcli "github.com/NpoolPlatform/ledger-manager/pkg/message/client"
-	msglistener "github.com/NpoolPlatform/ledger-manager/pkg/message/listener"
+	_ "github.com/NpoolPlatform/ledger-manager/pkg/message/client"
+	_ "github.com/NpoolPlatform/ledger-manager/pkg/message/listener"
 	msg "github.com/NpoolPlatform/ledger-manager/pkg/message/message"
 	msgsrv "github.com/NpoolPlatform/ledger-manager/pkg/message/server"
 
@@ -39,15 +39,17 @@ var runCmd = &cli.Command{
 			}
 		}()
 
-		if err := msgsrv.Init(); err != nil {
-			return err
-		}
-		if err := msgcli.Init(); err != nil {
-			return err
-		}
+		/*
+			if err := msgsrv.Init(); err != nil {
+				return err
+			}
+			if err := msgcli.Init(); err != nil {
+				return err
+			}
 
-		go msglistener.Listen()
-		go msgSender()
+			go msglistener.Listen()
+			go msgSender()
+		*/
 
 		return grpc2.RunGRPCGateWay(rpcGatewayRegister)
 	},

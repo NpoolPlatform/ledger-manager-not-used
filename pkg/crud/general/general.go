@@ -133,12 +133,8 @@ func AddFields(ctx context.Context, in *npool.GeneralReq) (*ent.General, error) 
 		incoming := price.DBPriceToVisualPrice(info.Incoming)
 		spendable := price.DBPriceToVisualPrice(info.Spendable)
 
-		if int32(in.GetIncoming()+incoming) < int32(in.GetLocked()+locked+in.GetOutcoming()+outcoming) {
-			return fmt.Errorf("outcoming + locked > incoming")
-		}
-
-		if int32(in.GetIncoming()+incoming) < int32(in.GetLocked()+locked+in.GetSpendable()+spendable) {
-			return fmt.Errorf("spendable + locked > incoming")
+		if int32(in.GetIncoming()+incoming) < int32(in.GetLocked()+locked+in.GetOutcoming()+outcoming+in.GetSpendable()+spendable) {
+			return fmt.Errorf("outcoming + locked + spendable > incoming")
 		}
 
 		if locked+in.GetLocked() < 0 {
