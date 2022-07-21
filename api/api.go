@@ -4,7 +4,8 @@ import (
 	"context"
 
 	"github.com/NpoolPlatform/message/npool/ledgermgr"
-	"github.com/NpoolPlatform/message/npool/ledgermgr/general"
+
+	"github.com/NpoolPlatform/ledger-manager/api/general"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"

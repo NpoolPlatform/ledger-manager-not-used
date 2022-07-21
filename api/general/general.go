@@ -3,7 +3,6 @@ package general
 
 import (
 	"context"
-	"fmt"
 
 	converter "github.com/NpoolPlatform/ledger-manager/pkg/converter/general"
 	crud "github.com/NpoolPlatform/ledger-manager/pkg/crud/general"
@@ -12,10 +11,7 @@ import (
 
 	constant "github.com/NpoolPlatform/ledger-manager/pkg/message/const"
 
-	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent"
-
 	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/attribute"
 	scodes "go.opentelemetry.io/otel/codes"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -26,7 +22,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func (s *GeneralServer) CreateGeneral(ctx context.Context, in *npool.CreateGeneralRequest) (*npool.CreateGeneralResponse, error) {
+func (s *Server) CreateGeneral(ctx context.Context, in *npool.CreateGeneralRequest) (*npool.CreateGeneralResponse, error) {
 	var err error
 
 	_, span := otel.Tracer(constant.ServiceName).Start(ctx, "CreateGeneral")
@@ -46,11 +42,11 @@ func (s *GeneralServer) CreateGeneral(ctx context.Context, in *npool.CreateGener
 		return &npool.CreateGeneralResponse{}, err
 	}
 
-	span = commontracer.TraceInvoker(span, "crud", "Create")
+	span = commontracer.TraceInvoker(span, "general", "crud", "Create")
 
 	info, err := crud.Create(ctx, in.GetInfo())
 	if err != nil {
-		logger.Sugar().Errorf("fail create general: %v", err)
+		logger.Sugar().Errorf("fail create general: %v", err.Error())
 		return &npool.CreateGeneralResponse{}, status.Error(codes.Internal, err.Error())
 	}
 
@@ -59,7 +55,7 @@ func (s *GeneralServer) CreateGeneral(ctx context.Context, in *npool.CreateGener
 	}, nil
 }
 
-func (s *GeneralServer) CreateGenerals(ctx context.Context, in *npool.CreateGeneralsRequest) (*npool.CreateGeneralsResponse, error) {
+func (s *Server) CreateGenerals(ctx context.Context, in *npool.CreateGeneralsRequest) (*npool.CreateGeneralsResponse, error) {
 	var err error
 
 	_, span := otel.Tracer(constant.ServiceName).Start(ctx, "CreateGenerals")
@@ -76,13 +72,13 @@ func (s *GeneralServer) CreateGenerals(ctx context.Context, in *npool.CreateGene
 		return &npool.CreateGeneralsResponse{}, status.Error(codes.InvalidArgument, "Infos is empty")
 	}
 
-	err = duplicate(ino.GetInfos())
+	err = duplicate(in.GetInfos())
 	if err != nil {
 		return &npool.CreateGeneralsResponse{}, err
 	}
 
 	span = tracer.TraceMany(span, in.GetInfos())
-	span = commontracer.TraceInvoker(span, "crud", "CreateBulk")
+	span = commontracer.TraceInvoker(span, "general", "crud", "CreateBulk")
 
 	rows, err := crud.CreateBulk(ctx, in.GetInfos())
 	if err != nil {
@@ -95,7 +91,7 @@ func (s *GeneralServer) CreateGenerals(ctx context.Context, in *npool.CreateGene
 	}, nil
 }
 
-func (s *GeneralServer) GetGeneral(ctx context.Context, in *npool.GetGeneralRequest) (*npool.GetGeneralResponse, error) {
+func (s *Server) GetGeneral(ctx context.Context, in *npool.GetGeneralRequest) (*npool.GetGeneralResponse, error) {
 	var err error
 
 	_, span := otel.Tracer(constant.ServiceName).Start(ctx, "GetGeneral")
@@ -115,7 +111,7 @@ func (s *GeneralServer) GetGeneral(ctx context.Context, in *npool.GetGeneralRequ
 		return &npool.GetGeneralResponse{}, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	span = commontracer.TraceInvoker(span, "crud", "Row")
+	span = commontracer.TraceInvoker(span, "general", "crud", "Row")
 
 	info, err := crud.Row(ctx, id)
 	if err != nil {
@@ -128,7 +124,7 @@ func (s *GeneralServer) GetGeneral(ctx context.Context, in *npool.GetGeneralRequ
 	}, nil
 }
 
-func (s *GeneralServer) GetGeneralOnly(ctx context.Context, in *npool.GetGeneralOnlyRequest) (*npool.GetGeneralOnlyResponse, error) {
+func (s *Server) GetGeneralOnly(ctx context.Context, in *npool.GetGeneralOnlyRequest) (*npool.GetGeneralOnlyResponse, error) {
 	var err error
 
 	_, span := otel.Tracer(constant.ServiceName).Start(ctx, "GetGeneralOnly")
@@ -141,8 +137,8 @@ func (s *GeneralServer) GetGeneralOnly(ctx context.Context, in *npool.GetGeneral
 		}
 	}()
 
-	span = crud.TraceConds(span, in.GetConds())
-	span = commontracer.TraceInvoker(span, "crud", "RowOnly")
+	span = tracer.TraceConds(span, in.GetConds())
+	span = commontracer.TraceInvoker(span, "general", "crud", "RowOnly")
 
 	info, err := crud.RowOnly(ctx, in.GetConds())
 	if err != nil {
@@ -155,7 +151,7 @@ func (s *GeneralServer) GetGeneralOnly(ctx context.Context, in *npool.GetGeneral
 	}, nil
 }
 
-func (s *GeneralServer) GetGenerals(ctx context.Context, in *npool.GetGeneralsRequest) (*npool.GetGeneralsResponse, error) {
+func (s *Server) GetGenerals(ctx context.Context, in *npool.GetGeneralsRequest) (*npool.GetGeneralsResponse, error) {
 	var err error
 
 	_, span := otel.Tracer(constant.ServiceName).Start(ctx, "GetGenerals")
@@ -170,7 +166,7 @@ func (s *GeneralServer) GetGenerals(ctx context.Context, in *npool.GetGeneralsRe
 
 	span = tracer.TraceConds(span, in.GetConds())
 	span = commontracer.TraceOffsetLimit(span, int(in.GetOffset()), int(in.GetLimit()))
-	span = commintracer.TraceInvoker(span, "crud", "Rows")
+	span = commontracer.TraceInvoker(span, "general", "crud", "Rows")
 
 	rows, total, err := crud.Rows(ctx, in.GetConds(), int(in.GetOffset()), int(in.GetLimit()))
 	if err != nil {
@@ -184,7 +180,7 @@ func (s *GeneralServer) GetGenerals(ctx context.Context, in *npool.GetGeneralsRe
 	}, nil
 }
 
-func (s *GeneralServer) ExistGeneral(ctx context.Context, in *npool.ExistGeneralRequest) (*npool.ExistGeneralResponse, error) {
+func (s *Server) ExistGeneral(ctx context.Context, in *npool.ExistGeneralRequest) (*npool.ExistGeneralResponse, error) {
 	var err error
 
 	_, span := otel.Tracer(constant.ServiceName).Start(ctx, "ExistGeneral")
@@ -204,7 +200,7 @@ func (s *GeneralServer) ExistGeneral(ctx context.Context, in *npool.ExistGeneral
 		return &npool.ExistGeneralResponse{}, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	span = commintracer.TraceInvoker(span, "crud", "Exist")
+	span = commontracer.TraceInvoker(span, "general", "crud", "Exist")
 
 	exist, err := crud.Exist(ctx, id)
 	if err != nil {
@@ -217,7 +213,7 @@ func (s *GeneralServer) ExistGeneral(ctx context.Context, in *npool.ExistGeneral
 	}, nil
 }
 
-func (s *GeneralServer) ExistGeneralConds(ctx context.Context,
+func (s *Server) ExistGeneralConds(ctx context.Context,
 	in *npool.ExistGeneralCondsRequest) (*npool.ExistGeneralCondsResponse, error) {
 	var err error
 
@@ -232,7 +228,7 @@ func (s *GeneralServer) ExistGeneralConds(ctx context.Context,
 	}()
 
 	span = tracer.TraceConds(span, in.GetConds())
-	span = commintracer.TraceInvoker(span, "crud", "ExistConds")
+	span = commontracer.TraceInvoker(span, "general", "crud", "ExistConds")
 
 	exist, err := crud.ExistConds(ctx, in.GetConds())
 	if err != nil {
@@ -245,7 +241,7 @@ func (s *GeneralServer) ExistGeneralConds(ctx context.Context,
 	}, nil
 }
 
-func (s *GeneralServer) CountGenerals(ctx context.Context, in *npool.CountGeneralsRequest) (*npool.CountGeneralsResponse, error) {
+func (s *Server) CountGenerals(ctx context.Context, in *npool.CountGeneralsRequest) (*npool.CountGeneralsResponse, error) {
 	var err error
 
 	_, span := otel.Tracer(constant.ServiceName).Start(ctx, "CountGenerals")
@@ -259,7 +255,7 @@ func (s *GeneralServer) CountGenerals(ctx context.Context, in *npool.CountGenera
 	}()
 
 	span = tracer.TraceConds(span, in.GetConds())
-	span = commintracer.TraceInvoker(span, "crud", "Count")
+	span = commontracer.TraceInvoker(span, "general", "crud", "Count")
 
 	total, err := crud.Count(ctx, in.GetConds())
 	if err != nil {
@@ -272,7 +268,7 @@ func (s *GeneralServer) CountGenerals(ctx context.Context, in *npool.CountGenera
 	}, nil
 }
 
-func (s *GeneralServer) DeleteGeneral(ctx context.Context, in *npool.DeleteGeneralRequest) (*npool.DeleteGeneralResponse, error) {
+func (s *Server) DeleteGeneral(ctx context.Context, in *npool.DeleteGeneralRequest) (*npool.DeleteGeneralResponse, error) {
 	var err error
 
 	_, span := otel.Tracer(constant.ServiceName).Start(ctx, "DeleteGeneral")
@@ -292,7 +288,7 @@ func (s *GeneralServer) DeleteGeneral(ctx context.Context, in *npool.DeleteGener
 		return &npool.DeleteGeneralResponse{}, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	span = commintracer.TraceInvoker(span, "crud", "Delete")
+	span = commontracer.TraceInvoker(span, "general", "crud", "Delete")
 
 	info, err := crud.Delete(ctx, id)
 	if err != nil {

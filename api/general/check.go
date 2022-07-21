@@ -2,22 +2,13 @@
 package general
 
 import (
-	"context"
 	"fmt"
 
-	crud "github.com/NpoolPlatform/ledger-manager/pkg/crud/general"
-	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent"
-	constant "github.com/NpoolPlatform/ledger-manager/pkg/message/const"
-	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/attribute"
-	scodes "go.opentelemetry.io/otel/codes"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
 	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
 	npool "github.com/NpoolPlatform/message/npool/ledgermgr/general"
-
-	"github.com/google/uuid"
 )
 
 func validate(info *npool.GeneralReq) error {
@@ -54,8 +45,8 @@ func duplicate(infos []*npool.GeneralReq) error {
 	apps := map[string]struct{}{}
 
 	for _, info := range infos {
-		if err := check(info); err != nil {
-			return status.Error(codes.InvalidArgument, fmt.Errorf("Infos has invalid element %v", err))
+		if err := validate(info); err != nil {
+			return status.Error(codes.InvalidArgument, fmt.Sprintf("Infos has invalid element %v", err))
 		}
 
 		key := fmt.Sprintf("%v:%v:%v", info.AppID, info.UserID, info.CoinTypeID)

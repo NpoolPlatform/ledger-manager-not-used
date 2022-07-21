@@ -3,14 +3,10 @@ package tracer
 import (
 	"fmt"
 
-	constant "github.com/NpoolPlatform/ledger-manager/pkg/message/const"
 	servicename "github.com/NpoolPlatform/ledger-manager/pkg/servicename"
 
-	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
-
-	"github.com/google/uuid"
 )
 
 func TraceID(span trace.Span, id string) trace.Span {
@@ -18,8 +14,8 @@ func TraceID(span trace.Span, id string) trace.Span {
 	return span
 }
 
-func TraceInvoker(span trace.Span, module, invokeName string) trace.Span {
-	span.AddEvent(fmt.Sprintf("%v.%v.%v", servicename.ServiceName, module, invokeName))
+func TraceInvoker(span trace.Span, entity, module, invokeName string) trace.Span {
+	span.AddEvent(fmt.Sprintf("%v.%v.%v.%v", servicename.ServiceName, entity, module, invokeName))
 	return span
 }
 

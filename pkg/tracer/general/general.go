@@ -2,15 +2,9 @@ package general
 
 import (
 	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/codes"
 	trace1 "go.opentelemetry.io/otel/trace"
 
-	"github.com/NpoolPlatform/ledger-manager/pkg/db"
-	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent"
-	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/general"
-	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 	npool "github.com/NpoolPlatform/message/npool/ledgermgr/general"
-	"github.com/google/uuid"
 )
 
 func trace(span trace1.Span, in *npool.GeneralReq, index int) trace1.Span {
@@ -55,7 +49,7 @@ func TraceConds(span trace1.Span, in *npool.Conds) trace1.Span {
 
 func TraceMany(span trace1.Span, infos []*npool.GeneralReq) trace1.Span {
 	for index, info := range infos {
-		span = Trace(span, info, index)
+		span = trace(span, info, index)
 	}
 	return span
 }

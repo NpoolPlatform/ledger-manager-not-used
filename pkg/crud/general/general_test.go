@@ -7,7 +7,6 @@ import (
 	"strconv"
 	"testing"
 
-	converter "github.com/NpoolPlatform/ledger-manager/pkg/converter/general"
 	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent"
 
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
@@ -92,7 +91,7 @@ func createBulk(t *testing.T) {
 	}
 
 	reqs := []*npool.GeneralReq{}
-	for index, _entity := range entities {
+	for _, _entity := range entities {
 		_id := _entity.ID.String()
 		_appID := _entity.AppID.String()
 		_userID := _entity.UserID.String()
@@ -113,14 +112,6 @@ func createBulk(t *testing.T) {
 	if assert.Nil(t, err) {
 		assert.Equal(t, len(infos), 2)
 		assert.Equal(t, infos, entities)
-	}
-}
-
-func update(t *testing.T) {
-	var err error
-	info, err = Update(context.Background(), &req)
-	if assert.Nil(t, err) {
-		assert.Equal(t, info, &entity)
 	}
 }
 
@@ -184,7 +175,7 @@ func exist(t *testing.T) {
 func existConds(t *testing.T) {
 	exist, err := ExistConds(context.Background(),
 		&npool.Conds{
-			ID: &val.StringVal{
+			ID: &valuedef.StringVal{
 				Value: id,
 				Op:    cruder.EQ,
 			},
@@ -211,7 +202,6 @@ func TestGeneral(t *testing.T) {
 	t.Run("row", row)
 	t.Run("rows", rows)
 	t.Run("rowOnly", rowOnly)
-	t.Run("update", update)
 	t.Run("exist", exist)
 	t.Run("existConds", existConds)
 	t.Run("delete", deleteA)

@@ -6,10 +6,9 @@ import (
 	"time"
 
 	constant "github.com/NpoolPlatform/ledger-manager/pkg/message/const"
+	commontracer "github.com/NpoolPlatform/ledger-manager/pkg/tracer"
 	tracer "github.com/NpoolPlatform/ledger-manager/pkg/tracer/general"
-	commontracer "github.com/NpoolPlatform/ledger-manager/pkt/tracer"
 	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
 
 	"github.com/NpoolPlatform/ledger-manager/pkg/db"
@@ -17,6 +16,9 @@ import (
 	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/general"
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 	npool "github.com/NpoolPlatform/message/npool/ledgermgr/general"
+
+	price "github.com/NpoolPlatform/go-service-framework/pkg/price"
+
 	"github.com/google/uuid"
 )
 
@@ -75,9 +77,7 @@ func CreateBulk(ctx context.Context, in []*npool.GeneralReq) ([]*ent.General, er
 		}
 	}()
 
-	for index, info := range in {
-		span = trace(span, info, index)
-	}
+	span = tracer.TraceMany(span, in)
 
 	rows := []*ent.General{}
 	err = db.WithTx(ctx, func(_ctx context.Context, tx *ent.Tx) error {
@@ -85,16 +85,16 @@ func CreateBulk(ctx context.Context, in []*npool.GeneralReq) ([]*ent.General, er
 		for i, info := range in {
 			bulk[i] = tx.General.Create()
 			if info.ID != nil {
-				c.SetID(uuid.MustParse(info.GetID()))
+				bulk[i].SetID(uuid.MustParse(info.GetID()))
 			}
 			if info.AppID != nil {
-				c.SetAppID(uuid.MustParse(info.GetAppID()))
+				bulk[i].SetAppID(uuid.MustParse(info.GetAppID()))
 			}
 			if info.UserID != nil {
-				c.SetUserID(uuid.MustParse(info.GetUserID()))
+				bulk[i].SetUserID(uuid.MustParse(info.GetUserID()))
 			}
 			if info.CoinTypeID != nil {
-				c.SetCoinTypeID(uuid.MustParse(info.GetCoinTypeID()))
+				bulk[i].SetCoinTypeID(uuid.MustParse(info.GetCoinTypeID()))
 			}
 		}
 		rows, err = tx.General.CreateBulk(bulk...).Save(_ctx)
@@ -106,7 +106,7 @@ func CreateBulk(ctx context.Context, in []*npool.GeneralReq) ([]*ent.General, er
 	return rows, nil
 }
 
-func AddFields(ctx context.Context, in *npool.GeneralReq) (*npool.General, error) {
+func AddFields(ctx context.Context, in *npool.GeneralReq) (*ent.General, error) {
 	var info *ent.General
 	var err error
 
@@ -120,10 +120,10 @@ func AddFields(ctx context.Context, in *npool.GeneralReq) (*npool.General, error
 		}
 	}()
 
-	span = trace(span, in, 0)
+	span = tracer.Trace(span, in)
 
 	err = db.WithTx(ctx, func(_ctx context.Context, tx *ent.Tx) error {
-
+		return nil
 	})
 
 	return info, nil
@@ -143,9 +143,7 @@ func Row(ctx context.Context, id uuid.UUID) (*ent.General, error) {
 		}
 	}()
 
-	span.SetAttributes(
-		attribute.String("ID", id.String()),
-	)
+	span = commontracer.TraceID(span, id.String())
 
 	err = db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
 		info, err = cli.General.Query().Where(general.ID(id)).Only(_ctx)
@@ -161,36 +159,81 @@ func Row(ctx context.Context, id uuid.UUID) (*ent.General, error) {
 func setQueryConds(conds *npool.Conds, cli *ent.Client) (*ent.GeneralQuery, error) {
 	stm := cli.General.Query()
 	if conds.ID != nil {
-		id := uuid.MustParse(conds.GetID().GetValue())
 		switch conds.GetID().GetOp() {
 		case cruder.EQ:
-			stm.Where(general.ID(id))
-		case cruder.IN:
-			stm.Where(general.IDIn(id))
+			stm.Where(general.ID(uuid.MustParse(conds.GetID().GetValue())))
 		default:
 			return nil, fmt.Errorf("invalid general field")
 		}
 	}
-	if conds.Name != nil {
-		switch conds.GetName().GetOp() {
+	if conds.AppID != nil {
+		switch conds.GetAppID().GetOp() {
 		case cruder.EQ:
-			stm.Where(general.Name(conds.GetName().GetValue()))
-		case cruder.IN:
-			stm.Where(general.NameIn(conds.GetName().GetValue()))
+			stm.Where(general.AppID(uuid.MustParse(conds.GetAppID().GetValue())))
 		default:
 			return nil, fmt.Errorf("invalid general field")
 		}
 	}
-	if conds.Age != nil {
-		switch conds.GetAge().GetOp() {
+	if conds.UserID != nil {
+		switch conds.GetUserID().GetOp() {
 		case cruder.EQ:
-			stm.Where(general.Age(conds.GetAge().GetValue()))
+			stm.Where(general.UserID(uuid.MustParse(conds.GetUserID().GetValue())))
+		default:
+			return nil, fmt.Errorf("invalid general field")
+		}
+	}
+	if conds.CoinTypeID != nil {
+		switch conds.GetCoinTypeID().GetOp() {
+		case cruder.EQ:
+			stm.Where(general.CoinTypeID(uuid.MustParse(conds.GetCoinTypeID().GetValue())))
+		default:
+			return nil, fmt.Errorf("invalid general field")
+		}
+	}
+	if conds.Incoming != nil {
+		switch conds.GetIncoming().GetOp() {
 		case cruder.LT:
-			stm.Where(general.AgeLT(conds.GetAge().GetValue()))
+			stm.Where(general.IncomingLT(price.VisualPriceToDBPrice(conds.GetIncoming().GetValue())))
 		case cruder.GT:
-			stm.Where(general.AgeGT(conds.GetAge().GetValue()))
-		case cruder.IN:
-			stm.Where(general.AgeIn(conds.GetAge().GetValue()))
+			stm.Where(general.IncomingGT(price.VisualPriceToDBPrice(conds.GetIncoming().GetValue())))
+		case cruder.EQ:
+			stm.Where(general.IncomingEQ(price.VisualPriceToDBPrice(conds.GetIncoming().GetValue())))
+		default:
+			return nil, fmt.Errorf("invalid general field")
+		}
+	}
+	if conds.Locked != nil {
+		switch conds.GetLocked().GetOp() {
+		case cruder.LT:
+			stm.Where(general.LockedLT(price.VisualPriceToDBPrice(conds.GetLocked().GetValue())))
+		case cruder.GT:
+			stm.Where(general.LockedGT(price.VisualPriceToDBPrice(conds.GetLocked().GetValue())))
+		case cruder.EQ:
+			stm.Where(general.LockedEQ(price.VisualPriceToDBPrice(conds.GetLocked().GetValue())))
+		default:
+			return nil, fmt.Errorf("invalid general field")
+		}
+	}
+	if conds.Outcoming != nil {
+		switch conds.GetOutcoming().GetOp() {
+		case cruder.LT:
+			stm.Where(general.OutcomingLT(price.VisualPriceToDBPrice(conds.GetOutcoming().GetValue())))
+		case cruder.GT:
+			stm.Where(general.OutcomingGT(price.VisualPriceToDBPrice(conds.GetOutcoming().GetValue())))
+		case cruder.EQ:
+			stm.Where(general.OutcomingEQ(price.VisualPriceToDBPrice(conds.GetOutcoming().GetValue())))
+		default:
+			return nil, fmt.Errorf("invalid general field")
+		}
+	}
+	if conds.Spendable != nil {
+		switch conds.GetSpendable().GetOp() {
+		case cruder.LT:
+			stm.Where(general.SpendableLT(price.VisualPriceToDBPrice(conds.GetSpendable().GetValue())))
+		case cruder.GT:
+			stm.Where(general.SpendableGT(price.VisualPriceToDBPrice(conds.GetSpendable().GetValue())))
+		case cruder.EQ:
+			stm.Where(general.SpendableEQ(price.VisualPriceToDBPrice(conds.GetSpendable().GetValue())))
 		default:
 			return nil, fmt.Errorf("invalid general field")
 		}
@@ -211,11 +254,8 @@ func Rows(ctx context.Context, conds *npool.Conds, offset, limit int) ([]*ent.Ge
 		}
 	}()
 
-	span = GeneralCondsSpanAttributes(span, conds)
-	span.SetAttributes(
-		attribute.Int("Offset", offset),
-		attribute.Int("Limit", limit),
-	)
+	span = tracer.TraceConds(span, conds)
+	span = commontracer.TraceOffsetLimit(span, offset, limit)
 
 	rows := []*ent.General{}
 	var total int
@@ -224,6 +264,7 @@ func Rows(ctx context.Context, conds *npool.Conds, offset, limit int) ([]*ent.Ge
 		if err != nil {
 			return err
 		}
+
 		total, err = stm.Count(_ctx)
 		if err != nil {
 			return err
@@ -260,7 +301,7 @@ func RowOnly(ctx context.Context, conds *npool.Conds) (*ent.General, error) {
 		}
 	}()
 
-	span = GeneralCondsSpanAttributes(span, conds)
+	span = tracer.TraceConds(span, conds)
 
 	err = db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
 		stm, err := setQueryConds(conds, cli)
@@ -296,7 +337,7 @@ func Count(ctx context.Context, conds *npool.Conds) (uint32, error) {
 		}
 	}()
 
-	span = GeneralCondsSpanAttributes(span, conds)
+	span = tracer.TraceConds(span, conds)
 
 	err = db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
 		stm, err := setQueryConds(conds, cli)
@@ -331,9 +372,7 @@ func Exist(ctx context.Context, id uuid.UUID) (bool, error) {
 		}
 	}()
 
-	span.SetAttributes(
-		attribute.String("ID", id.String()),
-	)
+	span = commontracer.TraceID(span, id.String())
 
 	err = db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
 		exist, err = cli.General.Query().Where(general.ID(id)).Exist(_ctx)
@@ -360,7 +399,7 @@ func ExistConds(ctx context.Context, conds *npool.Conds) (bool, error) {
 		}
 	}()
 
-	span = GeneralCondsSpanAttributes(span, conds)
+	span = tracer.TraceConds(span, conds)
 
 	err = db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
 		stm, err := setQueryConds(conds, cli)
@@ -396,9 +435,7 @@ func Delete(ctx context.Context, id uuid.UUID) (*ent.General, error) {
 		}
 	}()
 
-	span.SetAttributes(
-		attribute.String("ID", id.String()),
-	)
+	span = commontracer.TraceID(span, id.String())
 
 	err = db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
 		info, err = cli.General.UpdateOneID(id).

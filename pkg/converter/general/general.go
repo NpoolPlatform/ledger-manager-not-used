@@ -2,24 +2,9 @@
 package general
 
 import (
-	"context"
-	"fmt"
-
-	crud "github.com/NpoolPlatform/ledger-manager/pkg/crud/general"
-	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent"
-	constant "github.com/NpoolPlatform/ledger-manager/pkg/message/const"
-	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/attribute"
-	scodes "go.opentelemetry.io/otel/codes"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
-
-	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
-	npool "github.com/NpoolPlatform/message/npool/ledgermgr/general"
-
 	price "github.com/NpoolPlatform/go-service-framework/pkg/price"
-
-	"github.com/google/uuid"
+	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent"
+	npool "github.com/NpoolPlatform/message/npool/ledgermgr/general"
 )
 
 func Ent2Grpc(row *ent.General) *npool.General {
@@ -38,7 +23,7 @@ func Ent2Grpc(row *ent.General) *npool.General {
 func Ent2GrpcMany(rows []*ent.General) []*npool.General {
 	infos := []*npool.General{}
 	for _, row := range rows {
-		infos = append(infos, ent2grpc(row))
+		infos = append(infos, Ent2Grpc(row))
 	}
 	return infos
 }
