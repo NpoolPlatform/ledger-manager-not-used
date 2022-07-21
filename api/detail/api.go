@@ -1,18 +1,18 @@
-package general
+package detail
 
 import (
-	"github.com/NpoolPlatform/message/npool/ledgermgr/general"
+	"github.com/NpoolPlatform/message/npool/ledgermgr/detail"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"
 )
 
 type Server struct {
-	general.UnimplementedLedgerGeneralServer
+	detail.UnimplementedLedgerDetailServer
 }
 
 func Register(server grpc.ServiceRegistrar) {
-	general.RegisterLedgerGeneralServer(server, &Server{})
+	detail.RegisterLedgerDetailServer(server, &Server{})
 }
 
 func RegisterGateway(mux *runtime.ServeMux, endpoint string, opts []grpc.DialOption) error {

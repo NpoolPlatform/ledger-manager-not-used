@@ -1,4 +1,3 @@
-//nolint:nolintlint,dupl
 package general
 
 import (
@@ -9,6 +8,8 @@ import (
 
 	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
 	npool "github.com/NpoolPlatform/message/npool/ledgermgr/general"
+
+	"github.com/google/uuid"
 )
 
 func validate(info *npool.GeneralReq) error {
@@ -17,14 +18,29 @@ func validate(info *npool.GeneralReq) error {
 		return status.Error(codes.InvalidArgument, "AppID is empty")
 	}
 
+	if _, err := uuid.Parse(info.GetAppID()); err != nil {
+		logger.Sugar().Error("AppID is invalid: %v", err)
+		return status.Error(codes.InvalidArgument, fmt.Sprintf("AppID is invalid: %v", err))
+	}
+
 	if info.UserID == nil {
 		logger.Sugar().Error("UserID is empty")
 		return status.Error(codes.InvalidArgument, "UserID is empty")
 	}
 
+	if _, err := uuid.Parse(info.GetUserID()); err != nil {
+		logger.Sugar().Error("UserID is invalid: %v", err)
+		return status.Error(codes.InvalidArgument, fmt.Sprintf("UserID is invalid: %v", err))
+	}
+
 	if info.CoinTypeID == nil {
 		logger.Sugar().Error("CoinTypeID is empty")
 		return status.Error(codes.InvalidArgument, "UserID is empty")
+	}
+
+	if _, err := uuid.Parse(info.GetCoinTypeID()); err != nil {
+		logger.Sugar().Error("CoinTypeID is invalid: %v", err)
+		return status.Error(codes.InvalidArgument, fmt.Sprintf("CoinTypeID is invalid: %v", err))
 	}
 
 	if info.Incoming != nil && info.GetIncoming() < 0 {
