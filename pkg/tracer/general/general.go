@@ -1,15 +1,9 @@
 package general
 
 import (
-	"context"
-	"fmt"
-	"time"
-
-	constant "github.com/NpoolPlatform/ledger-manager/pkg/message/const"
-	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
-	"go.opentelemetry.io/otel/trace"
+	trace1 "go.opentelemetry.io/otel/trace"
 
 	"github.com/NpoolPlatform/ledger-manager/pkg/db"
 	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent"
@@ -19,7 +13,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func Trace(span trace.Span, in *npool.GeneralReq, index int) trace.Span {
+func trace(span trace1.Span, in *npool.GeneralReq, index int) trace1.Span {
 	span.SetAttributes(
 		attribute.String("ID", in.GetID()),
 		attribute.String("AppID", in.GetAppID()),
@@ -33,7 +27,11 @@ func Trace(span trace.Span, in *npool.GeneralReq, index int) trace.Span {
 	return span
 }
 
-func TraceConds(span trace.Span, in *npool.Conds) trace.Span {
+func Trace(span trace1.Span, in *npool.GeneralReq) trace1.Span {
+	return trace(span, in, 0)
+}
+
+func TraceConds(span trace1.Span, in *npool.Conds) trace1.Span {
 	span.SetAttributes(
 		attribute.String("ID.Op", in.GetID().GetOp()),
 		attribute.String("ID.Value", in.GetID().GetValue()),
@@ -55,8 +53,9 @@ func TraceConds(span trace.Span, in *npool.Conds) trace.Span {
 	return span
 }
 
-func TraceMany(span trace.Span, infos []*npool.GeneralReq) trace.Span {
+func TraceMany(span trace1.Span, infos []*npool.GeneralReq) trace1.Span {
 	for index, info := range infos {
-		Trace(span, info, index)
+		span = Trace(span, info, index)
 	}
+	return span
 }

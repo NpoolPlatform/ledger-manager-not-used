@@ -10,15 +10,21 @@ import (
 	"google.golang.org/grpc"
 )
 
-type LedgerManagerServer struct {
-	ledgermgr.UnimplementedGeneralServer
+type Server struct {
+	ledgermgr.UnimplementedLedgerManagerServer
 }
 
 func Register(server grpc.ServiceRegistrar) {
-	ledgermgr.RegisterGeneralServer(server, &LedgerManagerServer{})
+	ledgermgr.RegisterLedgerManagerServer(server, &Server{})
 	general.Register(server)
 }
 
 func RegisterGateway(mux *runtime.ServeMux, endpoint string, opts []grpc.DialOption) error {
-	return template.RegisterGeneralHandlerFromEndpoint(context.Background(), mux, endpoint, opts)
+	if err := ledgermgr.RegisterLedgerManagerHandlerFromEndpoint(context.Background(), mux, endpoint, opts); err != nil {
+		return err
+	}
+	if err := general.RegisterGateway(mux, endpoint, opts); err != nil {
+		return err
+	}
+	return nil
 }

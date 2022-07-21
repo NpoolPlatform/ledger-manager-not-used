@@ -7,12 +7,13 @@ import (
 	"strconv"
 	"testing"
 
+	converter "github.com/NpoolPlatform/ledger-manager/pkg/converter/general"
 	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent"
 
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 
 	testinit "github.com/NpoolPlatform/ledger-manager/pkg/testinit"
-	val "github.com/NpoolPlatform/message/npool"
+	valuedef "github.com/NpoolPlatform/message/npool"
 	npool "github.com/NpoolPlatform/message/npool/ledgermgr/general"
 	"github.com/google/uuid"
 
@@ -28,79 +29,98 @@ func init() {
 	}
 }
 
-var entGeneral = ent.General{
-	ID:   uuid.New(),
-	Name: uuid.New().String(),
-	Age:  10,
+var entity = ent.General{
+	ID:         uuid.New(),
+	AppID:      uuid.New(),
+	UserID:     uuid.New(),
+	CoinTypeID: uuid.New(),
+	// Incoming:   10.0,
+	// Locked:     10.0,
+	// Outcoming:  10.0,
+	// Spendable:  10.0,
 }
 
 var (
-	id          = entGeneral.ID.String()
-	generalInfo = npool.GeneralReq{
-		ID:   &id,
-		Name: &entGeneral.Name,
-		Age:  &entGeneral.Age,
+	id         = entity.ID.String()
+	appID      = entity.AppID.String()
+	userID     = entity.UserID.String()
+	coinTypeID = entity.CoinTypeID.String()
+	req        = npool.GeneralReq{
+		ID:         &id,
+		AppID:      &appID,
+		UserID:     &userID,
+		CoinTypeID: &coinTypeID,
+		Incoming:   &entity.Incoming,
+		Locked:     &entity.Locked,
+		Outcoming:  &entity.Outcoming,
+		Spendable:  &entity.Spendable,
 	}
 )
 
 var info *ent.General
 
-func rowToObject(row *ent.General) *ent.General {
-	return &ent.General{
-		ID:   row.ID,
-		Name: row.Name,
-		Age:  row.Age,
-	}
-}
-
 func create(t *testing.T) {
 	var err error
-	info, err = Create(context.Background(), &generalInfo)
+	info, err = Create(context.Background(), &req)
 	if assert.Nil(t, err) {
-		if assert.NotEqual(t, info.ID, uuid.UUID{}.String()) {
-			entGeneral.ID = info.ID
-			entGeneral.CreatedAt = info.CreatedAt
-		}
-		assert.Equal(t, rowToObject(info), &entGeneral)
+		assert.Equal(t, info, &entity)
 	}
 }
 
 func createBulk(t *testing.T) {
-	entGeneral := []ent.General{
+	entities := []ent.General{
 		{
-			ID:   uuid.New(),
-			Name: uuid.New().String(),
-			Age:  10,
+			ID:         uuid.New(),
+			AppID:      uuid.New(),
+			UserID:     uuid.New(),
+			CoinTypeID: uuid.New(),
+			// Incoming:   10.0,
+			// Locked:     10.0,
+			// Outcoming:  10.0,
+			// Spendable:  10.0,
 		},
 		{
-			ID:   uuid.New(),
-			Name: uuid.New().String(),
-			Age:  10,
+			ID:         uuid.New(),
+			AppID:      uuid.New(),
+			UserID:     uuid.New(),
+			CoinTypeID: uuid.New(),
+			// Incoming:   10.0,
+			// Locked:     10.0,
+			// Outcoming:  10.0,
+			// Spendable:  10.0,
 		},
 	}
 
-	generals := []*npool.GeneralReq{}
-	for key := range entGeneral {
-		id := entGeneral[key].ID.String()
-		generals = append(generals, &npool.GeneralReq{
-			ID:   &id,
-			Name: &entGeneral[key].Name,
-			Age:  &entGeneral[key].Age,
+	reqs := []*npool.GeneralReq{}
+	for index, _entity := range entities {
+		_id := _entity.ID.String()
+		_appID := _entity.AppID.String()
+		_userID := _entity.UserID.String()
+		_coinTypeID := _entity.CoinTypeID.String()
+
+		reqs = append(reqs, &npool.GeneralReq{
+			ID:         &_id,
+			AppID:      &_appID,
+			UserID:     &_userID,
+			CoinTypeID: &_coinTypeID,
+			Incoming:   &_entity.Incoming,
+			Locked:     &_entity.Locked,
+			Outcoming:  &_entity.Outcoming,
+			Spendable:  &_entity.Spendable,
 		})
 	}
-	infos, err := CreateBulk(context.Background(), generals)
+	infos, err := CreateBulk(context.Background(), reqs)
 	if assert.Nil(t, err) {
 		assert.Equal(t, len(infos), 2)
-		assert.NotEqual(t, infos[0].ID, uuid.UUID{}.String())
-		assert.NotEqual(t, infos[1].ID, uuid.UUID{}.String())
+		assert.Equal(t, infos, entities)
 	}
 }
 
 func update(t *testing.T) {
 	var err error
-	info, err = Update(context.Background(), &generalInfo)
+	info, err = Update(context.Background(), &req)
 	if assert.Nil(t, err) {
-		assert.Equal(t, rowToObject(info), &entGeneral)
+		assert.Equal(t, info, &entity)
 	}
 }
 
@@ -108,21 +128,21 @@ func row(t *testing.T) {
 	var err error
 	info, err = Row(context.Background(), info.ID)
 	if assert.Nil(t, err) {
-		assert.Equal(t, rowToObject(info), &entGeneral)
+		assert.Equal(t, info, &entity)
 	}
 }
 
 func rows(t *testing.T) {
 	infos, total, err := Rows(context.Background(),
 		&npool.Conds{
-			ID: &val.StringVal{
-				Value: info.ID.String(),
+			ID: &valuedef.StringVal{
+				Value: id,
 				Op:    cruder.EQ,
 			},
 		}, 0, 0)
 	if assert.Nil(t, err) {
 		assert.Equal(t, total, 1)
-		assert.Equal(t, rowToObject(infos[0]), &entGeneral)
+		assert.Equal(t, infos[0], &entity)
 	}
 }
 
@@ -130,32 +150,32 @@ func rowOnly(t *testing.T) {
 	var err error
 	info, err = RowOnly(context.Background(),
 		&npool.Conds{
-			ID: &val.StringVal{
-				Value: info.ID.String(),
+			ID: &valuedef.StringVal{
+				Value: id,
 				Op:    cruder.EQ,
 			},
 		})
 	if assert.Nil(t, err) {
-		assert.Equal(t, rowToObject(info), &entGeneral)
+		assert.Equal(t, info, &entity)
 	}
 }
 
 func count(t *testing.T) {
 	count, err := Count(context.Background(),
 		&npool.Conds{
-			ID: &val.StringVal{
-				Value: info.ID.String(),
+			ID: &valuedef.StringVal{
+				Value: id,
 				Op:    cruder.EQ,
 			},
 		},
 	)
 	if assert.Nil(t, err) {
-		assert.Equal(t, count, count)
+		assert.Equal(t, count, 1)
 	}
 }
 
 func exist(t *testing.T) {
-	exist, err := Exist(context.Background(), info.ID)
+	exist, err := Exist(context.Background(), entity.ID)
 	if assert.Nil(t, err) {
 		assert.Equal(t, exist, true)
 	}
@@ -165,7 +185,7 @@ func existConds(t *testing.T) {
 	exist, err := ExistConds(context.Background(),
 		&npool.Conds{
 			ID: &val.StringVal{
-				Value: info.ID.String(),
+				Value: id,
 				Op:    cruder.EQ,
 			},
 		},
@@ -176,9 +196,9 @@ func existConds(t *testing.T) {
 }
 
 func deleteA(t *testing.T) {
-	info, err := Delete(context.Background(), info.ID)
+	info, err := Delete(context.Background(), entity.ID)
 	if assert.Nil(t, err) {
-		assert.Equal(t, rowToObject(info), &entGeneral)
+		assert.Equal(t, info, &entity)
 	}
 }
 

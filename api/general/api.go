@@ -21,10 +21,14 @@ import (
 	"google.golang.org/grpc"
 )
 
-type GeneralServer struct {
+type Server struct {
 	general.UnimplementedGeneralServer
 }
 
 func Register(server grpc.ServiceRegistrar) {
-	general.RegisterGeneralServer(server, &GeneralServer{})
+	general.RegisterGeneralServer(server, &Server{})
+}
+
+func RegisterGateway(mux *runtime.ServeMux, endpoint string, opts []grpc.DialOption) error {
+	return general.RegisterGeneralHandlerFromEndpoint(context.Background(), mux, endpoint, opts)
 }

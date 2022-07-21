@@ -22,7 +22,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func ent2grpc(row *ent.General) *npool.General {
+func Ent2Grpc(row *ent.General) *npool.General {
 	return &npool.General{
 		ID:         row.ID.String(),
 		AppID:      row.AppID.String(),
@@ -35,7 +35,7 @@ func ent2grpc(row *ent.General) *npool.General {
 	}
 }
 
-func ent2grpcMany(rows []*ent.General) []*npool.General {
+func Ent2GrpcMany(rows []*ent.General) []*npool.General {
 	infos := []*npool.General{}
 	for _, row := range rows {
 		infos = append(infos, ent2grpc(row))

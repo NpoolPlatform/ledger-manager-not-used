@@ -5,9 +5,10 @@ import (
 	"context"
 	"fmt"
 
+	converter "github.com/NpoolPlatform/ledger-manager/pkg/converter/general"
 	crud "github.com/NpoolPlatform/ledger-manager/pkg/crud/general"
+	commontracer "github.com/NpoolPlatform/ledger-manager/pkg/tracer"
 	tracer "github.com/NpoolPlatform/ledger-manager/pkg/tracer/general"
-	commontracer "github.com/NpoolPlatform/ledger-manager/pkt/tracer"
 
 	constant "github.com/NpoolPlatform/ledger-manager/pkg/message/const"
 
@@ -54,7 +55,7 @@ func (s *GeneralServer) CreateGeneral(ctx context.Context, in *npool.CreateGener
 	}
 
 	return &npool.CreateGeneralResponse{
-		Info: ent2grpc(info),
+		Info: converter.Ent2Grpc(info),
 	}, nil
 }
 
@@ -90,7 +91,7 @@ func (s *GeneralServer) CreateGenerals(ctx context.Context, in *npool.CreateGene
 	}
 
 	return &npool.CreateGeneralsResponse{
-		Infos: ent2grpcMany(rows),
+		Infos: converter.Ent2GrpcMany(rows),
 	}, nil
 }
 
@@ -123,7 +124,7 @@ func (s *GeneralServer) GetGeneral(ctx context.Context, in *npool.GetGeneralRequ
 	}
 
 	return &npool.GetGeneralResponse{
-		Info: ent2grpc(info),
+		Info: converter.Ent2Grpc(info),
 	}, nil
 }
 
@@ -150,7 +151,7 @@ func (s *GeneralServer) GetGeneralOnly(ctx context.Context, in *npool.GetGeneral
 	}
 
 	return &npool.GetGeneralOnlyResponse{
-		Info: ent2grpc(info),
+		Info: converter.Ent2Grpc(info),
 	}, nil
 }
 
@@ -178,7 +179,7 @@ func (s *GeneralServer) GetGenerals(ctx context.Context, in *npool.GetGeneralsRe
 	}
 
 	return &npool.GetGeneralsResponse{
-		Infos: ent2grpcMany(rows),
+		Infos: converter.Ent2GrpcMany(rows),
 		Total: uint32(total),
 	}, nil
 }
@@ -300,6 +301,6 @@ func (s *GeneralServer) DeleteGeneral(ctx context.Context, in *npool.DeleteGener
 	}
 
 	return &npool.DeleteGeneralResponse{
-		Info: generalRowToObject(info),
+		Info: converter.Ent2Grpc(info),
 	}, nil
 }
