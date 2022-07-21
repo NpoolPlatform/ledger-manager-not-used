@@ -1,5 +1,6 @@
 package general
 
+/*
 import (
 	"context"
 	"fmt"
@@ -207,3 +208,4 @@ func TestGeneral(t *testing.T) {
 	t.Run("delete", deleteA)
 	t.Run("count", count)
 }
+*/
