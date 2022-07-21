@@ -1,13 +1,18 @@
 //nolint:nolintlint,dupl
-package api
+package general
 
 import (
 	"context"
 	"fmt"
 
 	crud "github.com/NpoolPlatform/ledger-manager/pkg/crud/general"
-	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent"
+	tracer "github.com/NpoolPlatform/ledger-manager/pkg/tracer/general"
+	commontracer "github.com/NpoolPlatform/ledger-manager/pkt/tracer"
+
 	constant "github.com/NpoolPlatform/ledger-manager/pkg/message/const"
+
+	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent"
+
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	scodes "go.opentelemetry.io/otel/codes"
@@ -19,28 +24,6 @@ import (
 
 	"github.com/google/uuid"
 )
-
-func checkGeneralInfo(info *npool.GeneralReq) error {
-	if info.Name == nil {
-		logger.Sugar().Error("Name is empty")
-		return status.Error(codes.InvalidArgument, "Name is empty")
-	}
-
-	if info.Age == nil {
-		logger.Sugar().Error("Age is empty")
-		return status.Error(codes.InvalidArgument, "Age is empty")
-	}
-
-	return nil
-}
-
-func generalRowToObject(row *ent.General) *npool.General {
-	return &npool.General{
-		ID:   row.ID.String(),
-		Name: row.Name,
-		Age:  row.Age,
-	}
-}
 
 func (s *GeneralServer) CreateGeneral(ctx context.Context, in *npool.CreateGeneralRequest) (*npool.CreateGeneralResponse, error) {
 	var err error
@@ -55,13 +38,15 @@ func (s *GeneralServer) CreateGeneral(ctx context.Context, in *npool.CreateGener
 		}
 	}()
 
-	span = crud.GeneralSpanAttributes(span, in.GetInfo())
-	err = checkGeneralInfo(in.GetInfo())
+	span = tracer.Trace(span, in.GetInfo())
+
+	err = validate(in.GetInfo())
 	if err != nil {
 		return &npool.CreateGeneralResponse{}, err
 	}
 
-	span.AddEvent("call crud Create")
+	span = commontracer.TraceInvoker(span, "crud", "Create")
+
 	info, err := crud.Create(ctx, in.GetInfo())
 	if err != nil {
 		logger.Sugar().Errorf("fail create general: %v", err)
@@ -69,7 +54,7 @@ func (s *GeneralServer) CreateGeneral(ctx context.Context, in *npool.CreateGener
 	}
 
 	return &npool.CreateGeneralResponse{
-		Info: generalRowToObject(info),
+		Info: ent2grpc(info),
 	}, nil
 }
 
@@ -87,34 +72,16 @@ func (s *GeneralServer) CreateGenerals(ctx context.Context, in *npool.CreateGene
 	}()
 
 	if len(in.GetInfos()) == 0 {
-		return &npool.CreateGeneralsResponse{},
-			status.Error(codes.InvalidArgument,
-				"Batah create resource must more than 1",
-			)
+		return &npool.CreateGeneralsResponse{}, status.Error(codes.InvalidArgument, "Infos is empty")
 	}
 
-	dup := make(map[string]struct{})
-	for key, info := range in.GetInfos() {
-		span.SetAttributes(
-			attribute.String(fmt.Sprintf("ID.%v", key), info.GetID()),
-			attribute.String(fmt.Sprintf("Name.%v", key), info.GetName()),
-			attribute.String(fmt.Sprintf("Age.%v", key), info.GetName()),
-		)
-		err := checkGeneralInfo(info)
-		if err != nil {
-			return &npool.CreateGeneralsResponse{}, err
-		}
-
-		if _, ok := dup[info.GetName()]; ok {
-			return &npool.CreateGeneralsResponse{},
-				status.Errorf(codes.AlreadyExists,
-					"Name: %v duplicate create",
-					info.GetName(),
-				)
-		}
-
-		dup[info.GetName()] = struct{}{}
+	err = duplicate(ino.GetInfos())
+	if err != nil {
+		return &npool.CreateGeneralsResponse{}, err
 	}
+
+	span = tracer.TraceMany(span, in.GetInfos())
+	span = commontracer.TraceInvoker(span, "crud", "CreateBulk")
 
 	rows, err := crud.CreateBulk(ctx, in.GetInfos())
 	if err != nil {
@@ -122,45 +89,8 @@ func (s *GeneralServer) CreateGenerals(ctx context.Context, in *npool.CreateGene
 		return &npool.CreateGeneralsResponse{}, status.Error(codes.Internal, err.Error())
 	}
 
-	infos := make([]*npool.General, 0, len(rows))
-	for _, val := range rows {
-		infos = append(infos, generalRowToObject(val))
-	}
-
 	return &npool.CreateGeneralsResponse{
-		Infos: infos,
-	}, nil
-}
-
-func (s *GeneralServer) UpdateGeneral(ctx context.Context, in *npool.UpdateGeneralRequest) (*npool.UpdateGeneralResponse, error) {
-	var err error
-
-	_, span := otel.Tracer(constant.ServiceName).Start(ctx, "UpdateGeneral")
-	defer span.End()
-
-	defer func() {
-		if err != nil {
-			span.SetStatus(scodes.Error, err.Error())
-			span.RecordError(err)
-		}
-	}()
-
-	span = crud.GeneralSpanAttributes(span, in.GetInfo())
-
-	if _, err := uuid.Parse(in.GetInfo().GetID()); err != nil {
-		logger.Sugar().Errorf("general id is invalid")
-		return &npool.UpdateGeneralResponse{}, status.Error(codes.InvalidArgument, err.Error())
-	}
-
-	span.AddEvent("call crud Update")
-	info, err := crud.Update(ctx, in.GetInfo())
-	if err != nil {
-		logger.Sugar().Errorf("fail update general: %v", err)
-		return &npool.UpdateGeneralResponse{}, status.Error(codes.Internal, err.Error())
-	}
-
-	return &npool.UpdateGeneralResponse{
-		Info: generalRowToObject(info),
+		Infos: ent2grpcMany(rows),
 	}, nil
 }
 
@@ -177,16 +107,15 @@ func (s *GeneralServer) GetGeneral(ctx context.Context, in *npool.GetGeneralRequ
 		}
 	}()
 
-	span.SetAttributes(
-		attribute.String("ID", in.GetID()),
-	)
+	span = commontracer.TraceID(span, in.GetID())
 
 	id, err := uuid.Parse(in.GetID())
 	if err != nil {
 		return &npool.GetGeneralResponse{}, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	span.AddEvent("call crud Row")
+	span = commontracer.TraceInvoker(span, "crud", "Row")
+
 	info, err := crud.Row(ctx, id)
 	if err != nil {
 		logger.Sugar().Errorf("fail get general: %v", err)
@@ -194,7 +123,7 @@ func (s *GeneralServer) GetGeneral(ctx context.Context, in *npool.GetGeneralRequ
 	}
 
 	return &npool.GetGeneralResponse{
-		Info: generalRowToObject(info),
+		Info: ent2grpc(info),
 	}, nil
 }
 
@@ -211,9 +140,9 @@ func (s *GeneralServer) GetGeneralOnly(ctx context.Context, in *npool.GetGeneral
 		}
 	}()
 
-	span = crud.GeneralCondsSpanAttributes(span, in.GetConds())
+	span = crud.TraceConds(span, in.GetConds())
+	span = commontracer.TraceInvoker(span, "crud", "RowOnly")
 
-	span.AddEvent("call crud RowOnly")
 	info, err := crud.RowOnly(ctx, in.GetConds())
 	if err != nil {
 		logger.Sugar().Errorf("fail get generals: %v", err)
@@ -221,7 +150,7 @@ func (s *GeneralServer) GetGeneralOnly(ctx context.Context, in *npool.GetGeneral
 	}
 
 	return &npool.GetGeneralOnlyResponse{
-		Info: generalRowToObject(info),
+		Info: ent2grpc(info),
 	}, nil
 }
 
@@ -238,26 +167,18 @@ func (s *GeneralServer) GetGenerals(ctx context.Context, in *npool.GetGeneralsRe
 		}
 	}()
 
-	span = crud.GeneralCondsSpanAttributes(span, in.GetConds())
-	span.SetAttributes(
-		attribute.Int("Offset", int(in.GetOffset())),
-		attribute.Int("Limit", int(in.GetLimit())),
-	)
+	span = tracer.TraceConds(span, in.GetConds())
+	span = commontracer.TraceOffsetLimit(span, int(in.GetOffset()), int(in.GetLimit()))
+	span = commintracer.TraceInvoker(span, "crud", "Rows")
 
-	span.AddEvent("call crud Rows")
 	rows, total, err := crud.Rows(ctx, in.GetConds(), int(in.GetOffset()), int(in.GetLimit()))
 	if err != nil {
 		logger.Sugar().Errorf("fail get generals: %v", err)
 		return &npool.GetGeneralsResponse{}, status.Error(codes.Internal, err.Error())
 	}
 
-	infos := make([]*npool.General, 0, len(rows))
-	for _, val := range rows {
-		infos = append(infos, generalRowToObject(val))
-	}
-
 	return &npool.GetGeneralsResponse{
-		Infos: infos,
+		Infos: ent2grpcMany(rows),
 		Total: uint32(total),
 	}, nil
 }
@@ -275,15 +196,15 @@ func (s *GeneralServer) ExistGeneral(ctx context.Context, in *npool.ExistGeneral
 		}
 	}()
 
-	span.SetAttributes(
-		attribute.String("ID", in.GetID()),
-	)
+	span = commontracer.TraceID(span, in.GetID())
+
 	id, err := uuid.Parse(in.GetID())
 	if err != nil {
 		return &npool.ExistGeneralResponse{}, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	span.AddEvent("call crud Exist")
+	span = commintracer.TraceInvoker(span, "crud", "Exist")
+
 	exist, err := crud.Exist(ctx, id)
 	if err != nil {
 		logger.Sugar().Errorf("fail check general: %v", err)
@@ -309,9 +230,9 @@ func (s *GeneralServer) ExistGeneralConds(ctx context.Context,
 		}
 	}()
 
-	span = crud.GeneralCondsSpanAttributes(span, in.GetConds())
+	span = tracer.TraceConds(span, in.GetConds())
+	span = commintracer.TraceInvoker(span, "crud", "ExistConds")
 
-	span.AddEvent("call crud ExistConds")
 	exist, err := crud.ExistConds(ctx, in.GetConds())
 	if err != nil {
 		logger.Sugar().Errorf("fail check general: %v", err)
@@ -335,9 +256,10 @@ func (s *GeneralServer) CountGenerals(ctx context.Context, in *npool.CountGenera
 			span.RecordError(err)
 		}
 	}()
-	span = crud.GeneralCondsSpanAttributes(span, in.GetConds())
 
-	span.AddEvent("call crud Count")
+	span = tracer.TraceConds(span, in.GetConds())
+	span = commintracer.TraceInvoker(span, "crud", "Count")
+
 	total, err := crud.Count(ctx, in.GetConds())
 	if err != nil {
 		logger.Sugar().Errorf("fail count generals: %v", err)
@@ -362,16 +284,15 @@ func (s *GeneralServer) DeleteGeneral(ctx context.Context, in *npool.DeleteGener
 		}
 	}()
 
-	span.SetAttributes(
-		attribute.String("ID", in.GetID()),
-	)
+	span = commontracer.TraceID(span, in.GetID())
 
 	id, err := uuid.Parse(in.GetID())
 	if err != nil {
 		return &npool.DeleteGeneralResponse{}, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	span.AddEvent("call crud Delete")
+	span = commintracer.TraceInvoker(span, "crud", "Delete")
+
 	info, err := crud.Delete(ctx, id)
 	if err != nil {
 		logger.Sugar().Errorf("fail delete general: %v", err)
