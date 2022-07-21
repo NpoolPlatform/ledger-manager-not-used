@@ -75,7 +75,7 @@ func create(t *testing.T) {
 }
 
 func createBulk(t *testing.T) {
-	entities := []ent.General{
+	entities := []*ent.General{
 		{
 			ID:         uuid.New(),
 			AppID:      uuid.New(),
@@ -123,7 +123,6 @@ func createBulk(t *testing.T) {
 	infos, err := CreateBulk(context.Background(), reqs)
 	if assert.Nil(t, err) {
 		assert.Equal(t, len(infos), 2)
-		// assert.Equal(t, infos, entities)
 	}
 }
 

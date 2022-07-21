@@ -1,14 +1,12 @@
 package main
 
 import (
-	"time"
-
 	"github.com/NpoolPlatform/ledger-manager/api"
 	db "github.com/NpoolPlatform/ledger-manager/pkg/db"
 	_ "github.com/NpoolPlatform/ledger-manager/pkg/message/client"
 	_ "github.com/NpoolPlatform/ledger-manager/pkg/message/listener"
-	msg "github.com/NpoolPlatform/ledger-manager/pkg/message/message"
-	msgsrv "github.com/NpoolPlatform/ledger-manager/pkg/message/server"
+	_ "github.com/NpoolPlatform/ledger-manager/pkg/message/message"
+	_ "github.com/NpoolPlatform/ledger-manager/pkg/message/server"
 
 	grpc2 "github.com/NpoolPlatform/go-service-framework/pkg/grpc"
 	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
@@ -22,7 +20,7 @@ import (
 	"google.golang.org/grpc"
 )
 
-const MsgInterval = 3 * time.Second
+// const MsgInterval = 3 * time.Second
 
 var runCmd = &cli.Command{
 	Name:    "run",
@@ -74,6 +72,7 @@ func rpcGatewayRegister(mux *runtime.ServeMux, endpoint string, opts []grpc.Dial
 	return nil
 }
 
+/*
 func msgSender() {
 	id := 0
 	for {
@@ -89,3 +88,4 @@ func msgSender() {
 		time.Sleep(MsgInterval)
 	}
 }
+*/
