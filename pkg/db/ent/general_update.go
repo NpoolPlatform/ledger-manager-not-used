@@ -251,6 +251,33 @@ func (gu *GeneralUpdate) ClearSpendable() *GeneralUpdate {
 	return gu
 }
 
+// SetPrecision sets the "precision" field.
+func (gu *GeneralUpdate) SetPrecision(u uint32) *GeneralUpdate {
+	gu.mutation.ResetPrecision()
+	gu.mutation.SetPrecision(u)
+	return gu
+}
+
+// SetNillablePrecision sets the "precision" field if the given value is not nil.
+func (gu *GeneralUpdate) SetNillablePrecision(u *uint32) *GeneralUpdate {
+	if u != nil {
+		gu.SetPrecision(*u)
+	}
+	return gu
+}
+
+// AddPrecision adds u to the "precision" field.
+func (gu *GeneralUpdate) AddPrecision(u int32) *GeneralUpdate {
+	gu.mutation.AddPrecision(u)
+	return gu
+}
+
+// ClearPrecision clears the value of the "precision" field.
+func (gu *GeneralUpdate) ClearPrecision() *GeneralUpdate {
+	gu.mutation.ClearPrecision()
+	return gu
+}
+
 // Mutation returns the GeneralMutation object of the builder.
 func (gu *GeneralUpdate) Mutation() *GeneralMutation {
 	return gu.mutation
@@ -504,6 +531,26 @@ func (gu *GeneralUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: general.FieldSpendable,
 		})
 	}
+	if value, ok := gu.mutation.Precision(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint32,
+			Value:  value,
+			Column: general.FieldPrecision,
+		})
+	}
+	if value, ok := gu.mutation.AddedPrecision(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint32,
+			Value:  value,
+			Column: general.FieldPrecision,
+		})
+	}
+	if gu.mutation.PrecisionCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint32,
+			Column: general.FieldPrecision,
+		})
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, gu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{general.Label}
@@ -743,6 +790,33 @@ func (guo *GeneralUpdateOne) AddSpendable(u int64) *GeneralUpdateOne {
 // ClearSpendable clears the value of the "spendable" field.
 func (guo *GeneralUpdateOne) ClearSpendable() *GeneralUpdateOne {
 	guo.mutation.ClearSpendable()
+	return guo
+}
+
+// SetPrecision sets the "precision" field.
+func (guo *GeneralUpdateOne) SetPrecision(u uint32) *GeneralUpdateOne {
+	guo.mutation.ResetPrecision()
+	guo.mutation.SetPrecision(u)
+	return guo
+}
+
+// SetNillablePrecision sets the "precision" field if the given value is not nil.
+func (guo *GeneralUpdateOne) SetNillablePrecision(u *uint32) *GeneralUpdateOne {
+	if u != nil {
+		guo.SetPrecision(*u)
+	}
+	return guo
+}
+
+// AddPrecision adds u to the "precision" field.
+func (guo *GeneralUpdateOne) AddPrecision(u int32) *GeneralUpdateOne {
+	guo.mutation.AddPrecision(u)
+	return guo
+}
+
+// ClearPrecision clears the value of the "precision" field.
+func (guo *GeneralUpdateOne) ClearPrecision() *GeneralUpdateOne {
+	guo.mutation.ClearPrecision()
 	return guo
 }
 
@@ -1021,6 +1095,26 @@ func (guo *GeneralUpdateOne) sqlSave(ctx context.Context) (_node *General, err e
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeUint64,
 			Column: general.FieldSpendable,
+		})
+	}
+	if value, ok := guo.mutation.Precision(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint32,
+			Value:  value,
+			Column: general.FieldPrecision,
+		})
+	}
+	if value, ok := guo.mutation.AddedPrecision(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint32,
+			Value:  value,
+			Column: general.FieldPrecision,
+		})
+	}
+	if guo.mutation.PrecisionCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint32,
+			Column: general.FieldPrecision,
 		})
 	}
 	_node = &General{config: guo.config}

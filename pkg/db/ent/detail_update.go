@@ -210,6 +210,33 @@ func (du *DetailUpdate) ClearAmount() *DetailUpdate {
 	return du
 }
 
+// SetAmountPrecision sets the "amount_precision" field.
+func (du *DetailUpdate) SetAmountPrecision(u uint32) *DetailUpdate {
+	du.mutation.ResetAmountPrecision()
+	du.mutation.SetAmountPrecision(u)
+	return du
+}
+
+// SetNillableAmountPrecision sets the "amount_precision" field if the given value is not nil.
+func (du *DetailUpdate) SetNillableAmountPrecision(u *uint32) *DetailUpdate {
+	if u != nil {
+		du.SetAmountPrecision(*u)
+	}
+	return du
+}
+
+// AddAmountPrecision adds u to the "amount_precision" field.
+func (du *DetailUpdate) AddAmountPrecision(u int32) *DetailUpdate {
+	du.mutation.AddAmountPrecision(u)
+	return du
+}
+
+// ClearAmountPrecision clears the value of the "amount_precision" field.
+func (du *DetailUpdate) ClearAmountPrecision() *DetailUpdate {
+	du.mutation.ClearAmountPrecision()
+	return du
+}
+
 // SetFromCoinTypeID sets the "from_coin_type_id" field.
 func (du *DetailUpdate) SetFromCoinTypeID(u uuid.UUID) *DetailUpdate {
 	du.mutation.SetFromCoinTypeID(u)
@@ -516,6 +543,26 @@ func (du *DetailUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: detail.FieldAmount,
 		})
 	}
+	if value, ok := du.mutation.AmountPrecision(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint32,
+			Value:  value,
+			Column: detail.FieldAmountPrecision,
+		})
+	}
+	if value, ok := du.mutation.AddedAmountPrecision(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint32,
+			Value:  value,
+			Column: detail.FieldAmountPrecision,
+		})
+	}
+	if du.mutation.AmountPrecisionCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint32,
+			Column: detail.FieldAmountPrecision,
+		})
+	}
 	if value, ok := du.mutation.FromCoinTypeID(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeUUID,
@@ -773,6 +820,33 @@ func (duo *DetailUpdateOne) AddAmount(u int64) *DetailUpdateOne {
 // ClearAmount clears the value of the "amount" field.
 func (duo *DetailUpdateOne) ClearAmount() *DetailUpdateOne {
 	duo.mutation.ClearAmount()
+	return duo
+}
+
+// SetAmountPrecision sets the "amount_precision" field.
+func (duo *DetailUpdateOne) SetAmountPrecision(u uint32) *DetailUpdateOne {
+	duo.mutation.ResetAmountPrecision()
+	duo.mutation.SetAmountPrecision(u)
+	return duo
+}
+
+// SetNillableAmountPrecision sets the "amount_precision" field if the given value is not nil.
+func (duo *DetailUpdateOne) SetNillableAmountPrecision(u *uint32) *DetailUpdateOne {
+	if u != nil {
+		duo.SetAmountPrecision(*u)
+	}
+	return duo
+}
+
+// AddAmountPrecision adds u to the "amount_precision" field.
+func (duo *DetailUpdateOne) AddAmountPrecision(u int32) *DetailUpdateOne {
+	duo.mutation.AddAmountPrecision(u)
+	return duo
+}
+
+// ClearAmountPrecision clears the value of the "amount_precision" field.
+func (duo *DetailUpdateOne) ClearAmountPrecision() *DetailUpdateOne {
+	duo.mutation.ClearAmountPrecision()
 	return duo
 }
 
@@ -1104,6 +1178,26 @@ func (duo *DetailUpdateOne) sqlSave(ctx context.Context) (_node *Detail, err err
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeUint64,
 			Column: detail.FieldAmount,
+		})
+	}
+	if value, ok := duo.mutation.AmountPrecision(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint32,
+			Value:  value,
+			Column: detail.FieldAmountPrecision,
+		})
+	}
+	if value, ok := duo.mutation.AddedAmountPrecision(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint32,
+			Value:  value,
+			Column: detail.FieldAmountPrecision,
+		})
+	}
+	if duo.mutation.AmountPrecisionCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint32,
+			Column: detail.FieldAmountPrecision,
 		})
 	}
 	if value, ok := duo.mutation.FromCoinTypeID(); ok {

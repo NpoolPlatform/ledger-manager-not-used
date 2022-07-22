@@ -34,6 +34,8 @@ type Detail struct {
 	IoSubType string `json:"io_sub_type,omitempty"`
 	// Amount holds the value of the "amount" field.
 	Amount uint64 `json:"amount,omitempty"`
+	// AmountPrecision holds the value of the "amount_precision" field.
+	AmountPrecision uint32 `json:"amount_precision,omitempty"`
 	// FromCoinTypeID holds the value of the "from_coin_type_id" field.
 	FromCoinTypeID uuid.UUID `json:"from_coin_type_id,omitempty"`
 	// CoinUsdCurrency holds the value of the "coin_usd_currency" field.
@@ -49,7 +51,7 @@ func (*Detail) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case detail.FieldCreatedAt, detail.FieldUpdatedAt, detail.FieldDeletedAt, detail.FieldAmount, detail.FieldCoinUsdCurrency:
+		case detail.FieldCreatedAt, detail.FieldUpdatedAt, detail.FieldDeletedAt, detail.FieldAmount, detail.FieldAmountPrecision, detail.FieldCoinUsdCurrency:
 			values[i] = new(sql.NullInt64)
 		case detail.FieldIoType, detail.FieldIoSubType, detail.FieldIoExtra:
 			values[i] = new(sql.NullString)
@@ -130,6 +132,12 @@ func (d *Detail) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				d.Amount = uint64(value.Int64)
 			}
+		case detail.FieldAmountPrecision:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field amount_precision", values[i])
+			} else if value.Valid {
+				d.AmountPrecision = uint32(value.Int64)
+			}
 		case detail.FieldFromCoinTypeID:
 			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field from_coin_type_id", values[i])
@@ -200,6 +208,8 @@ func (d *Detail) String() string {
 	builder.WriteString(d.IoSubType)
 	builder.WriteString(", amount=")
 	builder.WriteString(fmt.Sprintf("%v", d.Amount))
+	builder.WriteString(", amount_precision=")
+	builder.WriteString(fmt.Sprintf("%v", d.AmountPrecision))
 	builder.WriteString(", from_coin_type_id=")
 	builder.WriteString(fmt.Sprintf("%v", d.FromCoinTypeID))
 	builder.WriteString(", coin_usd_currency=")

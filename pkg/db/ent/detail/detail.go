@@ -30,6 +30,8 @@ const (
 	FieldIoSubType = "io_sub_type"
 	// FieldAmount holds the string denoting the amount field in the database.
 	FieldAmount = "amount"
+	// FieldAmountPrecision holds the string denoting the amount_precision field in the database.
+	FieldAmountPrecision = "amount_precision"
 	// FieldFromCoinTypeID holds the string denoting the from_coin_type_id field in the database.
 	FieldFromCoinTypeID = "from_coin_type_id"
 	// FieldCoinUsdCurrency holds the string denoting the coin_usd_currency field in the database.
@@ -54,6 +56,7 @@ var Columns = []string{
 	FieldIoType,
 	FieldIoSubType,
 	FieldAmount,
+	FieldAmountPrecision,
 	FieldFromCoinTypeID,
 	FieldCoinUsdCurrency,
 	FieldIoExtra,
@@ -99,6 +102,8 @@ var (
 	DefaultIoSubType string
 	// DefaultAmount holds the default value on creation for the "amount" field.
 	DefaultAmount uint64
+	// DefaultAmountPrecision holds the default value on creation for the "amount_precision" field.
+	DefaultAmountPrecision uint32
 	// DefaultFromCoinTypeID holds the default value on creation for the "from_coin_type_id" field.
 	DefaultFromCoinTypeID func() uuid.UUID
 	// DefaultCoinUsdCurrency holds the default value on creation for the "coin_usd_currency" field.

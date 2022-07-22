@@ -36,6 +36,8 @@ type General struct {
 	Outcoming uint64 `json:"outcoming,omitempty"`
 	// Spendable holds the value of the "spendable" field.
 	Spendable uint64 `json:"spendable,omitempty"`
+	// Precision holds the value of the "precision" field.
+	Precision uint32 `json:"precision,omitempty"`
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -43,7 +45,7 @@ func (*General) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case general.FieldCreatedAt, general.FieldUpdatedAt, general.FieldDeletedAt, general.FieldIncoming, general.FieldLocked, general.FieldOutcoming, general.FieldSpendable:
+		case general.FieldCreatedAt, general.FieldUpdatedAt, general.FieldDeletedAt, general.FieldIncoming, general.FieldLocked, general.FieldOutcoming, general.FieldSpendable, general.FieldPrecision:
 			values[i] = new(sql.NullInt64)
 		case general.FieldID, general.FieldAppID, general.FieldUserID, general.FieldCoinTypeID:
 			values[i] = new(uuid.UUID)
@@ -128,6 +130,12 @@ func (ge *General) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				ge.Spendable = uint64(value.Int64)
 			}
+		case general.FieldPrecision:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field precision", values[i])
+			} else if value.Valid {
+				ge.Precision = uint32(value.Int64)
+			}
 		}
 	}
 	return nil
@@ -176,6 +184,8 @@ func (ge *General) String() string {
 	builder.WriteString(fmt.Sprintf("%v", ge.Outcoming))
 	builder.WriteString(", spendable=")
 	builder.WriteString(fmt.Sprintf("%v", ge.Spendable))
+	builder.WriteString(", precision=")
+	builder.WriteString(fmt.Sprintf("%v", ge.Precision))
 	builder.WriteByte(')')
 	return builder.String()
 }

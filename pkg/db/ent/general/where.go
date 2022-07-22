@@ -161,6 +161,13 @@ func Spendable(v uint64) predicate.General {
 	})
 }
 
+// Precision applies equality check predicate on the "precision" field. It's identical to PrecisionEQ.
+func Precision(v uint32) predicate.General {
+	return predicate.General(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldPrecision), v))
+	})
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v uint32) predicate.General {
 	return predicate.General(func(s *sql.Selector) {
@@ -1016,6 +1023,96 @@ func SpendableIsNil() predicate.General {
 func SpendableNotNil() predicate.General {
 	return predicate.General(func(s *sql.Selector) {
 		s.Where(sql.NotNull(s.C(FieldSpendable)))
+	})
+}
+
+// PrecisionEQ applies the EQ predicate on the "precision" field.
+func PrecisionEQ(v uint32) predicate.General {
+	return predicate.General(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldPrecision), v))
+	})
+}
+
+// PrecisionNEQ applies the NEQ predicate on the "precision" field.
+func PrecisionNEQ(v uint32) predicate.General {
+	return predicate.General(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldPrecision), v))
+	})
+}
+
+// PrecisionIn applies the In predicate on the "precision" field.
+func PrecisionIn(vs ...uint32) predicate.General {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.General(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldPrecision), v...))
+	})
+}
+
+// PrecisionNotIn applies the NotIn predicate on the "precision" field.
+func PrecisionNotIn(vs ...uint32) predicate.General {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.General(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldPrecision), v...))
+	})
+}
+
+// PrecisionGT applies the GT predicate on the "precision" field.
+func PrecisionGT(v uint32) predicate.General {
+	return predicate.General(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldPrecision), v))
+	})
+}
+
+// PrecisionGTE applies the GTE predicate on the "precision" field.
+func PrecisionGTE(v uint32) predicate.General {
+	return predicate.General(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldPrecision), v))
+	})
+}
+
+// PrecisionLT applies the LT predicate on the "precision" field.
+func PrecisionLT(v uint32) predicate.General {
+	return predicate.General(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldPrecision), v))
+	})
+}
+
+// PrecisionLTE applies the LTE predicate on the "precision" field.
+func PrecisionLTE(v uint32) predicate.General {
+	return predicate.General(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldPrecision), v))
+	})
+}
+
+// PrecisionIsNil applies the IsNil predicate on the "precision" field.
+func PrecisionIsNil() predicate.General {
+	return predicate.General(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldPrecision)))
+	})
+}
+
+// PrecisionNotNil applies the NotNil predicate on the "precision" field.
+func PrecisionNotNil() predicate.General {
+	return predicate.General(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldPrecision)))
 	})
 }
 

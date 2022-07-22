@@ -35,6 +35,7 @@ func (General) Fields() []ent.Field {
 		field.Uint64("locked").Optional().Default(0),
 		field.Uint64("outcoming").Optional().Default(0),
 		field.Uint64("spendable").Optional().Default(0),
+		field.Uint32("precision").Optional().Default(6),
 	}
 }
 

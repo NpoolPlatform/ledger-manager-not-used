@@ -35,6 +35,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			detail.FieldIoType:          {Type: field.TypeString, Column: detail.FieldIoType},
 			detail.FieldIoSubType:       {Type: field.TypeString, Column: detail.FieldIoSubType},
 			detail.FieldAmount:          {Type: field.TypeUint64, Column: detail.FieldAmount},
+			detail.FieldAmountPrecision: {Type: field.TypeUint32, Column: detail.FieldAmountPrecision},
 			detail.FieldFromCoinTypeID:  {Type: field.TypeUUID, Column: detail.FieldFromCoinTypeID},
 			detail.FieldCoinUsdCurrency: {Type: field.TypeUint64, Column: detail.FieldCoinUsdCurrency},
 			detail.FieldIoExtra:         {Type: field.TypeString, Column: detail.FieldIoExtra},
@@ -62,6 +63,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			general.FieldLocked:     {Type: field.TypeUint64, Column: general.FieldLocked},
 			general.FieldOutcoming:  {Type: field.TypeUint64, Column: general.FieldOutcoming},
 			general.FieldSpendable:  {Type: field.TypeUint64, Column: general.FieldSpendable},
+			general.FieldPrecision:  {Type: field.TypeUint32, Column: general.FieldPrecision},
 		},
 	}
 	return graph
@@ -155,6 +157,11 @@ func (f *DetailFilter) WhereIoSubType(p entql.StringP) {
 // WhereAmount applies the entql uint64 predicate on the amount field.
 func (f *DetailFilter) WhereAmount(p entql.Uint64P) {
 	f.Where(p.Field(detail.FieldAmount))
+}
+
+// WhereAmountPrecision applies the entql uint32 predicate on the amount_precision field.
+func (f *DetailFilter) WhereAmountPrecision(p entql.Uint32P) {
+	f.Where(p.Field(detail.FieldAmountPrecision))
 }
 
 // WhereFromCoinTypeID applies the entql [16]byte predicate on the from_coin_type_id field.
@@ -264,4 +271,9 @@ func (f *GeneralFilter) WhereOutcoming(p entql.Uint64P) {
 // WhereSpendable applies the entql uint64 predicate on the spendable field.
 func (f *GeneralFilter) WhereSpendable(p entql.Uint64P) {
 	f.Where(p.Field(general.FieldSpendable))
+}
+
+// WherePrecision applies the entql uint32 predicate on the precision field.
+func (f *GeneralFilter) WherePrecision(p entql.Uint32P) {
+	f.Where(p.Field(general.FieldPrecision))
 }

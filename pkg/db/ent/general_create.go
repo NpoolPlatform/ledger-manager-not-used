@@ -163,6 +163,20 @@ func (gc *GeneralCreate) SetNillableSpendable(u *uint64) *GeneralCreate {
 	return gc
 }
 
+// SetPrecision sets the "precision" field.
+func (gc *GeneralCreate) SetPrecision(u uint32) *GeneralCreate {
+	gc.mutation.SetPrecision(u)
+	return gc
+}
+
+// SetNillablePrecision sets the "precision" field if the given value is not nil.
+func (gc *GeneralCreate) SetNillablePrecision(u *uint32) *GeneralCreate {
+	if u != nil {
+		gc.SetPrecision(*u)
+	}
+	return gc
+}
+
 // SetID sets the "id" field.
 func (gc *GeneralCreate) SetID(u uuid.UUID) *GeneralCreate {
 	gc.mutation.SetID(u)
@@ -308,6 +322,10 @@ func (gc *GeneralCreate) defaults() error {
 		v := general.DefaultSpendable
 		gc.mutation.SetSpendable(v)
 	}
+	if _, ok := gc.mutation.Precision(); !ok {
+		v := general.DefaultPrecision
+		gc.mutation.SetPrecision(v)
+	}
 	if _, ok := gc.mutation.ID(); !ok {
 		if general.DefaultID == nil {
 			return fmt.Errorf("ent: uninitialized general.DefaultID (forgotten import ent/runtime?)")
@@ -445,6 +463,14 @@ func (gc *GeneralCreate) createSpec() (*General, *sqlgraph.CreateSpec) {
 			Column: general.FieldSpendable,
 		})
 		_node.Spendable = value
+	}
+	if value, ok := gc.mutation.Precision(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint32,
+			Value:  value,
+			Column: general.FieldPrecision,
+		})
+		_node.Precision = value
 	}
 	return _node, _spec
 }
@@ -701,6 +727,30 @@ func (u *GeneralUpsert) AddSpendable(v uint64) *GeneralUpsert {
 // ClearSpendable clears the value of the "spendable" field.
 func (u *GeneralUpsert) ClearSpendable() *GeneralUpsert {
 	u.SetNull(general.FieldSpendable)
+	return u
+}
+
+// SetPrecision sets the "precision" field.
+func (u *GeneralUpsert) SetPrecision(v uint32) *GeneralUpsert {
+	u.Set(general.FieldPrecision, v)
+	return u
+}
+
+// UpdatePrecision sets the "precision" field to the value that was provided on create.
+func (u *GeneralUpsert) UpdatePrecision() *GeneralUpsert {
+	u.SetExcluded(general.FieldPrecision)
+	return u
+}
+
+// AddPrecision adds v to the "precision" field.
+func (u *GeneralUpsert) AddPrecision(v uint32) *GeneralUpsert {
+	u.Add(general.FieldPrecision, v)
+	return u
+}
+
+// ClearPrecision clears the value of the "precision" field.
+func (u *GeneralUpsert) ClearPrecision() *GeneralUpsert {
+	u.SetNull(general.FieldPrecision)
 	return u
 }
 
@@ -989,6 +1039,34 @@ func (u *GeneralUpsertOne) UpdateSpendable() *GeneralUpsertOne {
 func (u *GeneralUpsertOne) ClearSpendable() *GeneralUpsertOne {
 	return u.Update(func(s *GeneralUpsert) {
 		s.ClearSpendable()
+	})
+}
+
+// SetPrecision sets the "precision" field.
+func (u *GeneralUpsertOne) SetPrecision(v uint32) *GeneralUpsertOne {
+	return u.Update(func(s *GeneralUpsert) {
+		s.SetPrecision(v)
+	})
+}
+
+// AddPrecision adds v to the "precision" field.
+func (u *GeneralUpsertOne) AddPrecision(v uint32) *GeneralUpsertOne {
+	return u.Update(func(s *GeneralUpsert) {
+		s.AddPrecision(v)
+	})
+}
+
+// UpdatePrecision sets the "precision" field to the value that was provided on create.
+func (u *GeneralUpsertOne) UpdatePrecision() *GeneralUpsertOne {
+	return u.Update(func(s *GeneralUpsert) {
+		s.UpdatePrecision()
+	})
+}
+
+// ClearPrecision clears the value of the "precision" field.
+func (u *GeneralUpsertOne) ClearPrecision() *GeneralUpsertOne {
+	return u.Update(func(s *GeneralUpsert) {
+		s.ClearPrecision()
 	})
 }
 
@@ -1443,6 +1521,34 @@ func (u *GeneralUpsertBulk) UpdateSpendable() *GeneralUpsertBulk {
 func (u *GeneralUpsertBulk) ClearSpendable() *GeneralUpsertBulk {
 	return u.Update(func(s *GeneralUpsert) {
 		s.ClearSpendable()
+	})
+}
+
+// SetPrecision sets the "precision" field.
+func (u *GeneralUpsertBulk) SetPrecision(v uint32) *GeneralUpsertBulk {
+	return u.Update(func(s *GeneralUpsert) {
+		s.SetPrecision(v)
+	})
+}
+
+// AddPrecision adds v to the "precision" field.
+func (u *GeneralUpsertBulk) AddPrecision(v uint32) *GeneralUpsertBulk {
+	return u.Update(func(s *GeneralUpsert) {
+		s.AddPrecision(v)
+	})
+}
+
+// UpdatePrecision sets the "precision" field to the value that was provided on create.
+func (u *GeneralUpsertBulk) UpdatePrecision() *GeneralUpsertBulk {
+	return u.Update(func(s *GeneralUpsert) {
+		s.UpdatePrecision()
+	})
+}
+
+// ClearPrecision clears the value of the "precision" field.
+func (u *GeneralUpsertBulk) ClearPrecision() *GeneralUpsertBulk {
+	return u.Update(func(s *GeneralUpsert) {
+		s.ClearPrecision()
 	})
 }
 

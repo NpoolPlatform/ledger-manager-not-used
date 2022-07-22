@@ -154,6 +154,13 @@ func Amount(v uint64) predicate.Detail {
 	})
 }
 
+// AmountPrecision applies equality check predicate on the "amount_precision" field. It's identical to AmountPrecisionEQ.
+func AmountPrecision(v uint32) predicate.Detail {
+	return predicate.Detail(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldAmountPrecision), v))
+	})
+}
+
 // FromCoinTypeID applies equality check predicate on the "from_coin_type_id" field. It's identical to FromCoinTypeIDEQ.
 func FromCoinTypeID(v uuid.UUID) predicate.Detail {
 	return predicate.Detail(func(s *sql.Selector) {
@@ -1017,6 +1024,96 @@ func AmountIsNil() predicate.Detail {
 func AmountNotNil() predicate.Detail {
 	return predicate.Detail(func(s *sql.Selector) {
 		s.Where(sql.NotNull(s.C(FieldAmount)))
+	})
+}
+
+// AmountPrecisionEQ applies the EQ predicate on the "amount_precision" field.
+func AmountPrecisionEQ(v uint32) predicate.Detail {
+	return predicate.Detail(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldAmountPrecision), v))
+	})
+}
+
+// AmountPrecisionNEQ applies the NEQ predicate on the "amount_precision" field.
+func AmountPrecisionNEQ(v uint32) predicate.Detail {
+	return predicate.Detail(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldAmountPrecision), v))
+	})
+}
+
+// AmountPrecisionIn applies the In predicate on the "amount_precision" field.
+func AmountPrecisionIn(vs ...uint32) predicate.Detail {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Detail(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldAmountPrecision), v...))
+	})
+}
+
+// AmountPrecisionNotIn applies the NotIn predicate on the "amount_precision" field.
+func AmountPrecisionNotIn(vs ...uint32) predicate.Detail {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Detail(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldAmountPrecision), v...))
+	})
+}
+
+// AmountPrecisionGT applies the GT predicate on the "amount_precision" field.
+func AmountPrecisionGT(v uint32) predicate.Detail {
+	return predicate.Detail(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldAmountPrecision), v))
+	})
+}
+
+// AmountPrecisionGTE applies the GTE predicate on the "amount_precision" field.
+func AmountPrecisionGTE(v uint32) predicate.Detail {
+	return predicate.Detail(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldAmountPrecision), v))
+	})
+}
+
+// AmountPrecisionLT applies the LT predicate on the "amount_precision" field.
+func AmountPrecisionLT(v uint32) predicate.Detail {
+	return predicate.Detail(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldAmountPrecision), v))
+	})
+}
+
+// AmountPrecisionLTE applies the LTE predicate on the "amount_precision" field.
+func AmountPrecisionLTE(v uint32) predicate.Detail {
+	return predicate.Detail(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldAmountPrecision), v))
+	})
+}
+
+// AmountPrecisionIsNil applies the IsNil predicate on the "amount_precision" field.
+func AmountPrecisionIsNil() predicate.Detail {
+	return predicate.Detail(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldAmountPrecision)))
+	})
+}
+
+// AmountPrecisionNotNil applies the NotNil predicate on the "amount_precision" field.
+func AmountPrecisionNotNil() predicate.Detail {
+	return predicate.Detail(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldAmountPrecision)))
 	})
 }
 

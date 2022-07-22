@@ -48,6 +48,8 @@ type DetailMutation struct {
 	io_sub_type          *string
 	amount               *uint64
 	addamount            *int64
+	amount_precision     *uint32
+	addamount_precision  *int32
 	from_coin_type_id    *uuid.UUID
 	coin_usd_currency    *uint64
 	addcoin_usd_currency *int64
@@ -646,6 +648,76 @@ func (m *DetailMutation) ResetAmount() {
 	delete(m.clearedFields, detail.FieldAmount)
 }
 
+// SetAmountPrecision sets the "amount_precision" field.
+func (m *DetailMutation) SetAmountPrecision(u uint32) {
+	m.amount_precision = &u
+	m.addamount_precision = nil
+}
+
+// AmountPrecision returns the value of the "amount_precision" field in the mutation.
+func (m *DetailMutation) AmountPrecision() (r uint32, exists bool) {
+	v := m.amount_precision
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAmountPrecision returns the old "amount_precision" field's value of the Detail entity.
+// If the Detail object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DetailMutation) OldAmountPrecision(ctx context.Context) (v uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAmountPrecision is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAmountPrecision requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAmountPrecision: %w", err)
+	}
+	return oldValue.AmountPrecision, nil
+}
+
+// AddAmountPrecision adds u to the "amount_precision" field.
+func (m *DetailMutation) AddAmountPrecision(u int32) {
+	if m.addamount_precision != nil {
+		*m.addamount_precision += u
+	} else {
+		m.addamount_precision = &u
+	}
+}
+
+// AddedAmountPrecision returns the value that was added to the "amount_precision" field in this mutation.
+func (m *DetailMutation) AddedAmountPrecision() (r int32, exists bool) {
+	v := m.addamount_precision
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearAmountPrecision clears the value of the "amount_precision" field.
+func (m *DetailMutation) ClearAmountPrecision() {
+	m.amount_precision = nil
+	m.addamount_precision = nil
+	m.clearedFields[detail.FieldAmountPrecision] = struct{}{}
+}
+
+// AmountPrecisionCleared returns if the "amount_precision" field was cleared in this mutation.
+func (m *DetailMutation) AmountPrecisionCleared() bool {
+	_, ok := m.clearedFields[detail.FieldAmountPrecision]
+	return ok
+}
+
+// ResetAmountPrecision resets all changes to the "amount_precision" field.
+func (m *DetailMutation) ResetAmountPrecision() {
+	m.amount_precision = nil
+	m.addamount_precision = nil
+	delete(m.clearedFields, detail.FieldAmountPrecision)
+}
+
 // SetFromCoinTypeID sets the "from_coin_type_id" field.
 func (m *DetailMutation) SetFromCoinTypeID(u uuid.UUID) {
 	m.from_coin_type_id = &u
@@ -882,7 +954,7 @@ func (m *DetailMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *DetailMutation) Fields() []string {
-	fields := make([]string, 0, 13)
+	fields := make([]string, 0, 14)
 	if m.created_at != nil {
 		fields = append(fields, detail.FieldCreatedAt)
 	}
@@ -909,6 +981,9 @@ func (m *DetailMutation) Fields() []string {
 	}
 	if m.amount != nil {
 		fields = append(fields, detail.FieldAmount)
+	}
+	if m.amount_precision != nil {
+		fields = append(fields, detail.FieldAmountPrecision)
 	}
 	if m.from_coin_type_id != nil {
 		fields = append(fields, detail.FieldFromCoinTypeID)
@@ -948,6 +1023,8 @@ func (m *DetailMutation) Field(name string) (ent.Value, bool) {
 		return m.IoSubType()
 	case detail.FieldAmount:
 		return m.Amount()
+	case detail.FieldAmountPrecision:
+		return m.AmountPrecision()
 	case detail.FieldFromCoinTypeID:
 		return m.FromCoinTypeID()
 	case detail.FieldCoinUsdCurrency:
@@ -983,6 +1060,8 @@ func (m *DetailMutation) OldField(ctx context.Context, name string) (ent.Value, 
 		return m.OldIoSubType(ctx)
 	case detail.FieldAmount:
 		return m.OldAmount(ctx)
+	case detail.FieldAmountPrecision:
+		return m.OldAmountPrecision(ctx)
 	case detail.FieldFromCoinTypeID:
 		return m.OldFromCoinTypeID(ctx)
 	case detail.FieldCoinUsdCurrency:
@@ -1063,6 +1142,13 @@ func (m *DetailMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetAmount(v)
 		return nil
+	case detail.FieldAmountPrecision:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAmountPrecision(v)
+		return nil
 	case detail.FieldFromCoinTypeID:
 		v, ok := value.(uuid.UUID)
 		if !ok {
@@ -1111,6 +1197,9 @@ func (m *DetailMutation) AddedFields() []string {
 	if m.addamount != nil {
 		fields = append(fields, detail.FieldAmount)
 	}
+	if m.addamount_precision != nil {
+		fields = append(fields, detail.FieldAmountPrecision)
+	}
 	if m.addcoin_usd_currency != nil {
 		fields = append(fields, detail.FieldCoinUsdCurrency)
 	}
@@ -1130,6 +1219,8 @@ func (m *DetailMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedDeletedAt()
 	case detail.FieldAmount:
 		return m.AddedAmount()
+	case detail.FieldAmountPrecision:
+		return m.AddedAmountPrecision()
 	case detail.FieldCoinUsdCurrency:
 		return m.AddedCoinUsdCurrency()
 	}
@@ -1169,6 +1260,13 @@ func (m *DetailMutation) AddField(name string, value ent.Value) error {
 		}
 		m.AddAmount(v)
 		return nil
+	case detail.FieldAmountPrecision:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddAmountPrecision(v)
+		return nil
 	case detail.FieldCoinUsdCurrency:
 		v, ok := value.(int64)
 		if !ok {
@@ -1201,6 +1299,9 @@ func (m *DetailMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(detail.FieldAmount) {
 		fields = append(fields, detail.FieldAmount)
+	}
+	if m.FieldCleared(detail.FieldAmountPrecision) {
+		fields = append(fields, detail.FieldAmountPrecision)
 	}
 	if m.FieldCleared(detail.FieldFromCoinTypeID) {
 		fields = append(fields, detail.FieldFromCoinTypeID)
@@ -1245,6 +1346,9 @@ func (m *DetailMutation) ClearField(name string) error {
 		return nil
 	case detail.FieldAmount:
 		m.ClearAmount()
+		return nil
+	case detail.FieldAmountPrecision:
+		m.ClearAmountPrecision()
 		return nil
 	case detail.FieldFromCoinTypeID:
 		m.ClearFromCoinTypeID()
@@ -1292,6 +1396,9 @@ func (m *DetailMutation) ResetField(name string) error {
 		return nil
 	case detail.FieldAmount:
 		m.ResetAmount()
+		return nil
+	case detail.FieldAmountPrecision:
+		m.ResetAmountPrecision()
 		return nil
 	case detail.FieldFromCoinTypeID:
 		m.ResetFromCoinTypeID()
@@ -1380,6 +1487,8 @@ type GeneralMutation struct {
 	addoutcoming  *int64
 	spendable     *uint64
 	addspendable  *int64
+	precision     *uint32
+	addprecision  *int32
 	clearedFields map[string]struct{}
 	done          bool
 	oldValue      func(context.Context) (*General, error)
@@ -2085,6 +2194,76 @@ func (m *GeneralMutation) ResetSpendable() {
 	delete(m.clearedFields, general.FieldSpendable)
 }
 
+// SetPrecision sets the "precision" field.
+func (m *GeneralMutation) SetPrecision(u uint32) {
+	m.precision = &u
+	m.addprecision = nil
+}
+
+// Precision returns the value of the "precision" field in the mutation.
+func (m *GeneralMutation) Precision() (r uint32, exists bool) {
+	v := m.precision
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPrecision returns the old "precision" field's value of the General entity.
+// If the General object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *GeneralMutation) OldPrecision(ctx context.Context) (v uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPrecision is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPrecision requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPrecision: %w", err)
+	}
+	return oldValue.Precision, nil
+}
+
+// AddPrecision adds u to the "precision" field.
+func (m *GeneralMutation) AddPrecision(u int32) {
+	if m.addprecision != nil {
+		*m.addprecision += u
+	} else {
+		m.addprecision = &u
+	}
+}
+
+// AddedPrecision returns the value that was added to the "precision" field in this mutation.
+func (m *GeneralMutation) AddedPrecision() (r int32, exists bool) {
+	v := m.addprecision
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearPrecision clears the value of the "precision" field.
+func (m *GeneralMutation) ClearPrecision() {
+	m.precision = nil
+	m.addprecision = nil
+	m.clearedFields[general.FieldPrecision] = struct{}{}
+}
+
+// PrecisionCleared returns if the "precision" field was cleared in this mutation.
+func (m *GeneralMutation) PrecisionCleared() bool {
+	_, ok := m.clearedFields[general.FieldPrecision]
+	return ok
+}
+
+// ResetPrecision resets all changes to the "precision" field.
+func (m *GeneralMutation) ResetPrecision() {
+	m.precision = nil
+	m.addprecision = nil
+	delete(m.clearedFields, general.FieldPrecision)
+}
+
 // Where appends a list predicates to the GeneralMutation builder.
 func (m *GeneralMutation) Where(ps ...predicate.General) {
 	m.predicates = append(m.predicates, ps...)
@@ -2104,7 +2283,7 @@ func (m *GeneralMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *GeneralMutation) Fields() []string {
-	fields := make([]string, 0, 10)
+	fields := make([]string, 0, 11)
 	if m.created_at != nil {
 		fields = append(fields, general.FieldCreatedAt)
 	}
@@ -2135,6 +2314,9 @@ func (m *GeneralMutation) Fields() []string {
 	if m.spendable != nil {
 		fields = append(fields, general.FieldSpendable)
 	}
+	if m.precision != nil {
+		fields = append(fields, general.FieldPrecision)
+	}
 	return fields
 }
 
@@ -2163,6 +2345,8 @@ func (m *GeneralMutation) Field(name string) (ent.Value, bool) {
 		return m.Outcoming()
 	case general.FieldSpendable:
 		return m.Spendable()
+	case general.FieldPrecision:
+		return m.Precision()
 	}
 	return nil, false
 }
@@ -2192,6 +2376,8 @@ func (m *GeneralMutation) OldField(ctx context.Context, name string) (ent.Value,
 		return m.OldOutcoming(ctx)
 	case general.FieldSpendable:
 		return m.OldSpendable(ctx)
+	case general.FieldPrecision:
+		return m.OldPrecision(ctx)
 	}
 	return nil, fmt.Errorf("unknown General field %s", name)
 }
@@ -2271,6 +2457,13 @@ func (m *GeneralMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetSpendable(v)
 		return nil
+	case general.FieldPrecision:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPrecision(v)
+		return nil
 	}
 	return fmt.Errorf("unknown General field %s", name)
 }
@@ -2300,6 +2493,9 @@ func (m *GeneralMutation) AddedFields() []string {
 	if m.addspendable != nil {
 		fields = append(fields, general.FieldSpendable)
 	}
+	if m.addprecision != nil {
+		fields = append(fields, general.FieldPrecision)
+	}
 	return fields
 }
 
@@ -2322,6 +2518,8 @@ func (m *GeneralMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedOutcoming()
 	case general.FieldSpendable:
 		return m.AddedSpendable()
+	case general.FieldPrecision:
+		return m.AddedPrecision()
 	}
 	return nil, false
 }
@@ -2380,6 +2578,13 @@ func (m *GeneralMutation) AddField(name string, value ent.Value) error {
 		}
 		m.AddSpendable(v)
 		return nil
+	case general.FieldPrecision:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddPrecision(v)
+		return nil
 	}
 	return fmt.Errorf("unknown General numeric field %s", name)
 }
@@ -2408,6 +2613,9 @@ func (m *GeneralMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(general.FieldSpendable) {
 		fields = append(fields, general.FieldSpendable)
+	}
+	if m.FieldCleared(general.FieldPrecision) {
+		fields = append(fields, general.FieldPrecision)
 	}
 	return fields
 }
@@ -2443,6 +2651,9 @@ func (m *GeneralMutation) ClearField(name string) error {
 		return nil
 	case general.FieldSpendable:
 		m.ClearSpendable()
+		return nil
+	case general.FieldPrecision:
+		m.ClearPrecision()
 		return nil
 	}
 	return fmt.Errorf("unknown General nullable field %s", name)
@@ -2481,6 +2692,9 @@ func (m *GeneralMutation) ResetField(name string) error {
 		return nil
 	case general.FieldSpendable:
 		m.ResetSpendable()
+		return nil
+	case general.FieldPrecision:
+		m.ResetPrecision()
 		return nil
 	}
 	return fmt.Errorf("unknown General field %s", name)

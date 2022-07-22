@@ -149,6 +149,20 @@ func (dc *DetailCreate) SetNillableAmount(u *uint64) *DetailCreate {
 	return dc
 }
 
+// SetAmountPrecision sets the "amount_precision" field.
+func (dc *DetailCreate) SetAmountPrecision(u uint32) *DetailCreate {
+	dc.mutation.SetAmountPrecision(u)
+	return dc
+}
+
+// SetNillableAmountPrecision sets the "amount_precision" field if the given value is not nil.
+func (dc *DetailCreate) SetNillableAmountPrecision(u *uint32) *DetailCreate {
+	if u != nil {
+		dc.SetAmountPrecision(*u)
+	}
+	return dc
+}
+
 // SetFromCoinTypeID sets the "from_coin_type_id" field.
 func (dc *DetailCreate) SetFromCoinTypeID(u uuid.UUID) *DetailCreate {
 	dc.mutation.SetFromCoinTypeID(u)
@@ -346,6 +360,10 @@ func (dc *DetailCreate) defaults() error {
 		v := detail.DefaultAmount
 		dc.mutation.SetAmount(v)
 	}
+	if _, ok := dc.mutation.AmountPrecision(); !ok {
+		v := detail.DefaultAmountPrecision
+		dc.mutation.SetAmountPrecision(v)
+	}
 	if _, ok := dc.mutation.FromCoinTypeID(); !ok {
 		if detail.DefaultFromCoinTypeID == nil {
 			return fmt.Errorf("ent: uninitialized detail.DefaultFromCoinTypeID (forgotten import ent/runtime?)")
@@ -497,6 +515,14 @@ func (dc *DetailCreate) createSpec() (*Detail, *sqlgraph.CreateSpec) {
 			Column: detail.FieldAmount,
 		})
 		_node.Amount = value
+	}
+	if value, ok := dc.mutation.AmountPrecision(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint32,
+			Value:  value,
+			Column: detail.FieldAmountPrecision,
+		})
+		_node.AmountPrecision = value
 	}
 	if value, ok := dc.mutation.FromCoinTypeID(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -749,6 +775,30 @@ func (u *DetailUpsert) AddAmount(v uint64) *DetailUpsert {
 // ClearAmount clears the value of the "amount" field.
 func (u *DetailUpsert) ClearAmount() *DetailUpsert {
 	u.SetNull(detail.FieldAmount)
+	return u
+}
+
+// SetAmountPrecision sets the "amount_precision" field.
+func (u *DetailUpsert) SetAmountPrecision(v uint32) *DetailUpsert {
+	u.Set(detail.FieldAmountPrecision, v)
+	return u
+}
+
+// UpdateAmountPrecision sets the "amount_precision" field to the value that was provided on create.
+func (u *DetailUpsert) UpdateAmountPrecision() *DetailUpsert {
+	u.SetExcluded(detail.FieldAmountPrecision)
+	return u
+}
+
+// AddAmountPrecision adds v to the "amount_precision" field.
+func (u *DetailUpsert) AddAmountPrecision(v uint32) *DetailUpsert {
+	u.Add(detail.FieldAmountPrecision, v)
+	return u
+}
+
+// ClearAmountPrecision clears the value of the "amount_precision" field.
+func (u *DetailUpsert) ClearAmountPrecision() *DetailUpsert {
+	u.SetNull(detail.FieldAmountPrecision)
 	return u
 }
 
@@ -1073,6 +1123,34 @@ func (u *DetailUpsertOne) UpdateAmount() *DetailUpsertOne {
 func (u *DetailUpsertOne) ClearAmount() *DetailUpsertOne {
 	return u.Update(func(s *DetailUpsert) {
 		s.ClearAmount()
+	})
+}
+
+// SetAmountPrecision sets the "amount_precision" field.
+func (u *DetailUpsertOne) SetAmountPrecision(v uint32) *DetailUpsertOne {
+	return u.Update(func(s *DetailUpsert) {
+		s.SetAmountPrecision(v)
+	})
+}
+
+// AddAmountPrecision adds v to the "amount_precision" field.
+func (u *DetailUpsertOne) AddAmountPrecision(v uint32) *DetailUpsertOne {
+	return u.Update(func(s *DetailUpsert) {
+		s.AddAmountPrecision(v)
+	})
+}
+
+// UpdateAmountPrecision sets the "amount_precision" field to the value that was provided on create.
+func (u *DetailUpsertOne) UpdateAmountPrecision() *DetailUpsertOne {
+	return u.Update(func(s *DetailUpsert) {
+		s.UpdateAmountPrecision()
+	})
+}
+
+// ClearAmountPrecision clears the value of the "amount_precision" field.
+func (u *DetailUpsertOne) ClearAmountPrecision() *DetailUpsertOne {
+	return u.Update(func(s *DetailUpsert) {
+		s.ClearAmountPrecision()
 	})
 }
 
@@ -1576,6 +1654,34 @@ func (u *DetailUpsertBulk) UpdateAmount() *DetailUpsertBulk {
 func (u *DetailUpsertBulk) ClearAmount() *DetailUpsertBulk {
 	return u.Update(func(s *DetailUpsert) {
 		s.ClearAmount()
+	})
+}
+
+// SetAmountPrecision sets the "amount_precision" field.
+func (u *DetailUpsertBulk) SetAmountPrecision(v uint32) *DetailUpsertBulk {
+	return u.Update(func(s *DetailUpsert) {
+		s.SetAmountPrecision(v)
+	})
+}
+
+// AddAmountPrecision adds v to the "amount_precision" field.
+func (u *DetailUpsertBulk) AddAmountPrecision(v uint32) *DetailUpsertBulk {
+	return u.Update(func(s *DetailUpsert) {
+		s.AddAmountPrecision(v)
+	})
+}
+
+// UpdateAmountPrecision sets the "amount_precision" field to the value that was provided on create.
+func (u *DetailUpsertBulk) UpdateAmountPrecision() *DetailUpsertBulk {
+	return u.Update(func(s *DetailUpsert) {
+		s.UpdateAmountPrecision()
+	})
+}
+
+// ClearAmountPrecision clears the value of the "amount_precision" field.
+func (u *DetailUpsertBulk) ClearAmountPrecision() *DetailUpsertBulk {
+	return u.Update(func(s *DetailUpsert) {
+		s.ClearAmountPrecision()
 	})
 }
 

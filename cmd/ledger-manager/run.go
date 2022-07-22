@@ -2,11 +2,8 @@ package main
 
 import (
 	"github.com/NpoolPlatform/ledger-manager/api"
-	db "github.com/NpoolPlatform/ledger-manager/pkg/db"
-	_ "github.com/NpoolPlatform/ledger-manager/pkg/message/client"
-	_ "github.com/NpoolPlatform/ledger-manager/pkg/message/listener"
-	_ "github.com/NpoolPlatform/ledger-manager/pkg/message/message"
-	_ "github.com/NpoolPlatform/ledger-manager/pkg/message/server"
+	"github.com/NpoolPlatform/ledger-manager/pkg/db"
+	"github.com/NpoolPlatform/ledger-manager/pkg/migrator"
 
 	grpc2 "github.com/NpoolPlatform/go-service-framework/pkg/grpc"
 	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
@@ -27,6 +24,10 @@ var runCmd = &cli.Command{
 	Aliases: []string{"s"},
 	Usage:   "Run the daemon",
 	Action: func(c *cli.Context) error {
+		if err := migrator.Migrate(); err != nil {
+			return err
+		}
+
 		if err := db.Init(); err != nil {
 			return err
 		}
@@ -36,18 +37,6 @@ var runCmd = &cli.Command{
 				logger.Sugar().Errorf("fail to run grpc server: %v", err)
 			}
 		}()
-
-		/*
-			if err := msgsrv.Init(); err != nil {
-				return err
-			}
-			if err := msgcli.Init(); err != nil {
-				return err
-			}
-
-			go msglistener.Listen()
-			go msgSender()
-		*/
 
 		return grpc2.RunGRPCGateWay(rpcGatewayRegister)
 	},
@@ -71,21 +60,3 @@ func rpcGatewayRegister(mux *runtime.ServeMux, endpoint string, opts []grpc.Dial
 
 	return nil
 }
-
-/*
-func msgSender() {
-	id := 0
-	for {
-		err := msgsrv.PublishExample(&msg.Example{
-			ID:      id,
-			Example: "hello world",
-		})
-		if err != nil {
-			logger.Sugar().Errorf("fail to send example: %v", err)
-			return
-		}
-		id++
-		time.Sleep(MsgInterval)
-	}
-}
-*/

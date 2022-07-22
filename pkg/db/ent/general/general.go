@@ -32,6 +32,8 @@ const (
 	FieldOutcoming = "outcoming"
 	// FieldSpendable holds the string denoting the spendable field in the database.
 	FieldSpendable = "spendable"
+	// FieldPrecision holds the string denoting the precision field in the database.
+	FieldPrecision = "precision"
 	// Table holds the table name of the general in the database.
 	Table = "generals"
 )
@@ -49,6 +51,7 @@ var Columns = []string{
 	FieldLocked,
 	FieldOutcoming,
 	FieldSpendable,
+	FieldPrecision,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -92,6 +95,8 @@ var (
 	DefaultOutcoming uint64
 	// DefaultSpendable holds the default value on creation for the "spendable" field.
 	DefaultSpendable uint64
+	// DefaultPrecision holds the default value on creation for the "precision" field.
+	DefaultPrecision uint32
 	// DefaultID holds the default value on creation for the "id" field.
 	DefaultID func() uuid.UUID
 )

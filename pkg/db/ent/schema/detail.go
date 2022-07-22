@@ -36,6 +36,7 @@ func (Detail) Fields() []ent.Field {
 		field.String("io_type").Optional().Default(detail.IOType_DefaultType.String()),
 		field.String("io_sub_type").Optional().Default(detail.IOSubType_DefaultSubType.String()),
 		field.Uint64("amount").Optional().Default(0),
+		field.Uint32("amount_precision").Optional().Default(6),
 		field.UUID("from_coin_type_id", uuid.UUID{}).Optional().Default(func() uuid.UUID {
 			return uuid.UUID{}
 		}),

@@ -20,6 +20,7 @@ var (
 		{Name: "io_type", Type: field.TypeString, Nullable: true, Default: "DefaultType"},
 		{Name: "io_sub_type", Type: field.TypeString, Nullable: true, Default: "DefaultSubType"},
 		{Name: "amount", Type: field.TypeUint64, Nullable: true, Default: 0},
+		{Name: "amount_precision", Type: field.TypeUint32, Nullable: true, Default: 6},
 		{Name: "from_coin_type_id", Type: field.TypeUUID, Nullable: true},
 		{Name: "coin_usd_currency", Type: field.TypeUint64, Nullable: true, Default: 0},
 		{Name: "io_extra", Type: field.TypeString, Nullable: true, Default: ""},
@@ -44,6 +45,7 @@ var (
 		{Name: "locked", Type: field.TypeUint64, Nullable: true, Default: 0},
 		{Name: "outcoming", Type: field.TypeUint64, Nullable: true, Default: 0},
 		{Name: "spendable", Type: field.TypeUint64, Nullable: true, Default: 0},
+		{Name: "precision", Type: field.TypeUint32, Nullable: true, Default: 6},
 	}
 	// GeneralsTable holds the schema information for the "generals" table.
 	GeneralsTable = &schema.Table{
