@@ -74,6 +74,9 @@ func Create(ctx context.Context, in *npool.DetailReq) (*ent.Detail, error) {
 		if in.FromOldID != nil {
 			c.SetFromOldID(uuid.MustParse(in.GetFromOldID()))
 		}
+		if in.CreatedAt != nil {
+			c.SetCreatedAt(in.GetCreatedAt())
+		}
 
 		info, err = c.Save(_ctx)
 		return err
@@ -137,6 +140,9 @@ func CreateBulk(ctx context.Context, in []*npool.DetailReq) ([]*ent.Detail, erro
 			}
 			if info.FromOldID != nil {
 				bulk[i].SetFromOldID(uuid.MustParse(info.GetFromOldID()))
+			}
+			if info.CreatedAt != nil {
+				bulk[i].SetCreatedAt(info.GetCreatedAt())
 			}
 		}
 		rows, err = tx.Detail.CreateBulk(bulk...).Save(_ctx)
