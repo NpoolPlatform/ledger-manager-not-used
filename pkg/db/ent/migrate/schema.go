@@ -23,6 +23,7 @@ var (
 		{Name: "from_coin_type_id", Type: field.TypeUUID, Nullable: true},
 		{Name: "coin_usd_currency", Type: field.TypeUint64, Nullable: true, Default: 0},
 		{Name: "io_extra", Type: field.TypeString, Nullable: true, Default: ""},
+		{Name: "from_old_id", Type: field.TypeUUID, Nullable: true},
 	}
 	// DetailsTable holds the schema information for the "details" table.
 	DetailsTable = &schema.Table{

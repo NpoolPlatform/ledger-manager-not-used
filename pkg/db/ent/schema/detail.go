@@ -41,6 +41,9 @@ func (Detail) Fields() []ent.Field {
 		}),
 		field.Uint64("coin_usd_currency").Optional().Default(0),
 		field.String("io_extra").Optional().Default(""),
+		field.UUID("from_old_id", uuid.UUID{}).Optional().Default(func() uuid.UUID {
+			return uuid.UUID{}
+		}),
 	}
 }
 

@@ -94,6 +94,13 @@ func validate(info *npool.DetailReq) error { //nolint
 		return status.Error(codes.InvalidArgument, "IOSubType is invalid")
 	}
 
+	if info.FromOldID != nil {
+		if _, err := uuid.Parse(info.GetFromOldID()); err != nil {
+			logger.Sugar().Error("FromOldID is invalid: %v", err)
+			return status.Error(codes.InvalidArgument, fmt.Sprintf("FromOldID is invalid: %v", err))
+		}
+	}
+
 	return nil
 }
 

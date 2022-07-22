@@ -52,6 +52,7 @@ type DetailMutation struct {
 	coin_usd_currency    *uint64
 	addcoin_usd_currency *int64
 	io_extra             *string
+	from_old_id          *uuid.UUID
 	clearedFields        map[string]struct{}
 	done                 bool
 	oldValue             func(context.Context) (*Detail, error)
@@ -813,6 +814,55 @@ func (m *DetailMutation) ResetIoExtra() {
 	delete(m.clearedFields, detail.FieldIoExtra)
 }
 
+// SetFromOldID sets the "from_old_id" field.
+func (m *DetailMutation) SetFromOldID(u uuid.UUID) {
+	m.from_old_id = &u
+}
+
+// FromOldID returns the value of the "from_old_id" field in the mutation.
+func (m *DetailMutation) FromOldID() (r uuid.UUID, exists bool) {
+	v := m.from_old_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldFromOldID returns the old "from_old_id" field's value of the Detail entity.
+// If the Detail object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DetailMutation) OldFromOldID(ctx context.Context) (v uuid.UUID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldFromOldID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldFromOldID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldFromOldID: %w", err)
+	}
+	return oldValue.FromOldID, nil
+}
+
+// ClearFromOldID clears the value of the "from_old_id" field.
+func (m *DetailMutation) ClearFromOldID() {
+	m.from_old_id = nil
+	m.clearedFields[detail.FieldFromOldID] = struct{}{}
+}
+
+// FromOldIDCleared returns if the "from_old_id" field was cleared in this mutation.
+func (m *DetailMutation) FromOldIDCleared() bool {
+	_, ok := m.clearedFields[detail.FieldFromOldID]
+	return ok
+}
+
+// ResetFromOldID resets all changes to the "from_old_id" field.
+func (m *DetailMutation) ResetFromOldID() {
+	m.from_old_id = nil
+	delete(m.clearedFields, detail.FieldFromOldID)
+}
+
 // Where appends a list predicates to the DetailMutation builder.
 func (m *DetailMutation) Where(ps ...predicate.Detail) {
 	m.predicates = append(m.predicates, ps...)
@@ -832,7 +882,7 @@ func (m *DetailMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *DetailMutation) Fields() []string {
-	fields := make([]string, 0, 12)
+	fields := make([]string, 0, 13)
 	if m.created_at != nil {
 		fields = append(fields, detail.FieldCreatedAt)
 	}
@@ -869,6 +919,9 @@ func (m *DetailMutation) Fields() []string {
 	if m.io_extra != nil {
 		fields = append(fields, detail.FieldIoExtra)
 	}
+	if m.from_old_id != nil {
+		fields = append(fields, detail.FieldFromOldID)
+	}
 	return fields
 }
 
@@ -901,6 +954,8 @@ func (m *DetailMutation) Field(name string) (ent.Value, bool) {
 		return m.CoinUsdCurrency()
 	case detail.FieldIoExtra:
 		return m.IoExtra()
+	case detail.FieldFromOldID:
+		return m.FromOldID()
 	}
 	return nil, false
 }
@@ -934,6 +989,8 @@ func (m *DetailMutation) OldField(ctx context.Context, name string) (ent.Value, 
 		return m.OldCoinUsdCurrency(ctx)
 	case detail.FieldIoExtra:
 		return m.OldIoExtra(ctx)
+	case detail.FieldFromOldID:
+		return m.OldFromOldID(ctx)
 	}
 	return nil, fmt.Errorf("unknown Detail field %s", name)
 }
@@ -1026,6 +1083,13 @@ func (m *DetailMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetIoExtra(v)
+		return nil
+	case detail.FieldFromOldID:
+		v, ok := value.(uuid.UUID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetFromOldID(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Detail field %s", name)
@@ -1147,6 +1211,9 @@ func (m *DetailMutation) ClearedFields() []string {
 	if m.FieldCleared(detail.FieldIoExtra) {
 		fields = append(fields, detail.FieldIoExtra)
 	}
+	if m.FieldCleared(detail.FieldFromOldID) {
+		fields = append(fields, detail.FieldFromOldID)
+	}
 	return fields
 }
 
@@ -1187,6 +1254,9 @@ func (m *DetailMutation) ClearField(name string) error {
 		return nil
 	case detail.FieldIoExtra:
 		m.ClearIoExtra()
+		return nil
+	case detail.FieldFromOldID:
+		m.ClearFromOldID()
 		return nil
 	}
 	return fmt.Errorf("unknown Detail nullable field %s", name)
@@ -1231,6 +1301,9 @@ func (m *DetailMutation) ResetField(name string) error {
 		return nil
 	case detail.FieldIoExtra:
 		m.ResetIoExtra()
+		return nil
+	case detail.FieldFromOldID:
+		m.ResetFromOldID()
 		return nil
 	}
 	return fmt.Errorf("unknown Detail field %s", name)

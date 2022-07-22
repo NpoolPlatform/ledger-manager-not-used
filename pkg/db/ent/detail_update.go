@@ -277,6 +277,26 @@ func (du *DetailUpdate) ClearIoExtra() *DetailUpdate {
 	return du
 }
 
+// SetFromOldID sets the "from_old_id" field.
+func (du *DetailUpdate) SetFromOldID(u uuid.UUID) *DetailUpdate {
+	du.mutation.SetFromOldID(u)
+	return du
+}
+
+// SetNillableFromOldID sets the "from_old_id" field if the given value is not nil.
+func (du *DetailUpdate) SetNillableFromOldID(u *uuid.UUID) *DetailUpdate {
+	if u != nil {
+		du.SetFromOldID(*u)
+	}
+	return du
+}
+
+// ClearFromOldID clears the value of the "from_old_id" field.
+func (du *DetailUpdate) ClearFromOldID() *DetailUpdate {
+	du.mutation.ClearFromOldID()
+	return du
+}
+
 // Mutation returns the DetailMutation object of the builder.
 func (du *DetailUpdate) Mutation() *DetailMutation {
 	return du.mutation
@@ -540,6 +560,19 @@ func (du *DetailUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Column: detail.FieldIoExtra,
+		})
+	}
+	if value, ok := du.mutation.FromOldID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUUID,
+			Value:  value,
+			Column: detail.FieldFromOldID,
+		})
+	}
+	if du.mutation.FromOldIDCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeUUID,
+			Column: detail.FieldFromOldID,
 		})
 	}
 	if n, err = sqlgraph.UpdateNodes(ctx, du.driver, _spec); err != nil {
@@ -807,6 +840,26 @@ func (duo *DetailUpdateOne) SetNillableIoExtra(s *string) *DetailUpdateOne {
 // ClearIoExtra clears the value of the "io_extra" field.
 func (duo *DetailUpdateOne) ClearIoExtra() *DetailUpdateOne {
 	duo.mutation.ClearIoExtra()
+	return duo
+}
+
+// SetFromOldID sets the "from_old_id" field.
+func (duo *DetailUpdateOne) SetFromOldID(u uuid.UUID) *DetailUpdateOne {
+	duo.mutation.SetFromOldID(u)
+	return duo
+}
+
+// SetNillableFromOldID sets the "from_old_id" field if the given value is not nil.
+func (duo *DetailUpdateOne) SetNillableFromOldID(u *uuid.UUID) *DetailUpdateOne {
+	if u != nil {
+		duo.SetFromOldID(*u)
+	}
+	return duo
+}
+
+// ClearFromOldID clears the value of the "from_old_id" field.
+func (duo *DetailUpdateOne) ClearFromOldID() *DetailUpdateOne {
+	duo.mutation.ClearFromOldID()
 	return duo
 }
 
@@ -1097,6 +1150,19 @@ func (duo *DetailUpdateOne) sqlSave(ctx context.Context) (_node *Detail, err err
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Column: detail.FieldIoExtra,
+		})
+	}
+	if value, ok := duo.mutation.FromOldID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUUID,
+			Value:  value,
+			Column: detail.FieldFromOldID,
+		})
+	}
+	if duo.mutation.FromOldIDCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeUUID,
+			Column: detail.FieldFromOldID,
 		})
 	}
 	_node = &Detail{config: duo.config}

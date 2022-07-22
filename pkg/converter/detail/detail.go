@@ -18,6 +18,7 @@ func Ent2Grpc(row *ent.Detail) *npool.Detail {
 		FromCoinTypeID:  row.FromCoinTypeID.String(),
 		CoinUSDCurrency: price.DBPriceToVisualPrice(row.CoinUsdCurrency),
 		IOExtra:         row.IoExtra,
+		FromOldID:       row.FromOldID.String(),
 	}
 }
 
