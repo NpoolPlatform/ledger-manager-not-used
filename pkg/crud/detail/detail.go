@@ -8,6 +8,7 @@ import (
 	constant "github.com/NpoolPlatform/ledger-manager/pkg/message/const"
 	commontracer "github.com/NpoolPlatform/ledger-manager/pkg/tracer"
 	tracer "github.com/NpoolPlatform/ledger-manager/pkg/tracer/detail"
+	"github.com/shopspring/decimal"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/codes"
 
@@ -16,8 +17,6 @@ import (
 	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/detail"
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 	npool "github.com/NpoolPlatform/message/npool/ledgermgr/detail"
-
-	price "github.com/NpoolPlatform/go-service-framework/pkg/price"
 
 	"github.com/google/uuid"
 )
@@ -39,7 +38,7 @@ func Create(ctx context.Context, in *npool.DetailReq) (*ent.Detail, error) {
 	span = tracer.Trace(span, in)
 
 	err = db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
-		c := cli.Detail.Create()
+		c := cli.Debug().Detail.Create()
 
 		if in.ID != nil {
 			c.SetID(uuid.MustParse(in.GetID()))
@@ -60,13 +59,21 @@ func Create(ctx context.Context, in *npool.DetailReq) (*ent.Detail, error) {
 			c.SetIoSubType(in.GetIOSubType().String())
 		}
 		if in.Amount != nil {
-			c.SetAmount(price.VisualPriceToDBPrice(in.GetAmount()))
+			amount, err := decimal.NewFromString(in.GetAmount())
+			if err != nil {
+				return err
+			}
+			c.SetAmount(amount)
 		}
 		if in.FromCoinTypeID != nil {
 			c.SetFromCoinTypeID(uuid.MustParse(in.GetFromCoinTypeID()))
 		}
 		if in.CoinUSDCurrency != nil {
-			c.SetCoinUsdCurrency(price.VisualPriceToDBPrice(in.GetCoinUSDCurrency()))
+			currency, err := decimal.NewFromString(in.GetCoinUSDCurrency())
+			if err != nil {
+				return err
+			}
+			c.SetCoinUsdCurrency(currency)
 		}
 		if in.IOExtra != nil {
 			c.SetIoExtra(in.GetIOExtra())
@@ -127,13 +134,21 @@ func CreateBulk(ctx context.Context, in []*npool.DetailReq) ([]*ent.Detail, erro
 				bulk[i].SetIoSubType(info.GetIOSubType().String())
 			}
 			if info.Amount != nil {
-				bulk[i].SetAmount(price.VisualPriceToDBPrice(info.GetAmount()))
+				amount, err := decimal.NewFromString(info.GetAmount())
+				if err != nil {
+					return err
+				}
+				bulk[i].SetAmount(amount)
 			}
 			if info.FromCoinTypeID != nil {
 				bulk[i].SetCoinTypeID(uuid.MustParse(info.GetFromCoinTypeID()))
 			}
 			if info.CoinUSDCurrency != nil {
-				bulk[i].SetAmount(price.VisualPriceToDBPrice(info.GetCoinUSDCurrency()))
+				currency, err := decimal.NewFromString(info.GetCoinUSDCurrency())
+				if err != nil {
+					return err
+				}
+				bulk[i].SetCoinUsdCurrency(currency)
 			}
 			if info.IOExtra != nil {
 				bulk[i].SetIoExtra(info.GetIOExtra())
@@ -232,13 +247,17 @@ func setQueryConds(conds *npool.Conds, cli *ent.Client) (*ent.DetailQuery, error
 		}
 	}
 	if conds.Amount != nil {
+		amount, err := decimal.NewFromString(conds.GetAmount().GetValue())
+		if err != nil {
+			return nil, err
+		}
 		switch conds.GetAmount().GetOp() {
 		case cruder.LT:
-			stm.Where(detail.AmountLT(price.VisualPriceToDBPrice(conds.GetAmount().GetValue())))
+			stm.Where(detail.AmountLT(amount))
 		case cruder.GT:
-			stm.Where(detail.AmountGT(price.VisualPriceToDBPrice(conds.GetAmount().GetValue())))
+			stm.Where(detail.AmountGT(amount))
 		case cruder.EQ:
-			stm.Where(detail.AmountEQ(price.VisualPriceToDBPrice(conds.GetAmount().GetValue())))
+			stm.Where(detail.AmountEQ(amount))
 		default:
 			return nil, fmt.Errorf("invalid detail field")
 		}
@@ -252,13 +271,17 @@ func setQueryConds(conds *npool.Conds, cli *ent.Client) (*ent.DetailQuery, error
 		}
 	}
 	if conds.CoinUSDCurrency != nil {
+		currency, err := decimal.NewFromString(conds.GetCoinUSDCurrency().GetValue())
+		if err != nil {
+			return nil, err
+		}
 		switch conds.GetCoinUSDCurrency().GetOp() {
 		case cruder.LT:
-			stm.Where(detail.CoinUsdCurrencyLT(price.VisualPriceToDBPrice(conds.GetCoinUSDCurrency().GetValue())))
+			stm.Where(detail.CoinUsdCurrencyLT(currency))
 		case cruder.GT:
-			stm.Where(detail.CoinUsdCurrencyGT(price.VisualPriceToDBPrice(conds.GetCoinUSDCurrency().GetValue())))
+			stm.Where(detail.CoinUsdCurrencyGT(currency))
 		case cruder.EQ:
-			stm.Where(detail.CoinUsdCurrencyEQ(price.VisualPriceToDBPrice(conds.GetCoinUSDCurrency().GetValue())))
+			stm.Where(detail.CoinUsdCurrencyEQ(currency))
 		default:
 			return nil, fmt.Errorf("invalid detail field")
 		}

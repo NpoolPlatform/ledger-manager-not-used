@@ -2,9 +2,11 @@ package schema
 
 import (
 	"entgo.io/ent"
+	"entgo.io/ent/dialect"
 	"entgo.io/ent/schema/field"
 	"github.com/NpoolPlatform/ledger-manager/pkg/db/mixin"
 	"github.com/google/uuid"
+	"github.com/shopspring/decimal"
 
 	"github.com/NpoolPlatform/message/npool/ledgermgr/detail"
 )
@@ -35,12 +37,21 @@ func (Detail) Fields() []ent.Field {
 		}),
 		field.String("io_type").Optional().Default(detail.IOType_DefaultType.String()),
 		field.String("io_sub_type").Optional().Default(detail.IOSubType_DefaultSubType.String()),
-		field.Uint64("amount").Optional().Default(0),
-		field.Uint32("amount_precision").Optional().Default(6),
+		field.Float("amount").
+			GoType(decimal.Decimal{}).
+			SchemaType(map[string]string{
+				dialect.MySQL: "decimal(37, 18)",
+			}).
+			Optional(),
 		field.UUID("from_coin_type_id", uuid.UUID{}).Optional().Default(func() uuid.UUID {
 			return uuid.UUID{}
 		}),
-		field.Uint64("coin_usd_currency").Optional().Default(0),
+		field.Float("coin_usd_currency").
+			GoType(decimal.Decimal{}).
+			SchemaType(map[string]string{
+				dialect.MySQL: "decimal(37, 18)",
+			}).
+			Optional(),
 		field.String("io_extra").Optional().Default(""),
 		field.UUID("from_old_id", uuid.UUID{}).Optional().Default(func() uuid.UUID {
 			return uuid.UUID{}

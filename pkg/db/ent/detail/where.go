@@ -6,6 +6,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/predicate"
 	"github.com/google/uuid"
+	"github.com/shopspring/decimal"
 )
 
 // ID filters vertices based on their ID field.
@@ -148,16 +149,9 @@ func IoSubType(v string) predicate.Detail {
 }
 
 // Amount applies equality check predicate on the "amount" field. It's identical to AmountEQ.
-func Amount(v uint64) predicate.Detail {
+func Amount(v decimal.Decimal) predicate.Detail {
 	return predicate.Detail(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldAmount), v))
-	})
-}
-
-// AmountPrecision applies equality check predicate on the "amount_precision" field. It's identical to AmountPrecisionEQ.
-func AmountPrecision(v uint32) predicate.Detail {
-	return predicate.Detail(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldAmountPrecision), v))
 	})
 }
 
@@ -169,7 +163,7 @@ func FromCoinTypeID(v uuid.UUID) predicate.Detail {
 }
 
 // CoinUsdCurrency applies equality check predicate on the "coin_usd_currency" field. It's identical to CoinUsdCurrencyEQ.
-func CoinUsdCurrency(v uint64) predicate.Detail {
+func CoinUsdCurrency(v decimal.Decimal) predicate.Detail {
 	return predicate.Detail(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldCoinUsdCurrency), v))
 	})
@@ -938,21 +932,21 @@ func IoSubTypeContainsFold(v string) predicate.Detail {
 }
 
 // AmountEQ applies the EQ predicate on the "amount" field.
-func AmountEQ(v uint64) predicate.Detail {
+func AmountEQ(v decimal.Decimal) predicate.Detail {
 	return predicate.Detail(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldAmount), v))
 	})
 }
 
 // AmountNEQ applies the NEQ predicate on the "amount" field.
-func AmountNEQ(v uint64) predicate.Detail {
+func AmountNEQ(v decimal.Decimal) predicate.Detail {
 	return predicate.Detail(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldAmount), v))
 	})
 }
 
 // AmountIn applies the In predicate on the "amount" field.
-func AmountIn(vs ...uint64) predicate.Detail {
+func AmountIn(vs ...decimal.Decimal) predicate.Detail {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -969,7 +963,7 @@ func AmountIn(vs ...uint64) predicate.Detail {
 }
 
 // AmountNotIn applies the NotIn predicate on the "amount" field.
-func AmountNotIn(vs ...uint64) predicate.Detail {
+func AmountNotIn(vs ...decimal.Decimal) predicate.Detail {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -986,28 +980,28 @@ func AmountNotIn(vs ...uint64) predicate.Detail {
 }
 
 // AmountGT applies the GT predicate on the "amount" field.
-func AmountGT(v uint64) predicate.Detail {
+func AmountGT(v decimal.Decimal) predicate.Detail {
 	return predicate.Detail(func(s *sql.Selector) {
 		s.Where(sql.GT(s.C(FieldAmount), v))
 	})
 }
 
 // AmountGTE applies the GTE predicate on the "amount" field.
-func AmountGTE(v uint64) predicate.Detail {
+func AmountGTE(v decimal.Decimal) predicate.Detail {
 	return predicate.Detail(func(s *sql.Selector) {
 		s.Where(sql.GTE(s.C(FieldAmount), v))
 	})
 }
 
 // AmountLT applies the LT predicate on the "amount" field.
-func AmountLT(v uint64) predicate.Detail {
+func AmountLT(v decimal.Decimal) predicate.Detail {
 	return predicate.Detail(func(s *sql.Selector) {
 		s.Where(sql.LT(s.C(FieldAmount), v))
 	})
 }
 
 // AmountLTE applies the LTE predicate on the "amount" field.
-func AmountLTE(v uint64) predicate.Detail {
+func AmountLTE(v decimal.Decimal) predicate.Detail {
 	return predicate.Detail(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldAmount), v))
 	})
@@ -1024,96 +1018,6 @@ func AmountIsNil() predicate.Detail {
 func AmountNotNil() predicate.Detail {
 	return predicate.Detail(func(s *sql.Selector) {
 		s.Where(sql.NotNull(s.C(FieldAmount)))
-	})
-}
-
-// AmountPrecisionEQ applies the EQ predicate on the "amount_precision" field.
-func AmountPrecisionEQ(v uint32) predicate.Detail {
-	return predicate.Detail(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldAmountPrecision), v))
-	})
-}
-
-// AmountPrecisionNEQ applies the NEQ predicate on the "amount_precision" field.
-func AmountPrecisionNEQ(v uint32) predicate.Detail {
-	return predicate.Detail(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldAmountPrecision), v))
-	})
-}
-
-// AmountPrecisionIn applies the In predicate on the "amount_precision" field.
-func AmountPrecisionIn(vs ...uint32) predicate.Detail {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Detail(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.In(s.C(FieldAmountPrecision), v...))
-	})
-}
-
-// AmountPrecisionNotIn applies the NotIn predicate on the "amount_precision" field.
-func AmountPrecisionNotIn(vs ...uint32) predicate.Detail {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Detail(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.NotIn(s.C(FieldAmountPrecision), v...))
-	})
-}
-
-// AmountPrecisionGT applies the GT predicate on the "amount_precision" field.
-func AmountPrecisionGT(v uint32) predicate.Detail {
-	return predicate.Detail(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldAmountPrecision), v))
-	})
-}
-
-// AmountPrecisionGTE applies the GTE predicate on the "amount_precision" field.
-func AmountPrecisionGTE(v uint32) predicate.Detail {
-	return predicate.Detail(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldAmountPrecision), v))
-	})
-}
-
-// AmountPrecisionLT applies the LT predicate on the "amount_precision" field.
-func AmountPrecisionLT(v uint32) predicate.Detail {
-	return predicate.Detail(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldAmountPrecision), v))
-	})
-}
-
-// AmountPrecisionLTE applies the LTE predicate on the "amount_precision" field.
-func AmountPrecisionLTE(v uint32) predicate.Detail {
-	return predicate.Detail(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldAmountPrecision), v))
-	})
-}
-
-// AmountPrecisionIsNil applies the IsNil predicate on the "amount_precision" field.
-func AmountPrecisionIsNil() predicate.Detail {
-	return predicate.Detail(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldAmountPrecision)))
-	})
-}
-
-// AmountPrecisionNotNil applies the NotNil predicate on the "amount_precision" field.
-func AmountPrecisionNotNil() predicate.Detail {
-	return predicate.Detail(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldAmountPrecision)))
 	})
 }
 
@@ -1208,21 +1112,21 @@ func FromCoinTypeIDNotNil() predicate.Detail {
 }
 
 // CoinUsdCurrencyEQ applies the EQ predicate on the "coin_usd_currency" field.
-func CoinUsdCurrencyEQ(v uint64) predicate.Detail {
+func CoinUsdCurrencyEQ(v decimal.Decimal) predicate.Detail {
 	return predicate.Detail(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldCoinUsdCurrency), v))
 	})
 }
 
 // CoinUsdCurrencyNEQ applies the NEQ predicate on the "coin_usd_currency" field.
-func CoinUsdCurrencyNEQ(v uint64) predicate.Detail {
+func CoinUsdCurrencyNEQ(v decimal.Decimal) predicate.Detail {
 	return predicate.Detail(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldCoinUsdCurrency), v))
 	})
 }
 
 // CoinUsdCurrencyIn applies the In predicate on the "coin_usd_currency" field.
-func CoinUsdCurrencyIn(vs ...uint64) predicate.Detail {
+func CoinUsdCurrencyIn(vs ...decimal.Decimal) predicate.Detail {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -1239,7 +1143,7 @@ func CoinUsdCurrencyIn(vs ...uint64) predicate.Detail {
 }
 
 // CoinUsdCurrencyNotIn applies the NotIn predicate on the "coin_usd_currency" field.
-func CoinUsdCurrencyNotIn(vs ...uint64) predicate.Detail {
+func CoinUsdCurrencyNotIn(vs ...decimal.Decimal) predicate.Detail {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -1256,28 +1160,28 @@ func CoinUsdCurrencyNotIn(vs ...uint64) predicate.Detail {
 }
 
 // CoinUsdCurrencyGT applies the GT predicate on the "coin_usd_currency" field.
-func CoinUsdCurrencyGT(v uint64) predicate.Detail {
+func CoinUsdCurrencyGT(v decimal.Decimal) predicate.Detail {
 	return predicate.Detail(func(s *sql.Selector) {
 		s.Where(sql.GT(s.C(FieldCoinUsdCurrency), v))
 	})
 }
 
 // CoinUsdCurrencyGTE applies the GTE predicate on the "coin_usd_currency" field.
-func CoinUsdCurrencyGTE(v uint64) predicate.Detail {
+func CoinUsdCurrencyGTE(v decimal.Decimal) predicate.Detail {
 	return predicate.Detail(func(s *sql.Selector) {
 		s.Where(sql.GTE(s.C(FieldCoinUsdCurrency), v))
 	})
 }
 
 // CoinUsdCurrencyLT applies the LT predicate on the "coin_usd_currency" field.
-func CoinUsdCurrencyLT(v uint64) predicate.Detail {
+func CoinUsdCurrencyLT(v decimal.Decimal) predicate.Detail {
 	return predicate.Detail(func(s *sql.Selector) {
 		s.Where(sql.LT(s.C(FieldCoinUsdCurrency), v))
 	})
 }
 
 // CoinUsdCurrencyLTE applies the LTE predicate on the "coin_usd_currency" field.
-func CoinUsdCurrencyLTE(v uint64) predicate.Detail {
+func CoinUsdCurrencyLTE(v decimal.Decimal) predicate.Detail {
 	return predicate.Detail(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldCoinUsdCurrency), v))
 	})

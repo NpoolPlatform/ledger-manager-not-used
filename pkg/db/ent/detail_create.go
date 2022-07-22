@@ -13,6 +13,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/detail"
 	"github.com/google/uuid"
+	"github.com/shopspring/decimal"
 )
 
 // DetailCreate is the builder for creating a Detail entity.
@@ -136,29 +137,15 @@ func (dc *DetailCreate) SetNillableIoSubType(s *string) *DetailCreate {
 }
 
 // SetAmount sets the "amount" field.
-func (dc *DetailCreate) SetAmount(u uint64) *DetailCreate {
-	dc.mutation.SetAmount(u)
+func (dc *DetailCreate) SetAmount(d decimal.Decimal) *DetailCreate {
+	dc.mutation.SetAmount(d)
 	return dc
 }
 
 // SetNillableAmount sets the "amount" field if the given value is not nil.
-func (dc *DetailCreate) SetNillableAmount(u *uint64) *DetailCreate {
-	if u != nil {
-		dc.SetAmount(*u)
-	}
-	return dc
-}
-
-// SetAmountPrecision sets the "amount_precision" field.
-func (dc *DetailCreate) SetAmountPrecision(u uint32) *DetailCreate {
-	dc.mutation.SetAmountPrecision(u)
-	return dc
-}
-
-// SetNillableAmountPrecision sets the "amount_precision" field if the given value is not nil.
-func (dc *DetailCreate) SetNillableAmountPrecision(u *uint32) *DetailCreate {
-	if u != nil {
-		dc.SetAmountPrecision(*u)
+func (dc *DetailCreate) SetNillableAmount(d *decimal.Decimal) *DetailCreate {
+	if d != nil {
+		dc.SetAmount(*d)
 	}
 	return dc
 }
@@ -178,15 +165,15 @@ func (dc *DetailCreate) SetNillableFromCoinTypeID(u *uuid.UUID) *DetailCreate {
 }
 
 // SetCoinUsdCurrency sets the "coin_usd_currency" field.
-func (dc *DetailCreate) SetCoinUsdCurrency(u uint64) *DetailCreate {
-	dc.mutation.SetCoinUsdCurrency(u)
+func (dc *DetailCreate) SetCoinUsdCurrency(d decimal.Decimal) *DetailCreate {
+	dc.mutation.SetCoinUsdCurrency(d)
 	return dc
 }
 
 // SetNillableCoinUsdCurrency sets the "coin_usd_currency" field if the given value is not nil.
-func (dc *DetailCreate) SetNillableCoinUsdCurrency(u *uint64) *DetailCreate {
-	if u != nil {
-		dc.SetCoinUsdCurrency(*u)
+func (dc *DetailCreate) SetNillableCoinUsdCurrency(d *decimal.Decimal) *DetailCreate {
+	if d != nil {
+		dc.SetCoinUsdCurrency(*d)
 	}
 	return dc
 }
@@ -356,24 +343,12 @@ func (dc *DetailCreate) defaults() error {
 		v := detail.DefaultIoSubType
 		dc.mutation.SetIoSubType(v)
 	}
-	if _, ok := dc.mutation.Amount(); !ok {
-		v := detail.DefaultAmount
-		dc.mutation.SetAmount(v)
-	}
-	if _, ok := dc.mutation.AmountPrecision(); !ok {
-		v := detail.DefaultAmountPrecision
-		dc.mutation.SetAmountPrecision(v)
-	}
 	if _, ok := dc.mutation.FromCoinTypeID(); !ok {
 		if detail.DefaultFromCoinTypeID == nil {
 			return fmt.Errorf("ent: uninitialized detail.DefaultFromCoinTypeID (forgotten import ent/runtime?)")
 		}
 		v := detail.DefaultFromCoinTypeID()
 		dc.mutation.SetFromCoinTypeID(v)
-	}
-	if _, ok := dc.mutation.CoinUsdCurrency(); !ok {
-		v := detail.DefaultCoinUsdCurrency
-		dc.mutation.SetCoinUsdCurrency(v)
 	}
 	if _, ok := dc.mutation.IoExtra(); !ok {
 		v := detail.DefaultIoExtra
@@ -510,19 +485,11 @@ func (dc *DetailCreate) createSpec() (*Detail, *sqlgraph.CreateSpec) {
 	}
 	if value, ok := dc.mutation.Amount(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint64,
+			Type:   field.TypeFloat64,
 			Value:  value,
 			Column: detail.FieldAmount,
 		})
 		_node.Amount = value
-	}
-	if value, ok := dc.mutation.AmountPrecision(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint32,
-			Value:  value,
-			Column: detail.FieldAmountPrecision,
-		})
-		_node.AmountPrecision = value
 	}
 	if value, ok := dc.mutation.FromCoinTypeID(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -534,7 +501,7 @@ func (dc *DetailCreate) createSpec() (*Detail, *sqlgraph.CreateSpec) {
 	}
 	if value, ok := dc.mutation.CoinUsdCurrency(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint64,
+			Type:   field.TypeFloat64,
 			Value:  value,
 			Column: detail.FieldCoinUsdCurrency,
 		})
@@ -755,7 +722,7 @@ func (u *DetailUpsert) ClearIoSubType() *DetailUpsert {
 }
 
 // SetAmount sets the "amount" field.
-func (u *DetailUpsert) SetAmount(v uint64) *DetailUpsert {
+func (u *DetailUpsert) SetAmount(v decimal.Decimal) *DetailUpsert {
 	u.Set(detail.FieldAmount, v)
 	return u
 }
@@ -767,7 +734,7 @@ func (u *DetailUpsert) UpdateAmount() *DetailUpsert {
 }
 
 // AddAmount adds v to the "amount" field.
-func (u *DetailUpsert) AddAmount(v uint64) *DetailUpsert {
+func (u *DetailUpsert) AddAmount(v decimal.Decimal) *DetailUpsert {
 	u.Add(detail.FieldAmount, v)
 	return u
 }
@@ -775,30 +742,6 @@ func (u *DetailUpsert) AddAmount(v uint64) *DetailUpsert {
 // ClearAmount clears the value of the "amount" field.
 func (u *DetailUpsert) ClearAmount() *DetailUpsert {
 	u.SetNull(detail.FieldAmount)
-	return u
-}
-
-// SetAmountPrecision sets the "amount_precision" field.
-func (u *DetailUpsert) SetAmountPrecision(v uint32) *DetailUpsert {
-	u.Set(detail.FieldAmountPrecision, v)
-	return u
-}
-
-// UpdateAmountPrecision sets the "amount_precision" field to the value that was provided on create.
-func (u *DetailUpsert) UpdateAmountPrecision() *DetailUpsert {
-	u.SetExcluded(detail.FieldAmountPrecision)
-	return u
-}
-
-// AddAmountPrecision adds v to the "amount_precision" field.
-func (u *DetailUpsert) AddAmountPrecision(v uint32) *DetailUpsert {
-	u.Add(detail.FieldAmountPrecision, v)
-	return u
-}
-
-// ClearAmountPrecision clears the value of the "amount_precision" field.
-func (u *DetailUpsert) ClearAmountPrecision() *DetailUpsert {
-	u.SetNull(detail.FieldAmountPrecision)
 	return u
 }
 
@@ -821,7 +764,7 @@ func (u *DetailUpsert) ClearFromCoinTypeID() *DetailUpsert {
 }
 
 // SetCoinUsdCurrency sets the "coin_usd_currency" field.
-func (u *DetailUpsert) SetCoinUsdCurrency(v uint64) *DetailUpsert {
+func (u *DetailUpsert) SetCoinUsdCurrency(v decimal.Decimal) *DetailUpsert {
 	u.Set(detail.FieldCoinUsdCurrency, v)
 	return u
 }
@@ -833,7 +776,7 @@ func (u *DetailUpsert) UpdateCoinUsdCurrency() *DetailUpsert {
 }
 
 // AddCoinUsdCurrency adds v to the "coin_usd_currency" field.
-func (u *DetailUpsert) AddCoinUsdCurrency(v uint64) *DetailUpsert {
+func (u *DetailUpsert) AddCoinUsdCurrency(v decimal.Decimal) *DetailUpsert {
 	u.Add(detail.FieldCoinUsdCurrency, v)
 	return u
 }
@@ -1099,14 +1042,14 @@ func (u *DetailUpsertOne) ClearIoSubType() *DetailUpsertOne {
 }
 
 // SetAmount sets the "amount" field.
-func (u *DetailUpsertOne) SetAmount(v uint64) *DetailUpsertOne {
+func (u *DetailUpsertOne) SetAmount(v decimal.Decimal) *DetailUpsertOne {
 	return u.Update(func(s *DetailUpsert) {
 		s.SetAmount(v)
 	})
 }
 
 // AddAmount adds v to the "amount" field.
-func (u *DetailUpsertOne) AddAmount(v uint64) *DetailUpsertOne {
+func (u *DetailUpsertOne) AddAmount(v decimal.Decimal) *DetailUpsertOne {
 	return u.Update(func(s *DetailUpsert) {
 		s.AddAmount(v)
 	})
@@ -1123,34 +1066,6 @@ func (u *DetailUpsertOne) UpdateAmount() *DetailUpsertOne {
 func (u *DetailUpsertOne) ClearAmount() *DetailUpsertOne {
 	return u.Update(func(s *DetailUpsert) {
 		s.ClearAmount()
-	})
-}
-
-// SetAmountPrecision sets the "amount_precision" field.
-func (u *DetailUpsertOne) SetAmountPrecision(v uint32) *DetailUpsertOne {
-	return u.Update(func(s *DetailUpsert) {
-		s.SetAmountPrecision(v)
-	})
-}
-
-// AddAmountPrecision adds v to the "amount_precision" field.
-func (u *DetailUpsertOne) AddAmountPrecision(v uint32) *DetailUpsertOne {
-	return u.Update(func(s *DetailUpsert) {
-		s.AddAmountPrecision(v)
-	})
-}
-
-// UpdateAmountPrecision sets the "amount_precision" field to the value that was provided on create.
-func (u *DetailUpsertOne) UpdateAmountPrecision() *DetailUpsertOne {
-	return u.Update(func(s *DetailUpsert) {
-		s.UpdateAmountPrecision()
-	})
-}
-
-// ClearAmountPrecision clears the value of the "amount_precision" field.
-func (u *DetailUpsertOne) ClearAmountPrecision() *DetailUpsertOne {
-	return u.Update(func(s *DetailUpsert) {
-		s.ClearAmountPrecision()
 	})
 }
 
@@ -1176,14 +1091,14 @@ func (u *DetailUpsertOne) ClearFromCoinTypeID() *DetailUpsertOne {
 }
 
 // SetCoinUsdCurrency sets the "coin_usd_currency" field.
-func (u *DetailUpsertOne) SetCoinUsdCurrency(v uint64) *DetailUpsertOne {
+func (u *DetailUpsertOne) SetCoinUsdCurrency(v decimal.Decimal) *DetailUpsertOne {
 	return u.Update(func(s *DetailUpsert) {
 		s.SetCoinUsdCurrency(v)
 	})
 }
 
 // AddCoinUsdCurrency adds v to the "coin_usd_currency" field.
-func (u *DetailUpsertOne) AddCoinUsdCurrency(v uint64) *DetailUpsertOne {
+func (u *DetailUpsertOne) AddCoinUsdCurrency(v decimal.Decimal) *DetailUpsertOne {
 	return u.Update(func(s *DetailUpsert) {
 		s.AddCoinUsdCurrency(v)
 	})
@@ -1630,14 +1545,14 @@ func (u *DetailUpsertBulk) ClearIoSubType() *DetailUpsertBulk {
 }
 
 // SetAmount sets the "amount" field.
-func (u *DetailUpsertBulk) SetAmount(v uint64) *DetailUpsertBulk {
+func (u *DetailUpsertBulk) SetAmount(v decimal.Decimal) *DetailUpsertBulk {
 	return u.Update(func(s *DetailUpsert) {
 		s.SetAmount(v)
 	})
 }
 
 // AddAmount adds v to the "amount" field.
-func (u *DetailUpsertBulk) AddAmount(v uint64) *DetailUpsertBulk {
+func (u *DetailUpsertBulk) AddAmount(v decimal.Decimal) *DetailUpsertBulk {
 	return u.Update(func(s *DetailUpsert) {
 		s.AddAmount(v)
 	})
@@ -1654,34 +1569,6 @@ func (u *DetailUpsertBulk) UpdateAmount() *DetailUpsertBulk {
 func (u *DetailUpsertBulk) ClearAmount() *DetailUpsertBulk {
 	return u.Update(func(s *DetailUpsert) {
 		s.ClearAmount()
-	})
-}
-
-// SetAmountPrecision sets the "amount_precision" field.
-func (u *DetailUpsertBulk) SetAmountPrecision(v uint32) *DetailUpsertBulk {
-	return u.Update(func(s *DetailUpsert) {
-		s.SetAmountPrecision(v)
-	})
-}
-
-// AddAmountPrecision adds v to the "amount_precision" field.
-func (u *DetailUpsertBulk) AddAmountPrecision(v uint32) *DetailUpsertBulk {
-	return u.Update(func(s *DetailUpsert) {
-		s.AddAmountPrecision(v)
-	})
-}
-
-// UpdateAmountPrecision sets the "amount_precision" field to the value that was provided on create.
-func (u *DetailUpsertBulk) UpdateAmountPrecision() *DetailUpsertBulk {
-	return u.Update(func(s *DetailUpsert) {
-		s.UpdateAmountPrecision()
-	})
-}
-
-// ClearAmountPrecision clears the value of the "amount_precision" field.
-func (u *DetailUpsertBulk) ClearAmountPrecision() *DetailUpsertBulk {
-	return u.Update(func(s *DetailUpsert) {
-		s.ClearAmountPrecision()
 	})
 }
 
@@ -1707,14 +1594,14 @@ func (u *DetailUpsertBulk) ClearFromCoinTypeID() *DetailUpsertBulk {
 }
 
 // SetCoinUsdCurrency sets the "coin_usd_currency" field.
-func (u *DetailUpsertBulk) SetCoinUsdCurrency(v uint64) *DetailUpsertBulk {
+func (u *DetailUpsertBulk) SetCoinUsdCurrency(v decimal.Decimal) *DetailUpsertBulk {
 	return u.Update(func(s *DetailUpsert) {
 		s.SetCoinUsdCurrency(v)
 	})
 }
 
 // AddCoinUsdCurrency adds v to the "coin_usd_currency" field.
-func (u *DetailUpsertBulk) AddCoinUsdCurrency(v uint64) *DetailUpsertBulk {
+func (u *DetailUpsertBulk) AddCoinUsdCurrency(v decimal.Decimal) *DetailUpsertBulk {
 	return u.Update(func(s *DetailUpsert) {
 		s.AddCoinUsdCurrency(v)
 	})

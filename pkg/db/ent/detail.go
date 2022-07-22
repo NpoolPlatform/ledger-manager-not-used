@@ -9,6 +9,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/detail"
 	"github.com/google/uuid"
+	"github.com/shopspring/decimal"
 )
 
 // Detail is the model entity for the Detail schema.
@@ -33,13 +34,11 @@ type Detail struct {
 	// IoSubType holds the value of the "io_sub_type" field.
 	IoSubType string `json:"io_sub_type,omitempty"`
 	// Amount holds the value of the "amount" field.
-	Amount uint64 `json:"amount,omitempty"`
-	// AmountPrecision holds the value of the "amount_precision" field.
-	AmountPrecision uint32 `json:"amount_precision,omitempty"`
+	Amount decimal.Decimal `json:"amount,omitempty"`
 	// FromCoinTypeID holds the value of the "from_coin_type_id" field.
 	FromCoinTypeID uuid.UUID `json:"from_coin_type_id,omitempty"`
 	// CoinUsdCurrency holds the value of the "coin_usd_currency" field.
-	CoinUsdCurrency uint64 `json:"coin_usd_currency,omitempty"`
+	CoinUsdCurrency decimal.Decimal `json:"coin_usd_currency,omitempty"`
 	// IoExtra holds the value of the "io_extra" field.
 	IoExtra string `json:"io_extra,omitempty"`
 	// FromOldID holds the value of the "from_old_id" field.
@@ -51,7 +50,9 @@ func (*Detail) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case detail.FieldCreatedAt, detail.FieldUpdatedAt, detail.FieldDeletedAt, detail.FieldAmount, detail.FieldAmountPrecision, detail.FieldCoinUsdCurrency:
+		case detail.FieldAmount, detail.FieldCoinUsdCurrency:
+			values[i] = new(decimal.Decimal)
+		case detail.FieldCreatedAt, detail.FieldUpdatedAt, detail.FieldDeletedAt:
 			values[i] = new(sql.NullInt64)
 		case detail.FieldIoType, detail.FieldIoSubType, detail.FieldIoExtra:
 			values[i] = new(sql.NullString)
@@ -127,16 +128,10 @@ func (d *Detail) assignValues(columns []string, values []interface{}) error {
 				d.IoSubType = value.String
 			}
 		case detail.FieldAmount:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
+			if value, ok := values[i].(*decimal.Decimal); !ok {
 				return fmt.Errorf("unexpected type %T for field amount", values[i])
-			} else if value.Valid {
-				d.Amount = uint64(value.Int64)
-			}
-		case detail.FieldAmountPrecision:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field amount_precision", values[i])
-			} else if value.Valid {
-				d.AmountPrecision = uint32(value.Int64)
+			} else if value != nil {
+				d.Amount = *value
 			}
 		case detail.FieldFromCoinTypeID:
 			if value, ok := values[i].(*uuid.UUID); !ok {
@@ -145,10 +140,10 @@ func (d *Detail) assignValues(columns []string, values []interface{}) error {
 				d.FromCoinTypeID = *value
 			}
 		case detail.FieldCoinUsdCurrency:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
+			if value, ok := values[i].(*decimal.Decimal); !ok {
 				return fmt.Errorf("unexpected type %T for field coin_usd_currency", values[i])
-			} else if value.Valid {
-				d.CoinUsdCurrency = uint64(value.Int64)
+			} else if value != nil {
+				d.CoinUsdCurrency = *value
 			}
 		case detail.FieldIoExtra:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -208,8 +203,6 @@ func (d *Detail) String() string {
 	builder.WriteString(d.IoSubType)
 	builder.WriteString(", amount=")
 	builder.WriteString(fmt.Sprintf("%v", d.Amount))
-	builder.WriteString(", amount_precision=")
-	builder.WriteString(fmt.Sprintf("%v", d.AmountPrecision))
 	builder.WriteString(", from_coin_type_id=")
 	builder.WriteString(fmt.Sprintf("%v", d.FromCoinTypeID))
 	builder.WriteString(", coin_usd_currency=")

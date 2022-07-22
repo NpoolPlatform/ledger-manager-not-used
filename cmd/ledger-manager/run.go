@@ -24,7 +24,7 @@ var runCmd = &cli.Command{
 	Aliases: []string{"s"},
 	Usage:   "Run the daemon",
 	Action: func(c *cli.Context) error {
-		if err := migrator.Migrate(); err != nil {
+		if err := migrator.Migrate(c.Context); err != nil {
 			return err
 		}
 

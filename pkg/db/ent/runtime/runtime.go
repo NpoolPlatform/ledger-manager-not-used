@@ -66,28 +66,16 @@ func init() {
 	detailDescIoSubType := detailFields[5].Descriptor()
 	// detail.DefaultIoSubType holds the default value on creation for the io_sub_type field.
 	detail.DefaultIoSubType = detailDescIoSubType.Default.(string)
-	// detailDescAmount is the schema descriptor for amount field.
-	detailDescAmount := detailFields[6].Descriptor()
-	// detail.DefaultAmount holds the default value on creation for the amount field.
-	detail.DefaultAmount = detailDescAmount.Default.(uint64)
-	// detailDescAmountPrecision is the schema descriptor for amount_precision field.
-	detailDescAmountPrecision := detailFields[7].Descriptor()
-	// detail.DefaultAmountPrecision holds the default value on creation for the amount_precision field.
-	detail.DefaultAmountPrecision = detailDescAmountPrecision.Default.(uint32)
 	// detailDescFromCoinTypeID is the schema descriptor for from_coin_type_id field.
-	detailDescFromCoinTypeID := detailFields[8].Descriptor()
+	detailDescFromCoinTypeID := detailFields[7].Descriptor()
 	// detail.DefaultFromCoinTypeID holds the default value on creation for the from_coin_type_id field.
 	detail.DefaultFromCoinTypeID = detailDescFromCoinTypeID.Default.(func() uuid.UUID)
-	// detailDescCoinUsdCurrency is the schema descriptor for coin_usd_currency field.
-	detailDescCoinUsdCurrency := detailFields[9].Descriptor()
-	// detail.DefaultCoinUsdCurrency holds the default value on creation for the coin_usd_currency field.
-	detail.DefaultCoinUsdCurrency = detailDescCoinUsdCurrency.Default.(uint64)
 	// detailDescIoExtra is the schema descriptor for io_extra field.
-	detailDescIoExtra := detailFields[10].Descriptor()
+	detailDescIoExtra := detailFields[9].Descriptor()
 	// detail.DefaultIoExtra holds the default value on creation for the io_extra field.
 	detail.DefaultIoExtra = detailDescIoExtra.Default.(string)
 	// detailDescFromOldID is the schema descriptor for from_old_id field.
-	detailDescFromOldID := detailFields[11].Descriptor()
+	detailDescFromOldID := detailFields[10].Descriptor()
 	// detail.DefaultFromOldID holds the default value on creation for the from_old_id field.
 	detail.DefaultFromOldID = detailDescFromOldID.Default.(func() uuid.UUID)
 	// detailDescID is the schema descriptor for id field.
@@ -134,26 +122,6 @@ func init() {
 	generalDescCoinTypeID := generalFields[3].Descriptor()
 	// general.DefaultCoinTypeID holds the default value on creation for the coin_type_id field.
 	general.DefaultCoinTypeID = generalDescCoinTypeID.Default.(func() uuid.UUID)
-	// generalDescIncoming is the schema descriptor for incoming field.
-	generalDescIncoming := generalFields[4].Descriptor()
-	// general.DefaultIncoming holds the default value on creation for the incoming field.
-	general.DefaultIncoming = generalDescIncoming.Default.(uint64)
-	// generalDescLocked is the schema descriptor for locked field.
-	generalDescLocked := generalFields[5].Descriptor()
-	// general.DefaultLocked holds the default value on creation for the locked field.
-	general.DefaultLocked = generalDescLocked.Default.(uint64)
-	// generalDescOutcoming is the schema descriptor for outcoming field.
-	generalDescOutcoming := generalFields[6].Descriptor()
-	// general.DefaultOutcoming holds the default value on creation for the outcoming field.
-	general.DefaultOutcoming = generalDescOutcoming.Default.(uint64)
-	// generalDescSpendable is the schema descriptor for spendable field.
-	generalDescSpendable := generalFields[7].Descriptor()
-	// general.DefaultSpendable holds the default value on creation for the spendable field.
-	general.DefaultSpendable = generalDescSpendable.Default.(uint64)
-	// generalDescPrecision is the schema descriptor for precision field.
-	generalDescPrecision := generalFields[8].Descriptor()
-	// general.DefaultPrecision holds the default value on creation for the precision field.
-	general.DefaultPrecision = generalDescPrecision.Default.(uint32)
 	// generalDescID is the schema descriptor for id field.
 	generalDescID := generalFields[0].Descriptor()
 	// general.DefaultID holds the default value on creation for the id field.

@@ -15,10 +15,10 @@ func trace(span trace1.Span, in *npool.GeneralReq, index int) trace1.Span {
 		attribute.String(fmt.Sprintf("AppID.%v", index), in.GetAppID()),
 		attribute.String(fmt.Sprintf("UserID.%v", index), in.GetUserID()),
 		attribute.String(fmt.Sprintf("CoinTypeID.%v", index), in.GetCoinTypeID()),
-		attribute.Float64(fmt.Sprintf("Incoming.%v", index), in.GetIncoming()),
-		attribute.Float64(fmt.Sprintf("Locked.%v", index), in.GetLocked()),
-		attribute.Float64(fmt.Sprintf("Outcoming.%v", index), in.GetOutcoming()),
-		attribute.Float64(fmt.Sprintf("Spendable.%v", index), in.GetSpendable()),
+		attribute.String(fmt.Sprintf("Incoming.%v", index), in.GetIncoming()),
+		attribute.String(fmt.Sprintf("Locked.%v", index), in.GetLocked()),
+		attribute.String(fmt.Sprintf("Outcoming.%v", index), in.GetOutcoming()),
+		attribute.String(fmt.Sprintf("Spendable.%v", index), in.GetSpendable()),
 	)
 	return span
 }
@@ -38,13 +38,13 @@ func TraceConds(span trace1.Span, in *npool.Conds) trace1.Span {
 		attribute.String("CoinTypeID.Op", in.GetCoinTypeID().GetOp()),
 		attribute.String("CoinTypeID.Value", in.GetCoinTypeID().GetValue()),
 		attribute.String("Incoming.Op", in.GetIncoming().GetOp()),
-		attribute.Float64("Incoming.Value", in.GetIncoming().GetValue()),
+		attribute.String("Incoming.Value", in.GetIncoming().GetValue()),
 		attribute.String("Locked.Op", in.GetLocked().GetOp()),
-		attribute.Float64("Locked.Value", in.GetLocked().GetValue()),
+		attribute.String("Locked.Value", in.GetLocked().GetValue()),
 		attribute.String("Outcoming.Op", in.GetOutcoming().GetOp()),
-		attribute.Float64("Outcoming.Value", in.GetOutcoming().GetValue()),
+		attribute.String("Outcoming.Value", in.GetOutcoming().GetValue()),
 		attribute.String("Spendable.Op", in.GetSpendable().GetOp()),
-		attribute.Float64("Spendable.Value", in.GetSpendable().GetValue()),
+		attribute.String("Spendable.Value", in.GetSpendable().GetValue()),
 	)
 	return span
 }

@@ -3,6 +3,7 @@ package detail
 import (
 	"fmt"
 
+	"github.com/shopspring/decimal"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
@@ -50,14 +51,28 @@ func validate(info *npool.DetailReq) error { //nolint
 		}
 	}
 
-	if info.Amount != nil && info.GetAmount() < 0 {
-		logger.Sugar().Error("Amount is less than 0")
-		return status.Error(codes.InvalidArgument, "Amount is less than 0")
+	if info.Amount != nil {
+		amount, err := decimal.NewFromString(info.GetAmount())
+		if err != nil {
+			logger.Sugar().Error("Amount is invalid")
+			return status.Error(codes.InvalidArgument, fmt.Sprintf("Amount is invalid: %v", err))
+		}
+		if amount.Cmp(decimal.NewFromInt(0)) < 0 {
+			logger.Sugar().Error("Amount is less than 0")
+			return status.Error(codes.InvalidArgument, "Amount is less than 0")
+		}
 	}
 
-	if info.CoinUSDCurrency != nil && info.GetCoinUSDCurrency() < 0 {
-		logger.Sugar().Error("CoinUSDCurrency is less than 0")
-		return status.Error(codes.InvalidArgument, "CoinUSDCurrency is less than 0")
+	if info.CoinUSDCurrency != nil {
+		currency, err := decimal.NewFromString(info.GetCoinUSDCurrency())
+		if err != nil {
+			logger.Sugar().Error("CoinUSDCurrency is invalid")
+			return status.Error(codes.InvalidArgument, fmt.Sprintf("CoinUSDCurrency is invalid: %v", err))
+		}
+		if currency.Cmp(decimal.NewFromInt(0)) < 0 {
+			logger.Sugar().Error("CoinUSDCurrency is less than 0")
+			return status.Error(codes.InvalidArgument, "CoinUSDCurrency is less than 0")
+		}
 	}
 
 	if info.IOType == nil {

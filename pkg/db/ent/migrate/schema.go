@@ -19,10 +19,9 @@ var (
 		{Name: "coin_type_id", Type: field.TypeUUID, Nullable: true},
 		{Name: "io_type", Type: field.TypeString, Nullable: true, Default: "DefaultType"},
 		{Name: "io_sub_type", Type: field.TypeString, Nullable: true, Default: "DefaultSubType"},
-		{Name: "amount", Type: field.TypeUint64, Nullable: true, Default: 0},
-		{Name: "amount_precision", Type: field.TypeUint32, Nullable: true, Default: 6},
+		{Name: "amount", Type: field.TypeFloat64, Nullable: true, SchemaType: map[string]string{"mysql": "decimal(37, 18)"}},
 		{Name: "from_coin_type_id", Type: field.TypeUUID, Nullable: true},
-		{Name: "coin_usd_currency", Type: field.TypeUint64, Nullable: true, Default: 0},
+		{Name: "coin_usd_currency", Type: field.TypeFloat64, Nullable: true, SchemaType: map[string]string{"mysql": "decimal(37, 18)"}},
 		{Name: "io_extra", Type: field.TypeString, Nullable: true, Default: ""},
 		{Name: "from_old_id", Type: field.TypeUUID, Nullable: true},
 	}
@@ -41,11 +40,10 @@ var (
 		{Name: "app_id", Type: field.TypeUUID, Nullable: true},
 		{Name: "user_id", Type: field.TypeUUID, Nullable: true},
 		{Name: "coin_type_id", Type: field.TypeUUID, Nullable: true},
-		{Name: "incoming", Type: field.TypeUint64, Nullable: true, Default: 0},
-		{Name: "locked", Type: field.TypeUint64, Nullable: true, Default: 0},
-		{Name: "outcoming", Type: field.TypeUint64, Nullable: true, Default: 0},
-		{Name: "spendable", Type: field.TypeUint64, Nullable: true, Default: 0},
-		{Name: "precision", Type: field.TypeUint32, Nullable: true, Default: 6},
+		{Name: "incoming", Type: field.TypeFloat64, Nullable: true, SchemaType: map[string]string{"mysql": "decimal(37, 18)"}},
+		{Name: "locked", Type: field.TypeFloat64, Nullable: true, SchemaType: map[string]string{"mysql": "decimal(37, 18)"}},
+		{Name: "outcoming", Type: field.TypeFloat64, Nullable: true, SchemaType: map[string]string{"mysql": "decimal(37, 18)"}},
+		{Name: "spendable", Type: field.TypeFloat64, Nullable: true, SchemaType: map[string]string{"mysql": "decimal(37, 18)"}},
 	}
 	// GeneralsTable holds the schema information for the "generals" table.
 	GeneralsTable = &schema.Table{

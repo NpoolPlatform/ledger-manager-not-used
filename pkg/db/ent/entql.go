@@ -34,10 +34,9 @@ var schemaGraph = func() *sqlgraph.Schema {
 			detail.FieldCoinTypeID:      {Type: field.TypeUUID, Column: detail.FieldCoinTypeID},
 			detail.FieldIoType:          {Type: field.TypeString, Column: detail.FieldIoType},
 			detail.FieldIoSubType:       {Type: field.TypeString, Column: detail.FieldIoSubType},
-			detail.FieldAmount:          {Type: field.TypeUint64, Column: detail.FieldAmount},
-			detail.FieldAmountPrecision: {Type: field.TypeUint32, Column: detail.FieldAmountPrecision},
+			detail.FieldAmount:          {Type: field.TypeFloat64, Column: detail.FieldAmount},
 			detail.FieldFromCoinTypeID:  {Type: field.TypeUUID, Column: detail.FieldFromCoinTypeID},
-			detail.FieldCoinUsdCurrency: {Type: field.TypeUint64, Column: detail.FieldCoinUsdCurrency},
+			detail.FieldCoinUsdCurrency: {Type: field.TypeFloat64, Column: detail.FieldCoinUsdCurrency},
 			detail.FieldIoExtra:         {Type: field.TypeString, Column: detail.FieldIoExtra},
 			detail.FieldFromOldID:       {Type: field.TypeUUID, Column: detail.FieldFromOldID},
 		},
@@ -59,11 +58,10 @@ var schemaGraph = func() *sqlgraph.Schema {
 			general.FieldAppID:      {Type: field.TypeUUID, Column: general.FieldAppID},
 			general.FieldUserID:     {Type: field.TypeUUID, Column: general.FieldUserID},
 			general.FieldCoinTypeID: {Type: field.TypeUUID, Column: general.FieldCoinTypeID},
-			general.FieldIncoming:   {Type: field.TypeUint64, Column: general.FieldIncoming},
-			general.FieldLocked:     {Type: field.TypeUint64, Column: general.FieldLocked},
-			general.FieldOutcoming:  {Type: field.TypeUint64, Column: general.FieldOutcoming},
-			general.FieldSpendable:  {Type: field.TypeUint64, Column: general.FieldSpendable},
-			general.FieldPrecision:  {Type: field.TypeUint32, Column: general.FieldPrecision},
+			general.FieldIncoming:   {Type: field.TypeFloat64, Column: general.FieldIncoming},
+			general.FieldLocked:     {Type: field.TypeFloat64, Column: general.FieldLocked},
+			general.FieldOutcoming:  {Type: field.TypeFloat64, Column: general.FieldOutcoming},
+			general.FieldSpendable:  {Type: field.TypeFloat64, Column: general.FieldSpendable},
 		},
 	}
 	return graph
@@ -154,14 +152,9 @@ func (f *DetailFilter) WhereIoSubType(p entql.StringP) {
 	f.Where(p.Field(detail.FieldIoSubType))
 }
 
-// WhereAmount applies the entql uint64 predicate on the amount field.
-func (f *DetailFilter) WhereAmount(p entql.Uint64P) {
+// WhereAmount applies the entql float64 predicate on the amount field.
+func (f *DetailFilter) WhereAmount(p entql.Float64P) {
 	f.Where(p.Field(detail.FieldAmount))
-}
-
-// WhereAmountPrecision applies the entql uint32 predicate on the amount_precision field.
-func (f *DetailFilter) WhereAmountPrecision(p entql.Uint32P) {
-	f.Where(p.Field(detail.FieldAmountPrecision))
 }
 
 // WhereFromCoinTypeID applies the entql [16]byte predicate on the from_coin_type_id field.
@@ -169,8 +162,8 @@ func (f *DetailFilter) WhereFromCoinTypeID(p entql.ValueP) {
 	f.Where(p.Field(detail.FieldFromCoinTypeID))
 }
 
-// WhereCoinUsdCurrency applies the entql uint64 predicate on the coin_usd_currency field.
-func (f *DetailFilter) WhereCoinUsdCurrency(p entql.Uint64P) {
+// WhereCoinUsdCurrency applies the entql float64 predicate on the coin_usd_currency field.
+func (f *DetailFilter) WhereCoinUsdCurrency(p entql.Float64P) {
 	f.Where(p.Field(detail.FieldCoinUsdCurrency))
 }
 
@@ -253,27 +246,22 @@ func (f *GeneralFilter) WhereCoinTypeID(p entql.ValueP) {
 	f.Where(p.Field(general.FieldCoinTypeID))
 }
 
-// WhereIncoming applies the entql uint64 predicate on the incoming field.
-func (f *GeneralFilter) WhereIncoming(p entql.Uint64P) {
+// WhereIncoming applies the entql float64 predicate on the incoming field.
+func (f *GeneralFilter) WhereIncoming(p entql.Float64P) {
 	f.Where(p.Field(general.FieldIncoming))
 }
 
-// WhereLocked applies the entql uint64 predicate on the locked field.
-func (f *GeneralFilter) WhereLocked(p entql.Uint64P) {
+// WhereLocked applies the entql float64 predicate on the locked field.
+func (f *GeneralFilter) WhereLocked(p entql.Float64P) {
 	f.Where(p.Field(general.FieldLocked))
 }
 
-// WhereOutcoming applies the entql uint64 predicate on the outcoming field.
-func (f *GeneralFilter) WhereOutcoming(p entql.Uint64P) {
+// WhereOutcoming applies the entql float64 predicate on the outcoming field.
+func (f *GeneralFilter) WhereOutcoming(p entql.Float64P) {
 	f.Where(p.Field(general.FieldOutcoming))
 }
 
-// WhereSpendable applies the entql uint64 predicate on the spendable field.
-func (f *GeneralFilter) WhereSpendable(p entql.Uint64P) {
+// WhereSpendable applies the entql float64 predicate on the spendable field.
+func (f *GeneralFilter) WhereSpendable(p entql.Float64P) {
 	f.Where(p.Field(general.FieldSpendable))
-}
-
-// WherePrecision applies the entql uint32 predicate on the precision field.
-func (f *GeneralFilter) WherePrecision(p entql.Uint32P) {
-	f.Where(p.Field(general.FieldPrecision))
 }

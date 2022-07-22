@@ -7,8 +7,8 @@ import (
 	"strconv"
 	"testing"
 
-	price "github.com/NpoolPlatform/go-service-framework/pkg/price"
 	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent"
+	"github.com/shopspring/decimal"
 
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 
@@ -34,10 +34,10 @@ var entity = ent.General{
 	AppID:      uuid.New(),
 	UserID:     uuid.New(),
 	CoinTypeID: uuid.New(),
-	// Incoming:   10.0,
-	// Locked:     10.0,
-	// Outcoming:  10.0,
-	// Spendable:  10.0,
+	Incoming:   decimal.NewFromInt(0),
+	Locked:     decimal.NewFromInt(0),
+	Outcoming:  decimal.NewFromInt(0),
+	Spendable:  decimal.NewFromInt(0),
 }
 
 var (
@@ -45,10 +45,10 @@ var (
 	appID      = entity.AppID.String()
 	userID     = entity.UserID.String()
 	coinTypeID = entity.CoinTypeID.String()
-	incoming   = float64(entity.Incoming)
-	locked     = float64(entity.Locked)
-	outcoming  = float64(entity.Outcoming)
-	spendable  = float64(entity.Spendable)
+	incoming   = entity.Incoming.String()
+	locked     = entity.Locked.String()
+	outcoming  = entity.Outcoming.String()
+	spendable  = entity.Spendable.String()
 
 	req = npool.GeneralReq{
 		ID:         &id,
@@ -81,20 +81,20 @@ func createBulk(t *testing.T) {
 			AppID:      uuid.New(),
 			UserID:     uuid.New(),
 			CoinTypeID: uuid.New(),
-			// Incoming:   10.0,
-			// Locked:     10.0,
-			// Outcoming:  10.0,
-			// Spendable:  10.0,
+			Incoming:   decimal.NewFromInt(0),
+			Locked:     decimal.NewFromInt(0),
+			Outcoming:  decimal.NewFromInt(0),
+			Spendable:  decimal.NewFromInt(0),
 		},
 		{
 			ID:         uuid.New(),
 			AppID:      uuid.New(),
 			UserID:     uuid.New(),
 			CoinTypeID: uuid.New(),
-			// Incoming:   10.0,
-			// Locked:     10.0,
-			// Outcoming:  10.0,
-			// Spendable:  10.0,
+			Incoming:   decimal.NewFromInt(0),
+			Locked:     decimal.NewFromInt(0),
+			Outcoming:  decimal.NewFromInt(0),
+			Spendable:  decimal.NewFromInt(0),
 		},
 	}
 
@@ -104,10 +104,10 @@ func createBulk(t *testing.T) {
 		_appID := _entity.AppID.String()
 		_userID := _entity.UserID.String()
 		_coinTypeID := _entity.CoinTypeID.String()
-		_incoming := float64(_entity.Incoming)
-		_locked := float64(_entity.Locked)
-		_outcoming := float64(_entity.Outcoming)
-		_spendable := float64(_entity.Spendable)
+		_incoming := _entity.Incoming.String()
+		_locked := _entity.Locked.String()
+		_outcoming := _entity.Outcoming.String()
+		_spendable := _entity.Spendable.String()
 
 		reqs = append(reqs, &npool.GeneralReq{
 			ID:         &_id,
@@ -127,20 +127,20 @@ func createBulk(t *testing.T) {
 }
 
 func add(t *testing.T) {
-	incoming += 30
-	locked += 10
-	outcoming += 10
-	spendable += 10
+	incoming = "30"
+	locked = "10"
+	outcoming = "10"
+	spendable = "10"
 
 	req.Incoming = &incoming
 	req.Locked = &locked
 	req.Outcoming = &outcoming
 	req.Spendable = &spendable
 
-	entity.Incoming = price.VisualPriceToDBPrice(incoming)
-	entity.Locked = price.VisualPriceToDBPrice(locked)
-	entity.Outcoming = price.VisualPriceToDBPrice(outcoming)
-	entity.Spendable = price.VisualPriceToDBPrice(spendable)
+	entity.Incoming, _ = decimal.NewFromString(incoming)
+	entity.Locked, _ = decimal.NewFromString(locked)
+	entity.Outcoming, _ = decimal.NewFromString(outcoming)
+	entity.Spendable, _ = decimal.NewFromString(spendable)
 
 	info, err := AddFields(context.Background(), &req)
 	if assert.Nil(t, err) {

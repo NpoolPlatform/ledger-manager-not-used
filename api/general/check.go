@@ -3,6 +3,7 @@ package general
 import (
 	"fmt"
 
+	"github.com/shopspring/decimal"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
@@ -43,14 +44,28 @@ func validate(info *npool.GeneralReq) error {
 		return status.Error(codes.InvalidArgument, fmt.Sprintf("CoinTypeID is invalid: %v", err))
 	}
 
-	if info.Incoming != nil && info.GetIncoming() < 0 {
-		logger.Sugar().Error("Incoming is less than 0")
-		return status.Error(codes.InvalidArgument, "Incoming is less than 0")
+	if info.Incoming != nil {
+		incoming, err := decimal.NewFromString(info.GetIncoming())
+		if err != nil {
+			logger.Sugar().Error("Incoming is invalid")
+			return status.Error(codes.InvalidArgument, fmt.Sprintf("Incoming is invalid: %v", err))
+		}
+		if incoming.Cmp(decimal.NewFromInt(0)) < 0 {
+			logger.Sugar().Error("Incoming is less than 0")
+			return status.Error(codes.InvalidArgument, "Incoming is less than 0")
+		}
 	}
 
-	if info.Outcoming != nil && info.GetOutcoming() < 0 {
-		logger.Sugar().Error("Outcoming is less than 0")
-		return status.Error(codes.InvalidArgument, "Outcoming is less than 0")
+	if info.Outcoming != nil {
+		outcoming, err := decimal.NewFromString(info.GetOutcoming())
+		if err != nil {
+			logger.Sugar().Error("Outcoming is invalid")
+			return status.Error(codes.InvalidArgument, fmt.Sprintf("Outcoming is invalid: %v", err))
+		}
+		if outcoming.Cmp(decimal.NewFromInt(0)) < 0 {
+			logger.Sugar().Error("Outcoming is less than 0")
+			return status.Error(codes.InvalidArgument, "Outcoming is less than 0")
+		}
 	}
 
 	return nil

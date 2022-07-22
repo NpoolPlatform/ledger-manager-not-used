@@ -6,6 +6,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/predicate"
 	"github.com/google/uuid"
+	"github.com/shopspring/decimal"
 )
 
 // ID filters vertices based on their ID field.
@@ -134,37 +135,30 @@ func CoinTypeID(v uuid.UUID) predicate.General {
 }
 
 // Incoming applies equality check predicate on the "incoming" field. It's identical to IncomingEQ.
-func Incoming(v uint64) predicate.General {
+func Incoming(v decimal.Decimal) predicate.General {
 	return predicate.General(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldIncoming), v))
 	})
 }
 
 // Locked applies equality check predicate on the "locked" field. It's identical to LockedEQ.
-func Locked(v uint64) predicate.General {
+func Locked(v decimal.Decimal) predicate.General {
 	return predicate.General(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldLocked), v))
 	})
 }
 
 // Outcoming applies equality check predicate on the "outcoming" field. It's identical to OutcomingEQ.
-func Outcoming(v uint64) predicate.General {
+func Outcoming(v decimal.Decimal) predicate.General {
 	return predicate.General(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldOutcoming), v))
 	})
 }
 
 // Spendable applies equality check predicate on the "spendable" field. It's identical to SpendableEQ.
-func Spendable(v uint64) predicate.General {
+func Spendable(v decimal.Decimal) predicate.General {
 	return predicate.General(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldSpendable), v))
-	})
-}
-
-// Precision applies equality check predicate on the "precision" field. It's identical to PrecisionEQ.
-func Precision(v uint32) predicate.General {
-	return predicate.General(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldPrecision), v))
 	})
 }
 
@@ -667,21 +661,21 @@ func CoinTypeIDNotNil() predicate.General {
 }
 
 // IncomingEQ applies the EQ predicate on the "incoming" field.
-func IncomingEQ(v uint64) predicate.General {
+func IncomingEQ(v decimal.Decimal) predicate.General {
 	return predicate.General(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldIncoming), v))
 	})
 }
 
 // IncomingNEQ applies the NEQ predicate on the "incoming" field.
-func IncomingNEQ(v uint64) predicate.General {
+func IncomingNEQ(v decimal.Decimal) predicate.General {
 	return predicate.General(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldIncoming), v))
 	})
 }
 
 // IncomingIn applies the In predicate on the "incoming" field.
-func IncomingIn(vs ...uint64) predicate.General {
+func IncomingIn(vs ...decimal.Decimal) predicate.General {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -698,7 +692,7 @@ func IncomingIn(vs ...uint64) predicate.General {
 }
 
 // IncomingNotIn applies the NotIn predicate on the "incoming" field.
-func IncomingNotIn(vs ...uint64) predicate.General {
+func IncomingNotIn(vs ...decimal.Decimal) predicate.General {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -715,28 +709,28 @@ func IncomingNotIn(vs ...uint64) predicate.General {
 }
 
 // IncomingGT applies the GT predicate on the "incoming" field.
-func IncomingGT(v uint64) predicate.General {
+func IncomingGT(v decimal.Decimal) predicate.General {
 	return predicate.General(func(s *sql.Selector) {
 		s.Where(sql.GT(s.C(FieldIncoming), v))
 	})
 }
 
 // IncomingGTE applies the GTE predicate on the "incoming" field.
-func IncomingGTE(v uint64) predicate.General {
+func IncomingGTE(v decimal.Decimal) predicate.General {
 	return predicate.General(func(s *sql.Selector) {
 		s.Where(sql.GTE(s.C(FieldIncoming), v))
 	})
 }
 
 // IncomingLT applies the LT predicate on the "incoming" field.
-func IncomingLT(v uint64) predicate.General {
+func IncomingLT(v decimal.Decimal) predicate.General {
 	return predicate.General(func(s *sql.Selector) {
 		s.Where(sql.LT(s.C(FieldIncoming), v))
 	})
 }
 
 // IncomingLTE applies the LTE predicate on the "incoming" field.
-func IncomingLTE(v uint64) predicate.General {
+func IncomingLTE(v decimal.Decimal) predicate.General {
 	return predicate.General(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldIncoming), v))
 	})
@@ -757,21 +751,21 @@ func IncomingNotNil() predicate.General {
 }
 
 // LockedEQ applies the EQ predicate on the "locked" field.
-func LockedEQ(v uint64) predicate.General {
+func LockedEQ(v decimal.Decimal) predicate.General {
 	return predicate.General(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldLocked), v))
 	})
 }
 
 // LockedNEQ applies the NEQ predicate on the "locked" field.
-func LockedNEQ(v uint64) predicate.General {
+func LockedNEQ(v decimal.Decimal) predicate.General {
 	return predicate.General(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldLocked), v))
 	})
 }
 
 // LockedIn applies the In predicate on the "locked" field.
-func LockedIn(vs ...uint64) predicate.General {
+func LockedIn(vs ...decimal.Decimal) predicate.General {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -788,7 +782,7 @@ func LockedIn(vs ...uint64) predicate.General {
 }
 
 // LockedNotIn applies the NotIn predicate on the "locked" field.
-func LockedNotIn(vs ...uint64) predicate.General {
+func LockedNotIn(vs ...decimal.Decimal) predicate.General {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -805,28 +799,28 @@ func LockedNotIn(vs ...uint64) predicate.General {
 }
 
 // LockedGT applies the GT predicate on the "locked" field.
-func LockedGT(v uint64) predicate.General {
+func LockedGT(v decimal.Decimal) predicate.General {
 	return predicate.General(func(s *sql.Selector) {
 		s.Where(sql.GT(s.C(FieldLocked), v))
 	})
 }
 
 // LockedGTE applies the GTE predicate on the "locked" field.
-func LockedGTE(v uint64) predicate.General {
+func LockedGTE(v decimal.Decimal) predicate.General {
 	return predicate.General(func(s *sql.Selector) {
 		s.Where(sql.GTE(s.C(FieldLocked), v))
 	})
 }
 
 // LockedLT applies the LT predicate on the "locked" field.
-func LockedLT(v uint64) predicate.General {
+func LockedLT(v decimal.Decimal) predicate.General {
 	return predicate.General(func(s *sql.Selector) {
 		s.Where(sql.LT(s.C(FieldLocked), v))
 	})
 }
 
 // LockedLTE applies the LTE predicate on the "locked" field.
-func LockedLTE(v uint64) predicate.General {
+func LockedLTE(v decimal.Decimal) predicate.General {
 	return predicate.General(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldLocked), v))
 	})
@@ -847,21 +841,21 @@ func LockedNotNil() predicate.General {
 }
 
 // OutcomingEQ applies the EQ predicate on the "outcoming" field.
-func OutcomingEQ(v uint64) predicate.General {
+func OutcomingEQ(v decimal.Decimal) predicate.General {
 	return predicate.General(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldOutcoming), v))
 	})
 }
 
 // OutcomingNEQ applies the NEQ predicate on the "outcoming" field.
-func OutcomingNEQ(v uint64) predicate.General {
+func OutcomingNEQ(v decimal.Decimal) predicate.General {
 	return predicate.General(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldOutcoming), v))
 	})
 }
 
 // OutcomingIn applies the In predicate on the "outcoming" field.
-func OutcomingIn(vs ...uint64) predicate.General {
+func OutcomingIn(vs ...decimal.Decimal) predicate.General {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -878,7 +872,7 @@ func OutcomingIn(vs ...uint64) predicate.General {
 }
 
 // OutcomingNotIn applies the NotIn predicate on the "outcoming" field.
-func OutcomingNotIn(vs ...uint64) predicate.General {
+func OutcomingNotIn(vs ...decimal.Decimal) predicate.General {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -895,28 +889,28 @@ func OutcomingNotIn(vs ...uint64) predicate.General {
 }
 
 // OutcomingGT applies the GT predicate on the "outcoming" field.
-func OutcomingGT(v uint64) predicate.General {
+func OutcomingGT(v decimal.Decimal) predicate.General {
 	return predicate.General(func(s *sql.Selector) {
 		s.Where(sql.GT(s.C(FieldOutcoming), v))
 	})
 }
 
 // OutcomingGTE applies the GTE predicate on the "outcoming" field.
-func OutcomingGTE(v uint64) predicate.General {
+func OutcomingGTE(v decimal.Decimal) predicate.General {
 	return predicate.General(func(s *sql.Selector) {
 		s.Where(sql.GTE(s.C(FieldOutcoming), v))
 	})
 }
 
 // OutcomingLT applies the LT predicate on the "outcoming" field.
-func OutcomingLT(v uint64) predicate.General {
+func OutcomingLT(v decimal.Decimal) predicate.General {
 	return predicate.General(func(s *sql.Selector) {
 		s.Where(sql.LT(s.C(FieldOutcoming), v))
 	})
 }
 
 // OutcomingLTE applies the LTE predicate on the "outcoming" field.
-func OutcomingLTE(v uint64) predicate.General {
+func OutcomingLTE(v decimal.Decimal) predicate.General {
 	return predicate.General(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldOutcoming), v))
 	})
@@ -937,21 +931,21 @@ func OutcomingNotNil() predicate.General {
 }
 
 // SpendableEQ applies the EQ predicate on the "spendable" field.
-func SpendableEQ(v uint64) predicate.General {
+func SpendableEQ(v decimal.Decimal) predicate.General {
 	return predicate.General(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldSpendable), v))
 	})
 }
 
 // SpendableNEQ applies the NEQ predicate on the "spendable" field.
-func SpendableNEQ(v uint64) predicate.General {
+func SpendableNEQ(v decimal.Decimal) predicate.General {
 	return predicate.General(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldSpendable), v))
 	})
 }
 
 // SpendableIn applies the In predicate on the "spendable" field.
-func SpendableIn(vs ...uint64) predicate.General {
+func SpendableIn(vs ...decimal.Decimal) predicate.General {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -968,7 +962,7 @@ func SpendableIn(vs ...uint64) predicate.General {
 }
 
 // SpendableNotIn applies the NotIn predicate on the "spendable" field.
-func SpendableNotIn(vs ...uint64) predicate.General {
+func SpendableNotIn(vs ...decimal.Decimal) predicate.General {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -985,28 +979,28 @@ func SpendableNotIn(vs ...uint64) predicate.General {
 }
 
 // SpendableGT applies the GT predicate on the "spendable" field.
-func SpendableGT(v uint64) predicate.General {
+func SpendableGT(v decimal.Decimal) predicate.General {
 	return predicate.General(func(s *sql.Selector) {
 		s.Where(sql.GT(s.C(FieldSpendable), v))
 	})
 }
 
 // SpendableGTE applies the GTE predicate on the "spendable" field.
-func SpendableGTE(v uint64) predicate.General {
+func SpendableGTE(v decimal.Decimal) predicate.General {
 	return predicate.General(func(s *sql.Selector) {
 		s.Where(sql.GTE(s.C(FieldSpendable), v))
 	})
 }
 
 // SpendableLT applies the LT predicate on the "spendable" field.
-func SpendableLT(v uint64) predicate.General {
+func SpendableLT(v decimal.Decimal) predicate.General {
 	return predicate.General(func(s *sql.Selector) {
 		s.Where(sql.LT(s.C(FieldSpendable), v))
 	})
 }
 
 // SpendableLTE applies the LTE predicate on the "spendable" field.
-func SpendableLTE(v uint64) predicate.General {
+func SpendableLTE(v decimal.Decimal) predicate.General {
 	return predicate.General(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldSpendable), v))
 	})
@@ -1023,96 +1017,6 @@ func SpendableIsNil() predicate.General {
 func SpendableNotNil() predicate.General {
 	return predicate.General(func(s *sql.Selector) {
 		s.Where(sql.NotNull(s.C(FieldSpendable)))
-	})
-}
-
-// PrecisionEQ applies the EQ predicate on the "precision" field.
-func PrecisionEQ(v uint32) predicate.General {
-	return predicate.General(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldPrecision), v))
-	})
-}
-
-// PrecisionNEQ applies the NEQ predicate on the "precision" field.
-func PrecisionNEQ(v uint32) predicate.General {
-	return predicate.General(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldPrecision), v))
-	})
-}
-
-// PrecisionIn applies the In predicate on the "precision" field.
-func PrecisionIn(vs ...uint32) predicate.General {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.General(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.In(s.C(FieldPrecision), v...))
-	})
-}
-
-// PrecisionNotIn applies the NotIn predicate on the "precision" field.
-func PrecisionNotIn(vs ...uint32) predicate.General {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.General(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.NotIn(s.C(FieldPrecision), v...))
-	})
-}
-
-// PrecisionGT applies the GT predicate on the "precision" field.
-func PrecisionGT(v uint32) predicate.General {
-	return predicate.General(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldPrecision), v))
-	})
-}
-
-// PrecisionGTE applies the GTE predicate on the "precision" field.
-func PrecisionGTE(v uint32) predicate.General {
-	return predicate.General(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldPrecision), v))
-	})
-}
-
-// PrecisionLT applies the LT predicate on the "precision" field.
-func PrecisionLT(v uint32) predicate.General {
-	return predicate.General(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldPrecision), v))
-	})
-}
-
-// PrecisionLTE applies the LTE predicate on the "precision" field.
-func PrecisionLTE(v uint32) predicate.General {
-	return predicate.General(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldPrecision), v))
-	})
-}
-
-// PrecisionIsNil applies the IsNil predicate on the "precision" field.
-func PrecisionIsNil() predicate.General {
-	return predicate.General(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldPrecision)))
-	})
-}
-
-// PrecisionNotNil applies the NotNil predicate on the "precision" field.
-func PrecisionNotNil() predicate.General {
-	return predicate.General(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldPrecision)))
 	})
 }
 

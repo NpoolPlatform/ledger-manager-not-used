@@ -12,6 +12,7 @@ import (
 	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/general"
 	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/predicate"
 	"github.com/google/uuid"
+	"github.com/shopspring/decimal"
 
 	"entgo.io/ent"
 )
@@ -46,13 +47,11 @@ type DetailMutation struct {
 	coin_type_id         *uuid.UUID
 	io_type              *string
 	io_sub_type          *string
-	amount               *uint64
-	addamount            *int64
-	amount_precision     *uint32
-	addamount_precision  *int32
+	amount               *decimal.Decimal
+	addamount            *decimal.Decimal
 	from_coin_type_id    *uuid.UUID
-	coin_usd_currency    *uint64
-	addcoin_usd_currency *int64
+	coin_usd_currency    *decimal.Decimal
+	addcoin_usd_currency *decimal.Decimal
 	io_extra             *string
 	from_old_id          *uuid.UUID
 	clearedFields        map[string]struct{}
@@ -579,13 +578,13 @@ func (m *DetailMutation) ResetIoSubType() {
 }
 
 // SetAmount sets the "amount" field.
-func (m *DetailMutation) SetAmount(u uint64) {
-	m.amount = &u
+func (m *DetailMutation) SetAmount(d decimal.Decimal) {
+	m.amount = &d
 	m.addamount = nil
 }
 
 // Amount returns the value of the "amount" field in the mutation.
-func (m *DetailMutation) Amount() (r uint64, exists bool) {
+func (m *DetailMutation) Amount() (r decimal.Decimal, exists bool) {
 	v := m.amount
 	if v == nil {
 		return
@@ -596,7 +595,7 @@ func (m *DetailMutation) Amount() (r uint64, exists bool) {
 // OldAmount returns the old "amount" field's value of the Detail entity.
 // If the Detail object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *DetailMutation) OldAmount(ctx context.Context) (v uint64, err error) {
+func (m *DetailMutation) OldAmount(ctx context.Context) (v decimal.Decimal, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldAmount is only allowed on UpdateOne operations")
 	}
@@ -610,17 +609,17 @@ func (m *DetailMutation) OldAmount(ctx context.Context) (v uint64, err error) {
 	return oldValue.Amount, nil
 }
 
-// AddAmount adds u to the "amount" field.
-func (m *DetailMutation) AddAmount(u int64) {
+// AddAmount adds d to the "amount" field.
+func (m *DetailMutation) AddAmount(d decimal.Decimal) {
 	if m.addamount != nil {
-		*m.addamount += u
+		*m.addamount = m.addamount.Add(d)
 	} else {
-		m.addamount = &u
+		m.addamount = &d
 	}
 }
 
 // AddedAmount returns the value that was added to the "amount" field in this mutation.
-func (m *DetailMutation) AddedAmount() (r int64, exists bool) {
+func (m *DetailMutation) AddedAmount() (r decimal.Decimal, exists bool) {
 	v := m.addamount
 	if v == nil {
 		return
@@ -646,76 +645,6 @@ func (m *DetailMutation) ResetAmount() {
 	m.amount = nil
 	m.addamount = nil
 	delete(m.clearedFields, detail.FieldAmount)
-}
-
-// SetAmountPrecision sets the "amount_precision" field.
-func (m *DetailMutation) SetAmountPrecision(u uint32) {
-	m.amount_precision = &u
-	m.addamount_precision = nil
-}
-
-// AmountPrecision returns the value of the "amount_precision" field in the mutation.
-func (m *DetailMutation) AmountPrecision() (r uint32, exists bool) {
-	v := m.amount_precision
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldAmountPrecision returns the old "amount_precision" field's value of the Detail entity.
-// If the Detail object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *DetailMutation) OldAmountPrecision(ctx context.Context) (v uint32, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldAmountPrecision is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldAmountPrecision requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldAmountPrecision: %w", err)
-	}
-	return oldValue.AmountPrecision, nil
-}
-
-// AddAmountPrecision adds u to the "amount_precision" field.
-func (m *DetailMutation) AddAmountPrecision(u int32) {
-	if m.addamount_precision != nil {
-		*m.addamount_precision += u
-	} else {
-		m.addamount_precision = &u
-	}
-}
-
-// AddedAmountPrecision returns the value that was added to the "amount_precision" field in this mutation.
-func (m *DetailMutation) AddedAmountPrecision() (r int32, exists bool) {
-	v := m.addamount_precision
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ClearAmountPrecision clears the value of the "amount_precision" field.
-func (m *DetailMutation) ClearAmountPrecision() {
-	m.amount_precision = nil
-	m.addamount_precision = nil
-	m.clearedFields[detail.FieldAmountPrecision] = struct{}{}
-}
-
-// AmountPrecisionCleared returns if the "amount_precision" field was cleared in this mutation.
-func (m *DetailMutation) AmountPrecisionCleared() bool {
-	_, ok := m.clearedFields[detail.FieldAmountPrecision]
-	return ok
-}
-
-// ResetAmountPrecision resets all changes to the "amount_precision" field.
-func (m *DetailMutation) ResetAmountPrecision() {
-	m.amount_precision = nil
-	m.addamount_precision = nil
-	delete(m.clearedFields, detail.FieldAmountPrecision)
 }
 
 // SetFromCoinTypeID sets the "from_coin_type_id" field.
@@ -768,13 +697,13 @@ func (m *DetailMutation) ResetFromCoinTypeID() {
 }
 
 // SetCoinUsdCurrency sets the "coin_usd_currency" field.
-func (m *DetailMutation) SetCoinUsdCurrency(u uint64) {
-	m.coin_usd_currency = &u
+func (m *DetailMutation) SetCoinUsdCurrency(d decimal.Decimal) {
+	m.coin_usd_currency = &d
 	m.addcoin_usd_currency = nil
 }
 
 // CoinUsdCurrency returns the value of the "coin_usd_currency" field in the mutation.
-func (m *DetailMutation) CoinUsdCurrency() (r uint64, exists bool) {
+func (m *DetailMutation) CoinUsdCurrency() (r decimal.Decimal, exists bool) {
 	v := m.coin_usd_currency
 	if v == nil {
 		return
@@ -785,7 +714,7 @@ func (m *DetailMutation) CoinUsdCurrency() (r uint64, exists bool) {
 // OldCoinUsdCurrency returns the old "coin_usd_currency" field's value of the Detail entity.
 // If the Detail object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *DetailMutation) OldCoinUsdCurrency(ctx context.Context) (v uint64, err error) {
+func (m *DetailMutation) OldCoinUsdCurrency(ctx context.Context) (v decimal.Decimal, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldCoinUsdCurrency is only allowed on UpdateOne operations")
 	}
@@ -799,17 +728,17 @@ func (m *DetailMutation) OldCoinUsdCurrency(ctx context.Context) (v uint64, err 
 	return oldValue.CoinUsdCurrency, nil
 }
 
-// AddCoinUsdCurrency adds u to the "coin_usd_currency" field.
-func (m *DetailMutation) AddCoinUsdCurrency(u int64) {
+// AddCoinUsdCurrency adds d to the "coin_usd_currency" field.
+func (m *DetailMutation) AddCoinUsdCurrency(d decimal.Decimal) {
 	if m.addcoin_usd_currency != nil {
-		*m.addcoin_usd_currency += u
+		*m.addcoin_usd_currency = m.addcoin_usd_currency.Add(d)
 	} else {
-		m.addcoin_usd_currency = &u
+		m.addcoin_usd_currency = &d
 	}
 }
 
 // AddedCoinUsdCurrency returns the value that was added to the "coin_usd_currency" field in this mutation.
-func (m *DetailMutation) AddedCoinUsdCurrency() (r int64, exists bool) {
+func (m *DetailMutation) AddedCoinUsdCurrency() (r decimal.Decimal, exists bool) {
 	v := m.addcoin_usd_currency
 	if v == nil {
 		return
@@ -954,7 +883,7 @@ func (m *DetailMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *DetailMutation) Fields() []string {
-	fields := make([]string, 0, 14)
+	fields := make([]string, 0, 13)
 	if m.created_at != nil {
 		fields = append(fields, detail.FieldCreatedAt)
 	}
@@ -981,9 +910,6 @@ func (m *DetailMutation) Fields() []string {
 	}
 	if m.amount != nil {
 		fields = append(fields, detail.FieldAmount)
-	}
-	if m.amount_precision != nil {
-		fields = append(fields, detail.FieldAmountPrecision)
 	}
 	if m.from_coin_type_id != nil {
 		fields = append(fields, detail.FieldFromCoinTypeID)
@@ -1023,8 +949,6 @@ func (m *DetailMutation) Field(name string) (ent.Value, bool) {
 		return m.IoSubType()
 	case detail.FieldAmount:
 		return m.Amount()
-	case detail.FieldAmountPrecision:
-		return m.AmountPrecision()
 	case detail.FieldFromCoinTypeID:
 		return m.FromCoinTypeID()
 	case detail.FieldCoinUsdCurrency:
@@ -1060,8 +984,6 @@ func (m *DetailMutation) OldField(ctx context.Context, name string) (ent.Value, 
 		return m.OldIoSubType(ctx)
 	case detail.FieldAmount:
 		return m.OldAmount(ctx)
-	case detail.FieldAmountPrecision:
-		return m.OldAmountPrecision(ctx)
 	case detail.FieldFromCoinTypeID:
 		return m.OldFromCoinTypeID(ctx)
 	case detail.FieldCoinUsdCurrency:
@@ -1136,18 +1058,11 @@ func (m *DetailMutation) SetField(name string, value ent.Value) error {
 		m.SetIoSubType(v)
 		return nil
 	case detail.FieldAmount:
-		v, ok := value.(uint64)
+		v, ok := value.(decimal.Decimal)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetAmount(v)
-		return nil
-	case detail.FieldAmountPrecision:
-		v, ok := value.(uint32)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetAmountPrecision(v)
 		return nil
 	case detail.FieldFromCoinTypeID:
 		v, ok := value.(uuid.UUID)
@@ -1157,7 +1072,7 @@ func (m *DetailMutation) SetField(name string, value ent.Value) error {
 		m.SetFromCoinTypeID(v)
 		return nil
 	case detail.FieldCoinUsdCurrency:
-		v, ok := value.(uint64)
+		v, ok := value.(decimal.Decimal)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -1197,9 +1112,6 @@ func (m *DetailMutation) AddedFields() []string {
 	if m.addamount != nil {
 		fields = append(fields, detail.FieldAmount)
 	}
-	if m.addamount_precision != nil {
-		fields = append(fields, detail.FieldAmountPrecision)
-	}
 	if m.addcoin_usd_currency != nil {
 		fields = append(fields, detail.FieldCoinUsdCurrency)
 	}
@@ -1219,8 +1131,6 @@ func (m *DetailMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedDeletedAt()
 	case detail.FieldAmount:
 		return m.AddedAmount()
-	case detail.FieldAmountPrecision:
-		return m.AddedAmountPrecision()
 	case detail.FieldCoinUsdCurrency:
 		return m.AddedCoinUsdCurrency()
 	}
@@ -1254,21 +1164,14 @@ func (m *DetailMutation) AddField(name string, value ent.Value) error {
 		m.AddDeletedAt(v)
 		return nil
 	case detail.FieldAmount:
-		v, ok := value.(int64)
+		v, ok := value.(decimal.Decimal)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddAmount(v)
 		return nil
-	case detail.FieldAmountPrecision:
-		v, ok := value.(int32)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddAmountPrecision(v)
-		return nil
 	case detail.FieldCoinUsdCurrency:
-		v, ok := value.(int64)
+		v, ok := value.(decimal.Decimal)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -1299,9 +1202,6 @@ func (m *DetailMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(detail.FieldAmount) {
 		fields = append(fields, detail.FieldAmount)
-	}
-	if m.FieldCleared(detail.FieldAmountPrecision) {
-		fields = append(fields, detail.FieldAmountPrecision)
 	}
 	if m.FieldCleared(detail.FieldFromCoinTypeID) {
 		fields = append(fields, detail.FieldFromCoinTypeID)
@@ -1346,9 +1246,6 @@ func (m *DetailMutation) ClearField(name string) error {
 		return nil
 	case detail.FieldAmount:
 		m.ClearAmount()
-		return nil
-	case detail.FieldAmountPrecision:
-		m.ClearAmountPrecision()
 		return nil
 	case detail.FieldFromCoinTypeID:
 		m.ClearFromCoinTypeID()
@@ -1396,9 +1293,6 @@ func (m *DetailMutation) ResetField(name string) error {
 		return nil
 	case detail.FieldAmount:
 		m.ResetAmount()
-		return nil
-	case detail.FieldAmountPrecision:
-		m.ResetAmountPrecision()
 		return nil
 	case detail.FieldFromCoinTypeID:
 		m.ResetFromCoinTypeID()
@@ -1479,16 +1373,14 @@ type GeneralMutation struct {
 	app_id        *uuid.UUID
 	user_id       *uuid.UUID
 	coin_type_id  *uuid.UUID
-	incoming      *uint64
-	addincoming   *int64
-	locked        *uint64
-	addlocked     *int64
-	outcoming     *uint64
-	addoutcoming  *int64
-	spendable     *uint64
-	addspendable  *int64
-	precision     *uint32
-	addprecision  *int32
+	incoming      *decimal.Decimal
+	addincoming   *decimal.Decimal
+	locked        *decimal.Decimal
+	addlocked     *decimal.Decimal
+	outcoming     *decimal.Decimal
+	addoutcoming  *decimal.Decimal
+	spendable     *decimal.Decimal
+	addspendable  *decimal.Decimal
 	clearedFields map[string]struct{}
 	done          bool
 	oldValue      func(context.Context) (*General, error)
@@ -1915,13 +1807,13 @@ func (m *GeneralMutation) ResetCoinTypeID() {
 }
 
 // SetIncoming sets the "incoming" field.
-func (m *GeneralMutation) SetIncoming(u uint64) {
-	m.incoming = &u
+func (m *GeneralMutation) SetIncoming(d decimal.Decimal) {
+	m.incoming = &d
 	m.addincoming = nil
 }
 
 // Incoming returns the value of the "incoming" field in the mutation.
-func (m *GeneralMutation) Incoming() (r uint64, exists bool) {
+func (m *GeneralMutation) Incoming() (r decimal.Decimal, exists bool) {
 	v := m.incoming
 	if v == nil {
 		return
@@ -1932,7 +1824,7 @@ func (m *GeneralMutation) Incoming() (r uint64, exists bool) {
 // OldIncoming returns the old "incoming" field's value of the General entity.
 // If the General object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *GeneralMutation) OldIncoming(ctx context.Context) (v uint64, err error) {
+func (m *GeneralMutation) OldIncoming(ctx context.Context) (v decimal.Decimal, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldIncoming is only allowed on UpdateOne operations")
 	}
@@ -1946,17 +1838,17 @@ func (m *GeneralMutation) OldIncoming(ctx context.Context) (v uint64, err error)
 	return oldValue.Incoming, nil
 }
 
-// AddIncoming adds u to the "incoming" field.
-func (m *GeneralMutation) AddIncoming(u int64) {
+// AddIncoming adds d to the "incoming" field.
+func (m *GeneralMutation) AddIncoming(d decimal.Decimal) {
 	if m.addincoming != nil {
-		*m.addincoming += u
+		*m.addincoming = m.addincoming.Add(d)
 	} else {
-		m.addincoming = &u
+		m.addincoming = &d
 	}
 }
 
 // AddedIncoming returns the value that was added to the "incoming" field in this mutation.
-func (m *GeneralMutation) AddedIncoming() (r int64, exists bool) {
+func (m *GeneralMutation) AddedIncoming() (r decimal.Decimal, exists bool) {
 	v := m.addincoming
 	if v == nil {
 		return
@@ -1985,13 +1877,13 @@ func (m *GeneralMutation) ResetIncoming() {
 }
 
 // SetLocked sets the "locked" field.
-func (m *GeneralMutation) SetLocked(u uint64) {
-	m.locked = &u
+func (m *GeneralMutation) SetLocked(d decimal.Decimal) {
+	m.locked = &d
 	m.addlocked = nil
 }
 
 // Locked returns the value of the "locked" field in the mutation.
-func (m *GeneralMutation) Locked() (r uint64, exists bool) {
+func (m *GeneralMutation) Locked() (r decimal.Decimal, exists bool) {
 	v := m.locked
 	if v == nil {
 		return
@@ -2002,7 +1894,7 @@ func (m *GeneralMutation) Locked() (r uint64, exists bool) {
 // OldLocked returns the old "locked" field's value of the General entity.
 // If the General object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *GeneralMutation) OldLocked(ctx context.Context) (v uint64, err error) {
+func (m *GeneralMutation) OldLocked(ctx context.Context) (v decimal.Decimal, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldLocked is only allowed on UpdateOne operations")
 	}
@@ -2016,17 +1908,17 @@ func (m *GeneralMutation) OldLocked(ctx context.Context) (v uint64, err error) {
 	return oldValue.Locked, nil
 }
 
-// AddLocked adds u to the "locked" field.
-func (m *GeneralMutation) AddLocked(u int64) {
+// AddLocked adds d to the "locked" field.
+func (m *GeneralMutation) AddLocked(d decimal.Decimal) {
 	if m.addlocked != nil {
-		*m.addlocked += u
+		*m.addlocked = m.addlocked.Add(d)
 	} else {
-		m.addlocked = &u
+		m.addlocked = &d
 	}
 }
 
 // AddedLocked returns the value that was added to the "locked" field in this mutation.
-func (m *GeneralMutation) AddedLocked() (r int64, exists bool) {
+func (m *GeneralMutation) AddedLocked() (r decimal.Decimal, exists bool) {
 	v := m.addlocked
 	if v == nil {
 		return
@@ -2055,13 +1947,13 @@ func (m *GeneralMutation) ResetLocked() {
 }
 
 // SetOutcoming sets the "outcoming" field.
-func (m *GeneralMutation) SetOutcoming(u uint64) {
-	m.outcoming = &u
+func (m *GeneralMutation) SetOutcoming(d decimal.Decimal) {
+	m.outcoming = &d
 	m.addoutcoming = nil
 }
 
 // Outcoming returns the value of the "outcoming" field in the mutation.
-func (m *GeneralMutation) Outcoming() (r uint64, exists bool) {
+func (m *GeneralMutation) Outcoming() (r decimal.Decimal, exists bool) {
 	v := m.outcoming
 	if v == nil {
 		return
@@ -2072,7 +1964,7 @@ func (m *GeneralMutation) Outcoming() (r uint64, exists bool) {
 // OldOutcoming returns the old "outcoming" field's value of the General entity.
 // If the General object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *GeneralMutation) OldOutcoming(ctx context.Context) (v uint64, err error) {
+func (m *GeneralMutation) OldOutcoming(ctx context.Context) (v decimal.Decimal, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldOutcoming is only allowed on UpdateOne operations")
 	}
@@ -2086,17 +1978,17 @@ func (m *GeneralMutation) OldOutcoming(ctx context.Context) (v uint64, err error
 	return oldValue.Outcoming, nil
 }
 
-// AddOutcoming adds u to the "outcoming" field.
-func (m *GeneralMutation) AddOutcoming(u int64) {
+// AddOutcoming adds d to the "outcoming" field.
+func (m *GeneralMutation) AddOutcoming(d decimal.Decimal) {
 	if m.addoutcoming != nil {
-		*m.addoutcoming += u
+		*m.addoutcoming = m.addoutcoming.Add(d)
 	} else {
-		m.addoutcoming = &u
+		m.addoutcoming = &d
 	}
 }
 
 // AddedOutcoming returns the value that was added to the "outcoming" field in this mutation.
-func (m *GeneralMutation) AddedOutcoming() (r int64, exists bool) {
+func (m *GeneralMutation) AddedOutcoming() (r decimal.Decimal, exists bool) {
 	v := m.addoutcoming
 	if v == nil {
 		return
@@ -2125,13 +2017,13 @@ func (m *GeneralMutation) ResetOutcoming() {
 }
 
 // SetSpendable sets the "spendable" field.
-func (m *GeneralMutation) SetSpendable(u uint64) {
-	m.spendable = &u
+func (m *GeneralMutation) SetSpendable(d decimal.Decimal) {
+	m.spendable = &d
 	m.addspendable = nil
 }
 
 // Spendable returns the value of the "spendable" field in the mutation.
-func (m *GeneralMutation) Spendable() (r uint64, exists bool) {
+func (m *GeneralMutation) Spendable() (r decimal.Decimal, exists bool) {
 	v := m.spendable
 	if v == nil {
 		return
@@ -2142,7 +2034,7 @@ func (m *GeneralMutation) Spendable() (r uint64, exists bool) {
 // OldSpendable returns the old "spendable" field's value of the General entity.
 // If the General object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *GeneralMutation) OldSpendable(ctx context.Context) (v uint64, err error) {
+func (m *GeneralMutation) OldSpendable(ctx context.Context) (v decimal.Decimal, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldSpendable is only allowed on UpdateOne operations")
 	}
@@ -2156,17 +2048,17 @@ func (m *GeneralMutation) OldSpendable(ctx context.Context) (v uint64, err error
 	return oldValue.Spendable, nil
 }
 
-// AddSpendable adds u to the "spendable" field.
-func (m *GeneralMutation) AddSpendable(u int64) {
+// AddSpendable adds d to the "spendable" field.
+func (m *GeneralMutation) AddSpendable(d decimal.Decimal) {
 	if m.addspendable != nil {
-		*m.addspendable += u
+		*m.addspendable = m.addspendable.Add(d)
 	} else {
-		m.addspendable = &u
+		m.addspendable = &d
 	}
 }
 
 // AddedSpendable returns the value that was added to the "spendable" field in this mutation.
-func (m *GeneralMutation) AddedSpendable() (r int64, exists bool) {
+func (m *GeneralMutation) AddedSpendable() (r decimal.Decimal, exists bool) {
 	v := m.addspendable
 	if v == nil {
 		return
@@ -2194,76 +2086,6 @@ func (m *GeneralMutation) ResetSpendable() {
 	delete(m.clearedFields, general.FieldSpendable)
 }
 
-// SetPrecision sets the "precision" field.
-func (m *GeneralMutation) SetPrecision(u uint32) {
-	m.precision = &u
-	m.addprecision = nil
-}
-
-// Precision returns the value of the "precision" field in the mutation.
-func (m *GeneralMutation) Precision() (r uint32, exists bool) {
-	v := m.precision
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldPrecision returns the old "precision" field's value of the General entity.
-// If the General object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *GeneralMutation) OldPrecision(ctx context.Context) (v uint32, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldPrecision is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldPrecision requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldPrecision: %w", err)
-	}
-	return oldValue.Precision, nil
-}
-
-// AddPrecision adds u to the "precision" field.
-func (m *GeneralMutation) AddPrecision(u int32) {
-	if m.addprecision != nil {
-		*m.addprecision += u
-	} else {
-		m.addprecision = &u
-	}
-}
-
-// AddedPrecision returns the value that was added to the "precision" field in this mutation.
-func (m *GeneralMutation) AddedPrecision() (r int32, exists bool) {
-	v := m.addprecision
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ClearPrecision clears the value of the "precision" field.
-func (m *GeneralMutation) ClearPrecision() {
-	m.precision = nil
-	m.addprecision = nil
-	m.clearedFields[general.FieldPrecision] = struct{}{}
-}
-
-// PrecisionCleared returns if the "precision" field was cleared in this mutation.
-func (m *GeneralMutation) PrecisionCleared() bool {
-	_, ok := m.clearedFields[general.FieldPrecision]
-	return ok
-}
-
-// ResetPrecision resets all changes to the "precision" field.
-func (m *GeneralMutation) ResetPrecision() {
-	m.precision = nil
-	m.addprecision = nil
-	delete(m.clearedFields, general.FieldPrecision)
-}
-
 // Where appends a list predicates to the GeneralMutation builder.
 func (m *GeneralMutation) Where(ps ...predicate.General) {
 	m.predicates = append(m.predicates, ps...)
@@ -2283,7 +2105,7 @@ func (m *GeneralMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *GeneralMutation) Fields() []string {
-	fields := make([]string, 0, 11)
+	fields := make([]string, 0, 10)
 	if m.created_at != nil {
 		fields = append(fields, general.FieldCreatedAt)
 	}
@@ -2314,9 +2136,6 @@ func (m *GeneralMutation) Fields() []string {
 	if m.spendable != nil {
 		fields = append(fields, general.FieldSpendable)
 	}
-	if m.precision != nil {
-		fields = append(fields, general.FieldPrecision)
-	}
 	return fields
 }
 
@@ -2345,8 +2164,6 @@ func (m *GeneralMutation) Field(name string) (ent.Value, bool) {
 		return m.Outcoming()
 	case general.FieldSpendable:
 		return m.Spendable()
-	case general.FieldPrecision:
-		return m.Precision()
 	}
 	return nil, false
 }
@@ -2376,8 +2193,6 @@ func (m *GeneralMutation) OldField(ctx context.Context, name string) (ent.Value,
 		return m.OldOutcoming(ctx)
 	case general.FieldSpendable:
 		return m.OldSpendable(ctx)
-	case general.FieldPrecision:
-		return m.OldPrecision(ctx)
 	}
 	return nil, fmt.Errorf("unknown General field %s", name)
 }
@@ -2430,39 +2245,32 @@ func (m *GeneralMutation) SetField(name string, value ent.Value) error {
 		m.SetCoinTypeID(v)
 		return nil
 	case general.FieldIncoming:
-		v, ok := value.(uint64)
+		v, ok := value.(decimal.Decimal)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetIncoming(v)
 		return nil
 	case general.FieldLocked:
-		v, ok := value.(uint64)
+		v, ok := value.(decimal.Decimal)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetLocked(v)
 		return nil
 	case general.FieldOutcoming:
-		v, ok := value.(uint64)
+		v, ok := value.(decimal.Decimal)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetOutcoming(v)
 		return nil
 	case general.FieldSpendable:
-		v, ok := value.(uint64)
+		v, ok := value.(decimal.Decimal)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetSpendable(v)
-		return nil
-	case general.FieldPrecision:
-		v, ok := value.(uint32)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetPrecision(v)
 		return nil
 	}
 	return fmt.Errorf("unknown General field %s", name)
@@ -2493,9 +2301,6 @@ func (m *GeneralMutation) AddedFields() []string {
 	if m.addspendable != nil {
 		fields = append(fields, general.FieldSpendable)
 	}
-	if m.addprecision != nil {
-		fields = append(fields, general.FieldPrecision)
-	}
 	return fields
 }
 
@@ -2518,8 +2323,6 @@ func (m *GeneralMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedOutcoming()
 	case general.FieldSpendable:
 		return m.AddedSpendable()
-	case general.FieldPrecision:
-		return m.AddedPrecision()
 	}
 	return nil, false
 }
@@ -2551,39 +2354,32 @@ func (m *GeneralMutation) AddField(name string, value ent.Value) error {
 		m.AddDeletedAt(v)
 		return nil
 	case general.FieldIncoming:
-		v, ok := value.(int64)
+		v, ok := value.(decimal.Decimal)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddIncoming(v)
 		return nil
 	case general.FieldLocked:
-		v, ok := value.(int64)
+		v, ok := value.(decimal.Decimal)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddLocked(v)
 		return nil
 	case general.FieldOutcoming:
-		v, ok := value.(int64)
+		v, ok := value.(decimal.Decimal)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddOutcoming(v)
 		return nil
 	case general.FieldSpendable:
-		v, ok := value.(int64)
+		v, ok := value.(decimal.Decimal)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddSpendable(v)
-		return nil
-	case general.FieldPrecision:
-		v, ok := value.(int32)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddPrecision(v)
 		return nil
 	}
 	return fmt.Errorf("unknown General numeric field %s", name)
@@ -2613,9 +2409,6 @@ func (m *GeneralMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(general.FieldSpendable) {
 		fields = append(fields, general.FieldSpendable)
-	}
-	if m.FieldCleared(general.FieldPrecision) {
-		fields = append(fields, general.FieldPrecision)
 	}
 	return fields
 }
@@ -2651,9 +2444,6 @@ func (m *GeneralMutation) ClearField(name string) error {
 		return nil
 	case general.FieldSpendable:
 		m.ClearSpendable()
-		return nil
-	case general.FieldPrecision:
-		m.ClearPrecision()
 		return nil
 	}
 	return fmt.Errorf("unknown General nullable field %s", name)
@@ -2692,9 +2482,6 @@ func (m *GeneralMutation) ResetField(name string) error {
 		return nil
 	case general.FieldSpendable:
 		m.ResetSpendable()
-		return nil
-	case general.FieldPrecision:
-		m.ResetPrecision()
 		return nil
 	}
 	return fmt.Errorf("unknown General field %s", name)
