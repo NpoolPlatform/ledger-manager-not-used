@@ -114,7 +114,7 @@ func CreateBulk(ctx context.Context, in []*npool.GeneralReq) ([]*ent.General, er
 	return rows, nil
 }
 
-func AddFields(ctx context.Context, in *npool.GeneralReq) (*ent.General, error) {
+func AddFields(ctx context.Context, in *npool.GeneralReq) (*ent.General, error) { //nolint
 	var info *ent.General
 	var err error
 
