@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY ledger-manager /app
 
-ENTRYPOINT ["./ledger-manager"]
+ENTRYPOINT ["/app/ledger-manager"]
 
 EXPOSE 50330 50331 50332 50333
 
