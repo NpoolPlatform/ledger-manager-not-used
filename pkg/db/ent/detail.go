@@ -41,8 +41,6 @@ type Detail struct {
 	CoinUsdCurrency decimal.Decimal `json:"coin_usd_currency,omitempty"`
 	// IoExtra holds the value of the "io_extra" field.
 	IoExtra string `json:"io_extra,omitempty"`
-	// FromOldID holds the value of the "from_old_id" field.
-	FromOldID uuid.UUID `json:"from_old_id,omitempty"`
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -56,7 +54,7 @@ func (*Detail) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullInt64)
 		case detail.FieldIoType, detail.FieldIoSubType, detail.FieldIoExtra:
 			values[i] = new(sql.NullString)
-		case detail.FieldID, detail.FieldAppID, detail.FieldUserID, detail.FieldCoinTypeID, detail.FieldFromCoinTypeID, detail.FieldFromOldID:
+		case detail.FieldID, detail.FieldAppID, detail.FieldUserID, detail.FieldCoinTypeID, detail.FieldFromCoinTypeID:
 			values[i] = new(uuid.UUID)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Detail", columns[i])
@@ -151,12 +149,6 @@ func (d *Detail) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				d.IoExtra = value.String
 			}
-		case detail.FieldFromOldID:
-			if value, ok := values[i].(*uuid.UUID); !ok {
-				return fmt.Errorf("unexpected type %T for field from_old_id", values[i])
-			} else if value != nil {
-				d.FromOldID = *value
-			}
 		}
 	}
 	return nil
@@ -209,8 +201,6 @@ func (d *Detail) String() string {
 	builder.WriteString(fmt.Sprintf("%v", d.CoinUsdCurrency))
 	builder.WriteString(", io_extra=")
 	builder.WriteString(d.IoExtra)
-	builder.WriteString(", from_old_id=")
-	builder.WriteString(fmt.Sprintf("%v", d.FromOldID))
 	builder.WriteByte(')')
 	return builder.String()
 }

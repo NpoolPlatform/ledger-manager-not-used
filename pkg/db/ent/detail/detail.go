@@ -36,8 +36,6 @@ const (
 	FieldCoinUsdCurrency = "coin_usd_currency"
 	// FieldIoExtra holds the string denoting the io_extra field in the database.
 	FieldIoExtra = "io_extra"
-	// FieldFromOldID holds the string denoting the from_old_id field in the database.
-	FieldFromOldID = "from_old_id"
 	// Table holds the table name of the detail in the database.
 	Table = "details"
 )
@@ -57,7 +55,6 @@ var Columns = []string{
 	FieldFromCoinTypeID,
 	FieldCoinUsdCurrency,
 	FieldIoExtra,
-	FieldFromOldID,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -101,8 +98,6 @@ var (
 	DefaultFromCoinTypeID func() uuid.UUID
 	// DefaultIoExtra holds the default value on creation for the "io_extra" field.
 	DefaultIoExtra string
-	// DefaultFromOldID holds the default value on creation for the "from_old_id" field.
-	DefaultFromOldID func() uuid.UUID
 	// DefaultID holds the default value on creation for the "id" field.
 	DefaultID func() uuid.UUID
 )

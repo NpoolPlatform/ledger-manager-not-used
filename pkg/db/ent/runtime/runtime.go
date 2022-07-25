@@ -74,10 +74,6 @@ func init() {
 	detailDescIoExtra := detailFields[9].Descriptor()
 	// detail.DefaultIoExtra holds the default value on creation for the io_extra field.
 	detail.DefaultIoExtra = detailDescIoExtra.Default.(string)
-	// detailDescFromOldID is the schema descriptor for from_old_id field.
-	detailDescFromOldID := detailFields[10].Descriptor()
-	// detail.DefaultFromOldID holds the default value on creation for the from_old_id field.
-	detail.DefaultFromOldID = detailDescFromOldID.Default.(func() uuid.UUID)
 	// detailDescID is the schema descriptor for id field.
 	detailDescID := detailFields[0].Descriptor()
 	// detail.DefaultID holds the default value on creation for the id field.

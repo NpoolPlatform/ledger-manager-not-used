@@ -78,9 +78,6 @@ func Create(ctx context.Context, in *npool.DetailReq) (*ent.Detail, error) { //n
 		if in.IOExtra != nil {
 			c.SetIoExtra(in.GetIOExtra())
 		}
-		if in.FromOldID != nil {
-			c.SetFromOldID(uuid.MustParse(in.GetFromOldID()))
-		}
 		if in.CreatedAt != nil {
 			c.SetCreatedAt(in.GetCreatedAt())
 		}
@@ -152,9 +149,6 @@ func CreateBulk(ctx context.Context, in []*npool.DetailReq) ([]*ent.Detail, erro
 			}
 			if info.IOExtra != nil {
 				bulk[i].SetIoExtra(info.GetIOExtra())
-			}
-			if info.FromOldID != nil {
-				bulk[i].SetFromOldID(uuid.MustParse(info.GetFromOldID()))
 			}
 			if info.CreatedAt != nil {
 				bulk[i].SetCreatedAt(info.GetCreatedAt())
@@ -293,14 +287,6 @@ func setQueryConds(conds *npool.Conds, cli *ent.Client) (*ent.DetailQuery, error
 		switch conds.GetIOExtra().GetOp() {
 		case cruder.LIKE:
 			stm.Where(detail.IoExtraContains(conds.GetIOExtra().GetValue()))
-		default:
-			return nil, fmt.Errorf("invalid detail field")
-		}
-	}
-	if conds.FromOldID != nil {
-		switch conds.GetFromOldID().GetOp() {
-		case cruder.EQ:
-			stm.Where(detail.FromOldID(uuid.MustParse(conds.GetFromOldID().GetValue())))
 		default:
 			return nil, fmt.Errorf("invalid detail field")
 		}

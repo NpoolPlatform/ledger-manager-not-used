@@ -192,20 +192,6 @@ func (dc *DetailCreate) SetNillableIoExtra(s *string) *DetailCreate {
 	return dc
 }
 
-// SetFromOldID sets the "from_old_id" field.
-func (dc *DetailCreate) SetFromOldID(u uuid.UUID) *DetailCreate {
-	dc.mutation.SetFromOldID(u)
-	return dc
-}
-
-// SetNillableFromOldID sets the "from_old_id" field if the given value is not nil.
-func (dc *DetailCreate) SetNillableFromOldID(u *uuid.UUID) *DetailCreate {
-	if u != nil {
-		dc.SetFromOldID(*u)
-	}
-	return dc
-}
-
 // SetID sets the "id" field.
 func (dc *DetailCreate) SetID(u uuid.UUID) *DetailCreate {
 	dc.mutation.SetID(u)
@@ -353,13 +339,6 @@ func (dc *DetailCreate) defaults() error {
 	if _, ok := dc.mutation.IoExtra(); !ok {
 		v := detail.DefaultIoExtra
 		dc.mutation.SetIoExtra(v)
-	}
-	if _, ok := dc.mutation.FromOldID(); !ok {
-		if detail.DefaultFromOldID == nil {
-			return fmt.Errorf("ent: uninitialized detail.DefaultFromOldID (forgotten import ent/runtime?)")
-		}
-		v := detail.DefaultFromOldID()
-		dc.mutation.SetFromOldID(v)
 	}
 	if _, ok := dc.mutation.ID(); !ok {
 		if detail.DefaultID == nil {
@@ -514,14 +493,6 @@ func (dc *DetailCreate) createSpec() (*Detail, *sqlgraph.CreateSpec) {
 			Column: detail.FieldIoExtra,
 		})
 		_node.IoExtra = value
-	}
-	if value, ok := dc.mutation.FromOldID(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUUID,
-			Value:  value,
-			Column: detail.FieldFromOldID,
-		})
-		_node.FromOldID = value
 	}
 	return _node, _spec
 }
@@ -802,24 +773,6 @@ func (u *DetailUpsert) UpdateIoExtra() *DetailUpsert {
 // ClearIoExtra clears the value of the "io_extra" field.
 func (u *DetailUpsert) ClearIoExtra() *DetailUpsert {
 	u.SetNull(detail.FieldIoExtra)
-	return u
-}
-
-// SetFromOldID sets the "from_old_id" field.
-func (u *DetailUpsert) SetFromOldID(v uuid.UUID) *DetailUpsert {
-	u.Set(detail.FieldFromOldID, v)
-	return u
-}
-
-// UpdateFromOldID sets the "from_old_id" field to the value that was provided on create.
-func (u *DetailUpsert) UpdateFromOldID() *DetailUpsert {
-	u.SetExcluded(detail.FieldFromOldID)
-	return u
-}
-
-// ClearFromOldID clears the value of the "from_old_id" field.
-func (u *DetailUpsert) ClearFromOldID() *DetailUpsert {
-	u.SetNull(detail.FieldFromOldID)
 	return u
 }
 
@@ -1136,27 +1089,6 @@ func (u *DetailUpsertOne) UpdateIoExtra() *DetailUpsertOne {
 func (u *DetailUpsertOne) ClearIoExtra() *DetailUpsertOne {
 	return u.Update(func(s *DetailUpsert) {
 		s.ClearIoExtra()
-	})
-}
-
-// SetFromOldID sets the "from_old_id" field.
-func (u *DetailUpsertOne) SetFromOldID(v uuid.UUID) *DetailUpsertOne {
-	return u.Update(func(s *DetailUpsert) {
-		s.SetFromOldID(v)
-	})
-}
-
-// UpdateFromOldID sets the "from_old_id" field to the value that was provided on create.
-func (u *DetailUpsertOne) UpdateFromOldID() *DetailUpsertOne {
-	return u.Update(func(s *DetailUpsert) {
-		s.UpdateFromOldID()
-	})
-}
-
-// ClearFromOldID clears the value of the "from_old_id" field.
-func (u *DetailUpsertOne) ClearFromOldID() *DetailUpsertOne {
-	return u.Update(func(s *DetailUpsert) {
-		s.ClearFromOldID()
 	})
 }
 
@@ -1639,27 +1571,6 @@ func (u *DetailUpsertBulk) UpdateIoExtra() *DetailUpsertBulk {
 func (u *DetailUpsertBulk) ClearIoExtra() *DetailUpsertBulk {
 	return u.Update(func(s *DetailUpsert) {
 		s.ClearIoExtra()
-	})
-}
-
-// SetFromOldID sets the "from_old_id" field.
-func (u *DetailUpsertBulk) SetFromOldID(v uuid.UUID) *DetailUpsertBulk {
-	return u.Update(func(s *DetailUpsert) {
-		s.SetFromOldID(v)
-	})
-}
-
-// UpdateFromOldID sets the "from_old_id" field to the value that was provided on create.
-func (u *DetailUpsertBulk) UpdateFromOldID() *DetailUpsertBulk {
-	return u.Update(func(s *DetailUpsert) {
-		s.UpdateFromOldID()
-	})
-}
-
-// ClearFromOldID clears the value of the "from_old_id" field.
-func (u *DetailUpsertBulk) ClearFromOldID() *DetailUpsertBulk {
-	return u.Update(func(s *DetailUpsert) {
-		s.ClearFromOldID()
 	})
 }
 

@@ -38,7 +38,6 @@ var schemaGraph = func() *sqlgraph.Schema {
 			detail.FieldFromCoinTypeID:  {Type: field.TypeUUID, Column: detail.FieldFromCoinTypeID},
 			detail.FieldCoinUsdCurrency: {Type: field.TypeFloat64, Column: detail.FieldCoinUsdCurrency},
 			detail.FieldIoExtra:         {Type: field.TypeString, Column: detail.FieldIoExtra},
-			detail.FieldFromOldID:       {Type: field.TypeUUID, Column: detail.FieldFromOldID},
 		},
 	}
 	graph.Nodes[1] = &sqlgraph.Node{
@@ -170,11 +169,6 @@ func (f *DetailFilter) WhereCoinUsdCurrency(p entql.Float64P) {
 // WhereIoExtra applies the entql string predicate on the io_extra field.
 func (f *DetailFilter) WhereIoExtra(p entql.StringP) {
 	f.Where(p.Field(detail.FieldIoExtra))
-}
-
-// WhereFromOldID applies the entql [16]byte predicate on the from_old_id field.
-func (f *DetailFilter) WhereFromOldID(p entql.ValueP) {
-	f.Where(p.Field(detail.FieldFromOldID))
 }
 
 // addPredicate implements the predicateAdder interface.
