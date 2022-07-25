@@ -40,7 +40,6 @@ var entity = ent.Detail{
 	FromCoinTypeID:  uuid.New(),
 	CoinUsdCurrency: decimal.RequireFromString("1.00045000000123012"),
 	IoExtra:         uuid.New().String(),
-	FromOldID:       uuid.New(),
 }
 
 var (
@@ -54,7 +53,6 @@ var (
 	fromCoinTypeID  = entity.FromCoinTypeID.String()
 	coinUSDCurrency = entity.CoinUsdCurrency.String()
 	ioExtra         = entity.IoExtra
-	fromOldID       = entity.FromOldID.String()
 
 	req = npool.DetailReq{
 		ID:              &id,
@@ -67,7 +65,6 @@ var (
 		FromCoinTypeID:  &fromCoinTypeID,
 		CoinUSDCurrency: &coinUSDCurrency,
 		IOExtra:         &ioExtra,
-		FromOldID:       &fromOldID,
 	}
 )
 
@@ -96,7 +93,6 @@ func createBulk(t *testing.T) {
 			FromCoinTypeID:  uuid.New(),
 			CoinUsdCurrency: decimal.RequireFromString("1.8902"),
 			IoExtra:         uuid.New().String(),
-			FromOldID:       uuid.New(),
 		},
 		{
 			ID:              uuid.New(),
@@ -109,7 +105,6 @@ func createBulk(t *testing.T) {
 			FromCoinTypeID:  uuid.New(),
 			CoinUsdCurrency: decimal.RequireFromString("1.123"),
 			IoExtra:         uuid.New().String(),
-			FromOldID:       uuid.New(),
 		},
 	}
 
@@ -125,7 +120,6 @@ func createBulk(t *testing.T) {
 		_fromCoinTypeID := entity.FromCoinTypeID.String()
 		_coinUSDCurrency := _entity.CoinUsdCurrency.String()
 		_ioExtra := _entity.IoExtra
-		_fromOldID := _entity.FromOldID.String()
 
 		reqs = append(reqs, &npool.DetailReq{
 			ID:              &_id,
@@ -138,7 +132,6 @@ func createBulk(t *testing.T) {
 			FromCoinTypeID:  &_fromCoinTypeID,
 			CoinUSDCurrency: &_coinUSDCurrency,
 			IOExtra:         &_ioExtra,
-			FromOldID:       &_fromOldID,
 		})
 	}
 	infos, err := CreateBulk(context.Background(), reqs)
