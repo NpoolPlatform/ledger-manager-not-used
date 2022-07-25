@@ -80,10 +80,13 @@ func duplicate(infos []*npool.GeneralReq) error {
 			return status.Error(codes.InvalidArgument, fmt.Sprintf("Infos has invalid element %v", err))
 		}
 
-		key := fmt.Sprintf("%v:%v:%v", info.AppID, info.UserID, info.CoinTypeID)
+		key := fmt.Sprintf("%v:%v:%v", info.GetAppID(), info.GetUserID(), info.GetCoinTypeID())
 		if _, ok := keys[key]; ok {
 			return status.Error(codes.InvalidArgument, "Infos has duplicate AppID:UserID:CoinTypeID")
 		}
+
+		keys[key] = struct{}{}
+		apps[info.GetAppID()] = struct{}{}
 	}
 
 	if len(apps) > 1 {
