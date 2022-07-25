@@ -21,7 +21,7 @@ spec:
     - host: api.npool.top
       http: &http_rules
         paths:
-          - path: /api/ledger-manager
+          - path: /api/ledger
             backend:
               serviceName: ledger-manager
               servicePort: 50330
