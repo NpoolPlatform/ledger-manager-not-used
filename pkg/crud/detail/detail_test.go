@@ -14,7 +14,7 @@ import (
 
 	testinit "github.com/NpoolPlatform/ledger-manager/pkg/testinit"
 	valuedef "github.com/NpoolPlatform/message/npool"
-	npool "github.com/NpoolPlatform/message/npool/ledgermgr/detail"
+	npool "github.com/NpoolPlatform/message/npool/ledger/mgr/v1/detail"
 	"github.com/google/uuid"
 
 	"github.com/stretchr/testify/assert"

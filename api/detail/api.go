@@ -1,7 +1,7 @@
 package detail
 
 import (
-	"github.com/NpoolPlatform/message/npool/ledgermgr/detail"
+	"github.com/NpoolPlatform/message/npool/ledger/mgr/v1/detail"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"

@@ -16,7 +16,7 @@ import (
 	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent"
 	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/detail"
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
-	npool "github.com/NpoolPlatform/message/npool/ledgermgr/detail"
+	npool "github.com/NpoolPlatform/message/npool/ledger/mgr/v1/detail"
 
 	"github.com/google/uuid"
 )

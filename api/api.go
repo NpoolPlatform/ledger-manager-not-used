@@ -3,7 +3,7 @@ package api
 import (
 	"context"
 
-	"github.com/NpoolPlatform/message/npool/ledgermgr"
+	ledgermgr "github.com/NpoolPlatform/message/npool/ledger/mgr/v1"
 
 	"github.com/NpoolPlatform/ledger-manager/api/detail"
 	"github.com/NpoolPlatform/ledger-manager/api/general"

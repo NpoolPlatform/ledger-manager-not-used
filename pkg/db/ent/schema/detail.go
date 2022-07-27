@@ -8,7 +8,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/shopspring/decimal"
 
-	"github.com/NpoolPlatform/message/npool/ledgermgr/detail"
+	"github.com/NpoolPlatform/message/npool/ledger/mgr/v1/detail"
 )
 
 // Detail holds the schema definition for the Detail entity.
