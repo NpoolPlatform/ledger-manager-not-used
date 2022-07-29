@@ -2,7 +2,7 @@ package general
 
 import (
 	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent"
-	npool "github.com/NpoolPlatform/message/npool/ledger/mgr/v1/general"
+	npool "github.com/NpoolPlatform/message/npool/ledger/mgr/v1/ledger/general"
 )
 
 func Ent2Grpc(row *ent.General) *npool.General {
