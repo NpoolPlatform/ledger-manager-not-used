@@ -12,6 +12,7 @@ import (
 
 	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/detail"
 	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/general"
+	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/profit"
 
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
@@ -26,6 +27,8 @@ type Client struct {
 	Detail *DetailClient
 	// General is the client for interacting with the General builders.
 	General *GeneralClient
+	// Profit is the client for interacting with the Profit builders.
+	Profit *ProfitClient
 }
 
 // NewClient creates a new client configured with the given options.
@@ -41,6 +44,7 @@ func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.Detail = NewDetailClient(c.config)
 	c.General = NewGeneralClient(c.config)
+	c.Profit = NewProfitClient(c.config)
 }
 
 // Open opens a database/sql.DB specified by the driver name and
@@ -76,6 +80,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		config:  cfg,
 		Detail:  NewDetailClient(cfg),
 		General: NewGeneralClient(cfg),
+		Profit:  NewProfitClient(cfg),
 	}, nil
 }
 
@@ -97,6 +102,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		config:  cfg,
 		Detail:  NewDetailClient(cfg),
 		General: NewGeneralClient(cfg),
+		Profit:  NewProfitClient(cfg),
 	}, nil
 }
 
@@ -128,6 +134,7 @@ func (c *Client) Close() error {
 func (c *Client) Use(hooks ...Hook) {
 	c.Detail.Use(hooks...)
 	c.General.Use(hooks...)
+	c.Profit.Use(hooks...)
 }
 
 // DetailClient is a client for the Detail schema.
@@ -310,4 +317,95 @@ func (c *GeneralClient) GetX(ctx context.Context, id uuid.UUID) *General {
 func (c *GeneralClient) Hooks() []Hook {
 	hooks := c.hooks.General
 	return append(hooks[:len(hooks):len(hooks)], general.Hooks[:]...)
+}
+
+// ProfitClient is a client for the Profit schema.
+type ProfitClient struct {
+	config
+}
+
+// NewProfitClient returns a client for the Profit from the given config.
+func NewProfitClient(c config) *ProfitClient {
+	return &ProfitClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `profit.Hooks(f(g(h())))`.
+func (c *ProfitClient) Use(hooks ...Hook) {
+	c.hooks.Profit = append(c.hooks.Profit, hooks...)
+}
+
+// Create returns a create builder for Profit.
+func (c *ProfitClient) Create() *ProfitCreate {
+	mutation := newProfitMutation(c.config, OpCreate)
+	return &ProfitCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Profit entities.
+func (c *ProfitClient) CreateBulk(builders ...*ProfitCreate) *ProfitCreateBulk {
+	return &ProfitCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Profit.
+func (c *ProfitClient) Update() *ProfitUpdate {
+	mutation := newProfitMutation(c.config, OpUpdate)
+	return &ProfitUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ProfitClient) UpdateOne(pr *Profit) *ProfitUpdateOne {
+	mutation := newProfitMutation(c.config, OpUpdateOne, withProfit(pr))
+	return &ProfitUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ProfitClient) UpdateOneID(id uuid.UUID) *ProfitUpdateOne {
+	mutation := newProfitMutation(c.config, OpUpdateOne, withProfitID(id))
+	return &ProfitUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Profit.
+func (c *ProfitClient) Delete() *ProfitDelete {
+	mutation := newProfitMutation(c.config, OpDelete)
+	return &ProfitDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *ProfitClient) DeleteOne(pr *Profit) *ProfitDeleteOne {
+	return c.DeleteOneID(pr.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *ProfitClient) DeleteOneID(id uuid.UUID) *ProfitDeleteOne {
+	builder := c.Delete().Where(profit.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ProfitDeleteOne{builder}
+}
+
+// Query returns a query builder for Profit.
+func (c *ProfitClient) Query() *ProfitQuery {
+	return &ProfitQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a Profit entity by its id.
+func (c *ProfitClient) Get(ctx context.Context, id uuid.UUID) (*Profit, error) {
+	return c.Query().Where(profit.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ProfitClient) GetX(ctx context.Context, id uuid.UUID) *Profit {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *ProfitClient) Hooks() []Hook {
+	hooks := c.hooks.Profit
+	return append(hooks[:len(hooks):len(hooks)], profit.Hooks[:]...)
 }

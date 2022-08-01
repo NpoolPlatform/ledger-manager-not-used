@@ -10,6 +10,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/detail"
 	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/general"
+	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/profit"
 )
 
 // ent aliases to avoid import conflicts in user's code.
@@ -32,6 +33,7 @@ func columnChecker(table string) func(string) error {
 	checks := map[string]func(string) bool{
 		detail.Table:  detail.ValidColumn,
 		general.Table: general.ValidColumn,
+		profit.Table:  profit.ValidColumn,
 	}
 	check, ok := checks[table]
 	if !ok {

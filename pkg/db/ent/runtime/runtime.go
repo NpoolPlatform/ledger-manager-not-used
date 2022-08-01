@@ -7,6 +7,7 @@ import (
 
 	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/detail"
 	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/general"
+	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/profit"
 	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/schema"
 	"github.com/google/uuid"
 
@@ -122,6 +123,50 @@ func init() {
 	generalDescID := generalFields[0].Descriptor()
 	// general.DefaultID holds the default value on creation for the id field.
 	general.DefaultID = generalDescID.Default.(func() uuid.UUID)
+	profitMixin := schema.Profit{}.Mixin()
+	profit.Policy = privacy.NewPolicies(profitMixin[0], schema.Profit{})
+	profit.Hooks[0] = func(next ent.Mutator) ent.Mutator {
+		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+			if err := profit.Policy.EvalMutation(ctx, m); err != nil {
+				return nil, err
+			}
+			return next.Mutate(ctx, m)
+		})
+	}
+	profitMixinFields0 := profitMixin[0].Fields()
+	_ = profitMixinFields0
+	profitFields := schema.Profit{}.Fields()
+	_ = profitFields
+	// profitDescCreatedAt is the schema descriptor for created_at field.
+	profitDescCreatedAt := profitMixinFields0[0].Descriptor()
+	// profit.DefaultCreatedAt holds the default value on creation for the created_at field.
+	profit.DefaultCreatedAt = profitDescCreatedAt.Default.(func() uint32)
+	// profitDescUpdatedAt is the schema descriptor for updated_at field.
+	profitDescUpdatedAt := profitMixinFields0[1].Descriptor()
+	// profit.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	profit.DefaultUpdatedAt = profitDescUpdatedAt.Default.(func() uint32)
+	// profit.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	profit.UpdateDefaultUpdatedAt = profitDescUpdatedAt.UpdateDefault.(func() uint32)
+	// profitDescDeletedAt is the schema descriptor for deleted_at field.
+	profitDescDeletedAt := profitMixinFields0[2].Descriptor()
+	// profit.DefaultDeletedAt holds the default value on creation for the deleted_at field.
+	profit.DefaultDeletedAt = profitDescDeletedAt.Default.(func() uint32)
+	// profitDescAppID is the schema descriptor for app_id field.
+	profitDescAppID := profitFields[1].Descriptor()
+	// profit.DefaultAppID holds the default value on creation for the app_id field.
+	profit.DefaultAppID = profitDescAppID.Default.(func() uuid.UUID)
+	// profitDescUserID is the schema descriptor for user_id field.
+	profitDescUserID := profitFields[2].Descriptor()
+	// profit.DefaultUserID holds the default value on creation for the user_id field.
+	profit.DefaultUserID = profitDescUserID.Default.(func() uuid.UUID)
+	// profitDescCoinTypeID is the schema descriptor for coin_type_id field.
+	profitDescCoinTypeID := profitFields[3].Descriptor()
+	// profit.DefaultCoinTypeID holds the default value on creation for the coin_type_id field.
+	profit.DefaultCoinTypeID = profitDescCoinTypeID.Default.(func() uuid.UUID)
+	// profitDescID is the schema descriptor for id field.
+	profitDescID := profitFields[0].Descriptor()
+	// profit.DefaultID holds the default value on creation for the id field.
+	profit.DefaultID = profitDescID.Default.(func() uuid.UUID)
 }
 
 const (

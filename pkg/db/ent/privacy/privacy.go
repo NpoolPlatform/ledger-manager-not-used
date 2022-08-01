@@ -213,6 +213,30 @@ func (f GeneralMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutatio
 	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.GeneralMutation", m)
 }
 
+// The ProfitQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type ProfitQueryRuleFunc func(context.Context, *ent.ProfitQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f ProfitQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.ProfitQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.ProfitQuery", q)
+}
+
+// The ProfitMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type ProfitMutationRuleFunc func(context.Context, *ent.ProfitMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f ProfitMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.ProfitMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.ProfitMutation", m)
+}
+
 type (
 	// Filter is the interface that wraps the Where function
 	// for filtering nodes in queries and mutations.
@@ -252,6 +276,8 @@ func queryFilter(q ent.Query) (Filter, error) {
 		return q.Filter(), nil
 	case *ent.GeneralQuery:
 		return q.Filter(), nil
+	case *ent.ProfitQuery:
+		return q.Filter(), nil
 	default:
 		return nil, Denyf("ent/privacy: unexpected query type %T for query filter", q)
 	}
@@ -262,6 +288,8 @@ func mutationFilter(m ent.Mutation) (Filter, error) {
 	case *ent.DetailMutation:
 		return m.Filter(), nil
 	case *ent.GeneralMutation:
+		return m.Filter(), nil
+	case *ent.ProfitMutation:
 		return m.Filter(), nil
 	default:
 		return nil, Denyf("ent/privacy: unexpected mutation type %T for mutation filter", m)

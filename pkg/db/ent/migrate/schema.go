@@ -50,10 +50,28 @@ var (
 		Columns:    GeneralsColumns,
 		PrimaryKey: []*schema.Column{GeneralsColumns[0]},
 	}
+	// ProfitsColumns holds the columns for the "profits" table.
+	ProfitsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID, Unique: true},
+		{Name: "created_at", Type: field.TypeUint32},
+		{Name: "updated_at", Type: field.TypeUint32},
+		{Name: "deleted_at", Type: field.TypeUint32},
+		{Name: "app_id", Type: field.TypeUUID, Nullable: true},
+		{Name: "user_id", Type: field.TypeUUID, Nullable: true},
+		{Name: "coin_type_id", Type: field.TypeUUID, Nullable: true},
+		{Name: "incoming", Type: field.TypeFloat64, Nullable: true, SchemaType: map[string]string{"mysql": "decimal(37, 18)"}},
+	}
+	// ProfitsTable holds the schema information for the "profits" table.
+	ProfitsTable = &schema.Table{
+		Name:       "profits",
+		Columns:    ProfitsColumns,
+		PrimaryKey: []*schema.Column{ProfitsColumns[0]},
+	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		DetailsTable,
 		GeneralsTable,
+		ProfitsTable,
 	}
 )
 

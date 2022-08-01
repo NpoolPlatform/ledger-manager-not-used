@@ -35,6 +35,19 @@ func (f GeneralFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, err
 	return f(ctx, mv)
 }
 
+// The ProfitFunc type is an adapter to allow the use of ordinary
+// function as Profit mutator.
+type ProfitFunc func(context.Context, *ent.ProfitMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ProfitFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.ProfitMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ProfitMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // Condition is a hook condition function.
 type Condition func(context.Context, ent.Mutation) bool
 

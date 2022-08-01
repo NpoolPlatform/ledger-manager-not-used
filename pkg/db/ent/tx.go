@@ -16,6 +16,8 @@ type Tx struct {
 	Detail *DetailClient
 	// General is the client for interacting with the General builders.
 	General *GeneralClient
+	// Profit is the client for interacting with the Profit builders.
+	Profit *ProfitClient
 
 	// lazily loaded.
 	client     *Client
@@ -153,6 +155,7 @@ func (tx *Tx) Client() *Client {
 func (tx *Tx) init() {
 	tx.Detail = NewDetailClient(tx.config)
 	tx.General = NewGeneralClient(tx.config)
+	tx.Profit = NewProfitClient(tx.config)
 }
 
 // txDriver wraps the given dialect.Tx with a nop dialect.Driver implementation.
