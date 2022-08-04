@@ -129,3 +129,7 @@ func duplicate(infos []*npool.DetailReq) error {
 
 	return nil
 }
+
+func Validate(info *npool.DetailReq) error {
+	return validate(info)
+}
