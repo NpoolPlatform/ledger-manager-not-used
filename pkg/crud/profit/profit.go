@@ -21,6 +21,25 @@ import (
 	"github.com/google/uuid"
 )
 
+func CreateSet(c *ent.ProfitCreate, in *npool.ProfitReq) *ent.ProfitCreate {
+	if in.ID != nil {
+		c.SetID(uuid.MustParse(in.GetID()))
+	}
+	if in.AppID != nil {
+		c.SetAppID(uuid.MustParse(in.GetAppID()))
+	}
+	if in.UserID != nil {
+		c.SetUserID(uuid.MustParse(in.GetUserID()))
+	}
+	if in.CoinTypeID != nil {
+		c.SetCoinTypeID(uuid.MustParse(in.GetCoinTypeID()))
+	}
+
+	c.SetIncoming(decimal.NewFromInt(0))
+
+	return c
+}
+
 func Create(ctx context.Context, in *npool.ProfitReq) (*ent.Profit, error) {
 	var info *ent.Profit
 	var err error
@@ -38,24 +57,8 @@ func Create(ctx context.Context, in *npool.ProfitReq) (*ent.Profit, error) {
 	span = tracer.Trace(span, in)
 
 	err = db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
-		c := cli.Profit.Create()
-
-		if in.ID != nil {
-			c.SetID(uuid.MustParse(in.GetID()))
-		}
-		if in.AppID != nil {
-			c.SetAppID(uuid.MustParse(in.GetAppID()))
-		}
-		if in.UserID != nil {
-			c.SetUserID(uuid.MustParse(in.GetUserID()))
-		}
-		if in.CoinTypeID != nil {
-			c.SetCoinTypeID(uuid.MustParse(in.GetCoinTypeID()))
-		}
-
-		c.SetIncoming(decimal.NewFromInt(0))
-
-		info, err = c.Save(_ctx)
+		info, err = CreateSet(cli.Profit.Create(), in).
+			Save(_ctx)
 		return err
 	})
 	if err != nil {
@@ -84,20 +87,7 @@ func CreateBulk(ctx context.Context, in []*npool.ProfitReq) ([]*ent.Profit, erro
 	err = db.WithTx(ctx, func(_ctx context.Context, tx *ent.Tx) error {
 		bulk := make([]*ent.ProfitCreate, len(in))
 		for i, info := range in {
-			bulk[i] = tx.Profit.Create()
-			if info.ID != nil {
-				bulk[i].SetID(uuid.MustParse(info.GetID()))
-			}
-			if info.AppID != nil {
-				bulk[i].SetAppID(uuid.MustParse(info.GetAppID()))
-			}
-			if info.UserID != nil {
-				bulk[i].SetUserID(uuid.MustParse(info.GetUserID()))
-			}
-			if info.CoinTypeID != nil {
-				bulk[i].SetCoinTypeID(uuid.MustParse(info.GetCoinTypeID()))
-			}
-			bulk[i].SetIncoming(decimal.NewFromInt(0))
+			bulk[i] = CreateSet(tx.Profit.Create(), info)
 		}
 		rows, err = tx.Profit.CreateBulk(bulk...).Save(_ctx)
 		return err
@@ -106,6 +96,29 @@ func CreateBulk(ctx context.Context, in []*npool.ProfitReq) ([]*ent.Profit, erro
 		return nil, err
 	}
 	return rows, nil
+}
+
+func UpdateSet(info *ent.Profit, in *npool.ProfitReq) (*ent.ProfitUpdateOne, error) {
+	incoming := decimal.NewFromInt(0)
+	if in.Incoming != nil {
+		amount, err := decimal.NewFromString(in.GetIncoming())
+		if err != nil {
+			return nil, err
+		}
+		incoming = incoming.Add(amount)
+	}
+
+	if incoming.Cmp(decimal.NewFromInt(0)) < 0 {
+		return nil, fmt.Errorf("incoming < 0")
+	}
+
+	stm := info.Update()
+
+	if in.Incoming != nil {
+		stm = stm.AddIncoming(incoming)
+	}
+
+	return stm, nil
 }
 
 func AddFields(ctx context.Context, in *npool.ProfitReq) (*ent.Profit, error) {
@@ -130,23 +143,9 @@ func AddFields(ctx context.Context, in *npool.ProfitReq) (*ent.Profit, error) {
 			return fmt.Errorf("fail query profit: %v", err)
 		}
 
-		incoming := decimal.NewFromInt(0)
-		if in.Incoming != nil {
-			amount, err := decimal.NewFromString(in.GetIncoming())
-			if err != nil {
-				return err
-			}
-			incoming = incoming.Add(amount)
-		}
-
-		if incoming.Cmp(decimal.NewFromInt(0)) < 0 {
-			return fmt.Errorf("incoming < 0")
-		}
-
-		stm := info.Update()
-
-		if in.Incoming != nil {
-			stm = stm.AddIncoming(incoming)
+		stm, err := UpdateSet(info, in)
+		if err != nil {
+			return err
 		}
 
 		info, err = stm.Save(_ctx)
