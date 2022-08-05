@@ -21,6 +21,28 @@ import (
 	"github.com/google/uuid"
 )
 
+func CreateSet(c *ent.GeneralCreate, in *npool.GeneralReq) *ent.GeneralCreate {
+	if in.ID != nil {
+		c.SetID(uuid.MustParse(in.GetID()))
+	}
+	if in.AppID != nil {
+		c.SetAppID(uuid.MustParse(in.GetAppID()))
+	}
+	if in.UserID != nil {
+		c.SetUserID(uuid.MustParse(in.GetUserID()))
+	}
+	if in.CoinTypeID != nil {
+		c.SetCoinTypeID(uuid.MustParse(in.GetCoinTypeID()))
+	}
+
+	c.SetIncoming(decimal.NewFromInt(0))
+	c.SetLocked(decimal.NewFromInt(0))
+	c.SetOutcoming(decimal.NewFromInt(0))
+	c.SetSpendable(decimal.NewFromInt(0))
+
+	return c
+}
+
 func Create(ctx context.Context, in *npool.GeneralReq) (*ent.General, error) {
 	var info *ent.General
 	var err error
@@ -38,27 +60,8 @@ func Create(ctx context.Context, in *npool.GeneralReq) (*ent.General, error) {
 	span = tracer.Trace(span, in)
 
 	err = db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
-		c := cli.General.Create()
-
-		if in.ID != nil {
-			c.SetID(uuid.MustParse(in.GetID()))
-		}
-		if in.AppID != nil {
-			c.SetAppID(uuid.MustParse(in.GetAppID()))
-		}
-		if in.UserID != nil {
-			c.SetUserID(uuid.MustParse(in.GetUserID()))
-		}
-		if in.CoinTypeID != nil {
-			c.SetCoinTypeID(uuid.MustParse(in.GetCoinTypeID()))
-		}
-
-		c.SetIncoming(decimal.NewFromInt(0))
-		c.SetLocked(decimal.NewFromInt(0))
-		c.SetOutcoming(decimal.NewFromInt(0))
-		c.SetSpendable(decimal.NewFromInt(0))
-
-		info, err = c.Save(_ctx)
+		info, err = CreateSet(cli.General.Create(), in).
+			Save(_ctx)
 		return err
 	})
 	if err != nil {
@@ -87,23 +90,7 @@ func CreateBulk(ctx context.Context, in []*npool.GeneralReq) ([]*ent.General, er
 	err = db.WithTx(ctx, func(_ctx context.Context, tx *ent.Tx) error {
 		bulk := make([]*ent.GeneralCreate, len(in))
 		for i, info := range in {
-			bulk[i] = tx.General.Create()
-			if info.ID != nil {
-				bulk[i].SetID(uuid.MustParse(info.GetID()))
-			}
-			if info.AppID != nil {
-				bulk[i].SetAppID(uuid.MustParse(info.GetAppID()))
-			}
-			if info.UserID != nil {
-				bulk[i].SetUserID(uuid.MustParse(info.GetUserID()))
-			}
-			if info.CoinTypeID != nil {
-				bulk[i].SetCoinTypeID(uuid.MustParse(info.GetCoinTypeID()))
-			}
-			bulk[i].SetIncoming(decimal.NewFromInt(0))
-			bulk[i].SetLocked(decimal.NewFromInt(0))
-			bulk[i].SetOutcoming(decimal.NewFromInt(0))
-			bulk[i].SetSpendable(decimal.NewFromInt(0))
+			bulk[i] = CreateSet(tx.General.Create(), info)
 		}
 		rows, err = tx.General.CreateBulk(bulk...).Save(_ctx)
 		return err
@@ -114,7 +101,87 @@ func CreateBulk(ctx context.Context, in []*npool.GeneralReq) ([]*ent.General, er
 	return rows, nil
 }
 
-func AddFields(ctx context.Context, in *npool.GeneralReq) (*ent.General, error) { //nolint
+func UpdateSet(info *ent.General, in *npool.GeneralReq) (*ent.GeneralUpdateOne, error) { //nolint
+	incoming := decimal.NewFromInt(0)
+	if in.Incoming != nil {
+		amount, err := decimal.NewFromString(in.GetIncoming())
+		if err != nil {
+			return nil, err
+		}
+		incoming = incoming.Add(amount)
+	}
+	locked := decimal.NewFromInt(0)
+	if in.Locked != nil {
+		amount, err := decimal.NewFromString(in.GetLocked())
+		if err != nil {
+			return nil, err
+		}
+		locked = locked.Add(amount)
+	}
+	outcoming := decimal.NewFromInt(0)
+	if in.Outcoming != nil {
+		amount, err := decimal.NewFromString(in.GetOutcoming())
+		if err != nil {
+			return nil, err
+		}
+		outcoming = outcoming.Add(amount)
+	}
+	spendable := decimal.NewFromInt(0)
+	if in.Spendable != nil {
+		amount, err := decimal.NewFromString(in.GetSpendable())
+		if err != nil {
+			return nil, err
+		}
+		spendable = spendable.Add(amount)
+	}
+
+	if incoming.Add(info.Incoming).
+		Cmp(
+			locked.Add(info.Locked).
+				Add(outcoming).
+				Add(info.Outcoming).
+				Add(spendable).
+				Add(info.Spendable),
+		) < 0 {
+		return nil, fmt.Errorf("outcoming (%v + %v) + locked (%v + %v) + spendable (%v + %v) > incoming (%v + %v)",
+			outcoming, info.Outcoming, locked, info.Locked, spendable, info.Spendable, incoming, info.Incoming)
+	}
+
+	if locked.Add(info.Locked).Cmp(decimal.NewFromInt(0)) < 0 {
+		return nil, fmt.Errorf("locked + locked < 0")
+	}
+
+	if incoming.Cmp(decimal.NewFromInt(0)) < 0 {
+		return nil, fmt.Errorf("incoming < 0")
+	}
+
+	if outcoming.Cmp(decimal.NewFromInt(0)) < 0 {
+		return nil, fmt.Errorf("outcoming < 0")
+	}
+
+	if spendable.Add(info.Spendable).Cmp(decimal.NewFromInt(0)) < 0 {
+		return nil, fmt.Errorf("spendable + spendable < 0")
+	}
+
+	stm := info.Update()
+
+	if in.Incoming != nil {
+		stm = stm.AddIncoming(incoming)
+	}
+	if in.Outcoming != nil {
+		stm = stm.AddOutcoming(outcoming)
+	}
+	if in.Locked != nil {
+		stm = stm.AddLocked(locked)
+	}
+	if in.Spendable != nil {
+		stm = stm.AddSpendable(spendable)
+	}
+
+	return stm, nil
+}
+
+func AddFields(ctx context.Context, in *npool.GeneralReq) (*ent.General, error) {
 	var info *ent.General
 	var err error
 
@@ -136,80 +203,9 @@ func AddFields(ctx context.Context, in *npool.GeneralReq) (*ent.General, error) 
 			return fmt.Errorf("fail query general: %v", err)
 		}
 
-		incoming := decimal.NewFromInt(0)
-		if in.Incoming != nil {
-			amount, err := decimal.NewFromString(in.GetIncoming())
-			if err != nil {
-				return err
-			}
-			incoming = incoming.Add(amount)
-		}
-		locked := decimal.NewFromInt(0)
-		if in.Locked != nil {
-			amount, err := decimal.NewFromString(in.GetLocked())
-			if err != nil {
-				return err
-			}
-			locked = locked.Add(amount)
-		}
-		outcoming := decimal.NewFromInt(0)
-		if in.Outcoming != nil {
-			amount, err := decimal.NewFromString(in.GetOutcoming())
-			if err != nil {
-				return err
-			}
-			outcoming = outcoming.Add(amount)
-		}
-		spendable := decimal.NewFromInt(0)
-		if in.Spendable != nil {
-			amount, err := decimal.NewFromString(in.GetSpendable())
-			if err != nil {
-				return err
-			}
-			spendable = spendable.Add(amount)
-		}
-
-		if incoming.Add(info.Incoming).
-			Cmp(
-				locked.Add(info.Locked).
-					Add(outcoming).
-					Add(info.Outcoming).
-					Add(spendable).
-					Add(info.Spendable),
-			) < 0 {
-			return fmt.Errorf("outcoming (%v + %v) + locked (%v + %v) + spendable (%v + %v) > incoming (%v + %v)",
-				outcoming, info.Outcoming, locked, info.Locked, spendable, info.Spendable, incoming, info.Incoming)
-		}
-
-		if locked.Add(info.Locked).Cmp(decimal.NewFromInt(0)) < 0 {
-			return fmt.Errorf("locked + locked < 0")
-		}
-
-		if incoming.Cmp(decimal.NewFromInt(0)) < 0 {
-			return fmt.Errorf("incoming < 0")
-		}
-
-		if outcoming.Cmp(decimal.NewFromInt(0)) < 0 {
-			return fmt.Errorf("outcoming < 0")
-		}
-
-		if spendable.Add(info.Spendable).Cmp(decimal.NewFromInt(0)) < 0 {
-			return fmt.Errorf("spendable + spendable < 0")
-		}
-
-		stm := info.Update()
-
-		if in.Incoming != nil {
-			stm = stm.AddIncoming(incoming)
-		}
-		if in.Outcoming != nil {
-			stm = stm.AddOutcoming(outcoming)
-		}
-		if in.Locked != nil {
-			stm = stm.AddLocked(locked)
-		}
-		if in.Spendable != nil {
-			stm = stm.AddSpendable(spendable)
+		stm, err := UpdateSet(info, in)
+		if err != nil {
+			return err
 		}
 
 		info, err = stm.Save(_ctx)
