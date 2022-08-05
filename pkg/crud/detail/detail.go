@@ -21,7 +21,53 @@ import (
 	"github.com/google/uuid"
 )
 
-func Create(ctx context.Context, in *npool.DetailReq) (*ent.Detail, error) { //nolint
+func CreateSet(c *ent.DetailCreate, in *npool.DetailReq) (*ent.DetailCreate, error) {
+	if in.ID != nil {
+		c.SetID(uuid.MustParse(in.GetID()))
+	}
+	if in.AppID != nil {
+		c.SetAppID(uuid.MustParse(in.GetAppID()))
+	}
+	if in.UserID != nil {
+		c.SetUserID(uuid.MustParse(in.GetUserID()))
+	}
+	if in.CoinTypeID != nil {
+		c.SetCoinTypeID(uuid.MustParse(in.GetCoinTypeID()))
+	}
+	if in.IOType != nil {
+		c.SetIoType(in.GetIOType().String())
+	}
+	if in.IOSubType != nil {
+		c.SetIoSubType(in.GetIOSubType().String())
+	}
+	if in.Amount != nil {
+		amount, err := decimal.NewFromString(in.GetAmount())
+		if err != nil {
+			return nil, err
+		}
+		c.SetAmount(amount)
+	}
+	if in.FromCoinTypeID != nil {
+		c.SetFromCoinTypeID(uuid.MustParse(in.GetFromCoinTypeID()))
+	}
+	if in.CoinUSDCurrency != nil {
+		currency, err := decimal.NewFromString(in.GetCoinUSDCurrency())
+		if err != nil {
+			return nil, err
+		}
+		c.SetCoinUsdCurrency(currency)
+	}
+	if in.IOExtra != nil {
+		c.SetIoExtra(in.GetIOExtra())
+	}
+	if in.CreatedAt != nil {
+		c.SetCreatedAt(in.GetCreatedAt())
+	}
+
+	return c, nil
+}
+
+func Create(ctx context.Context, in *npool.DetailReq) (*ent.Detail, error) {
 	var info *ent.Detail
 	var err error
 
@@ -38,48 +84,9 @@ func Create(ctx context.Context, in *npool.DetailReq) (*ent.Detail, error) { //n
 	span = tracer.Trace(span, in)
 
 	err = db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
-		c := cli.Debug().Detail.Create()
-
-		if in.ID != nil {
-			c.SetID(uuid.MustParse(in.GetID()))
-		}
-		if in.AppID != nil {
-			c.SetAppID(uuid.MustParse(in.GetAppID()))
-		}
-		if in.UserID != nil {
-			c.SetUserID(uuid.MustParse(in.GetUserID()))
-		}
-		if in.CoinTypeID != nil {
-			c.SetCoinTypeID(uuid.MustParse(in.GetCoinTypeID()))
-		}
-		if in.IOType != nil {
-			c.SetIoType(in.GetIOType().String())
-		}
-		if in.IOSubType != nil {
-			c.SetIoSubType(in.GetIOSubType().String())
-		}
-		if in.Amount != nil {
-			amount, err := decimal.NewFromString(in.GetAmount())
-			if err != nil {
-				return err
-			}
-			c.SetAmount(amount)
-		}
-		if in.FromCoinTypeID != nil {
-			c.SetFromCoinTypeID(uuid.MustParse(in.GetFromCoinTypeID()))
-		}
-		if in.CoinUSDCurrency != nil {
-			currency, err := decimal.NewFromString(in.GetCoinUSDCurrency())
-			if err != nil {
-				return err
-			}
-			c.SetCoinUsdCurrency(currency)
-		}
-		if in.IOExtra != nil {
-			c.SetIoExtra(in.GetIOExtra())
-		}
-		if in.CreatedAt != nil {
-			c.SetCreatedAt(in.GetCreatedAt())
+		c, err := CreateSet(cli.Detail.Create(), in)
+		if err != nil {
+			return err
 		}
 
 		info, err = c.Save(_ctx)
@@ -92,7 +99,7 @@ func Create(ctx context.Context, in *npool.DetailReq) (*ent.Detail, error) { //n
 	return info, nil
 }
 
-func CreateBulk(ctx context.Context, in []*npool.DetailReq) ([]*ent.Detail, error) { //nolint
+func CreateBulk(ctx context.Context, in []*npool.DetailReq) ([]*ent.Detail, error) {
 	var err error
 
 	_, span := otel.Tracer(constant.ServiceName).Start(ctx, "CreateBulk")
@@ -111,47 +118,9 @@ func CreateBulk(ctx context.Context, in []*npool.DetailReq) ([]*ent.Detail, erro
 	err = db.WithTx(ctx, func(_ctx context.Context, tx *ent.Tx) error {
 		bulk := make([]*ent.DetailCreate, len(in))
 		for i, info := range in {
-			bulk[i] = tx.Detail.Create()
-			if info.ID != nil {
-				bulk[i].SetID(uuid.MustParse(info.GetID()))
-			}
-			if info.AppID != nil {
-				bulk[i].SetAppID(uuid.MustParse(info.GetAppID()))
-			}
-			if info.UserID != nil {
-				bulk[i].SetUserID(uuid.MustParse(info.GetUserID()))
-			}
-			if info.CoinTypeID != nil {
-				bulk[i].SetCoinTypeID(uuid.MustParse(info.GetCoinTypeID()))
-			}
-			if info.IOType != nil {
-				bulk[i].SetIoType(info.GetIOType().String())
-			}
-			if info.IOSubType != nil {
-				bulk[i].SetIoSubType(info.GetIOSubType().String())
-			}
-			if info.Amount != nil {
-				amount, err := decimal.NewFromString(info.GetAmount())
-				if err != nil {
-					return err
-				}
-				bulk[i].SetAmount(amount)
-			}
-			if info.FromCoinTypeID != nil {
-				bulk[i].SetCoinTypeID(uuid.MustParse(info.GetFromCoinTypeID()))
-			}
-			if info.CoinUSDCurrency != nil {
-				currency, err := decimal.NewFromString(info.GetCoinUSDCurrency())
-				if err != nil {
-					return err
-				}
-				bulk[i].SetCoinUsdCurrency(currency)
-			}
-			if info.IOExtra != nil {
-				bulk[i].SetIoExtra(info.GetIOExtra())
-			}
-			if info.CreatedAt != nil {
-				bulk[i].SetCreatedAt(info.GetCreatedAt())
+			bulk[i], err = CreateSet(tx.Detail.Create(), info)
+			if err != nil {
+				return err
 			}
 		}
 		rows, err = tx.Detail.CreateBulk(bulk...).Save(_ctx)
