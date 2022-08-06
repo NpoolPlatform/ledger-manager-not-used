@@ -46,7 +46,7 @@ func (s *Server) CreateGeneral(ctx context.Context, in *npool.CreateGeneralReque
 
 	info, err := crud.Create(ctx, in.GetInfo())
 	if err != nil {
-		logger.Sugar().Errorf("fail create general: %v", err.Error())
+		logger.Sugar().Errorw("CreateGeneral", "error", err)
 		return &npool.CreateGeneralResponse{}, status.Error(codes.Internal, err.Error())
 	}
 
@@ -82,7 +82,7 @@ func (s *Server) CreateGenerals(ctx context.Context, in *npool.CreateGeneralsReq
 
 	rows, err := crud.CreateBulk(ctx, in.GetInfos())
 	if err != nil {
-		logger.Sugar().Errorf("fail create generals: %v", err)
+		logger.Sugar().Errorw("CreateGenerals", "error", err)
 		return &npool.CreateGeneralsResponse{}, status.Error(codes.Internal, err.Error())
 	}
 
@@ -148,7 +148,7 @@ func (s *Server) GetGeneral(ctx context.Context, in *npool.GetGeneralRequest) (*
 
 	info, err := crud.Row(ctx, id)
 	if err != nil {
-		logger.Sugar().Errorf("fail get general: %v", err)
+		logger.Sugar().Errorw("GetGeneral", "error", err)
 		return &npool.GetGeneralResponse{}, status.Error(codes.Internal, err.Error())
 	}
 
@@ -175,7 +175,7 @@ func (s *Server) GetGeneralOnly(ctx context.Context, in *npool.GetGeneralOnlyReq
 
 	info, err := crud.RowOnly(ctx, in.GetConds())
 	if err != nil {
-		logger.Sugar().Errorf("fail get generals: %v", err)
+		logger.Sugar().Errorw("GetGeneralOnly", "error", err)
 		return &npool.GetGeneralOnlyResponse{}, status.Error(codes.Internal, err.Error())
 	}
 
@@ -203,7 +203,7 @@ func (s *Server) GetGenerals(ctx context.Context, in *npool.GetGeneralsRequest) 
 
 	rows, total, err := crud.Rows(ctx, in.GetConds(), int(in.GetOffset()), int(in.GetLimit()))
 	if err != nil {
-		logger.Sugar().Errorf("fail get generals: %v", err)
+		logger.Sugar().Errorw("GetGenerals", "error", err)
 		return &npool.GetGeneralsResponse{}, status.Error(codes.Internal, err.Error())
 	}
 
@@ -237,7 +237,7 @@ func (s *Server) ExistGeneral(ctx context.Context, in *npool.ExistGeneralRequest
 
 	exist, err := crud.Exist(ctx, id)
 	if err != nil {
-		logger.Sugar().Errorf("fail check general: %v", err)
+		logger.Sugar().Errorw("ExistGeneral", "error", err)
 		return &npool.ExistGeneralResponse{}, status.Error(codes.Internal, err.Error())
 	}
 
@@ -265,7 +265,7 @@ func (s *Server) ExistGeneralConds(ctx context.Context,
 
 	exist, err := crud.ExistConds(ctx, in.GetConds())
 	if err != nil {
-		logger.Sugar().Errorf("fail check general: %v", err)
+		logger.Sugar().Errorw("ExistGeneralConds", "error", err)
 		return &npool.ExistGeneralCondsResponse{}, status.Error(codes.Internal, err.Error())
 	}
 
@@ -292,7 +292,7 @@ func (s *Server) CountGenerals(ctx context.Context, in *npool.CountGeneralsReque
 
 	total, err := crud.Count(ctx, in.GetConds())
 	if err != nil {
-		logger.Sugar().Errorf("fail count generals: %v", err)
+		logger.Sugar().Errorw("CountGenerals", "error", err)
 		return &npool.CountGeneralsResponse{}, status.Error(codes.Internal, err.Error())
 	}
 
@@ -325,7 +325,7 @@ func (s *Server) DeleteGeneral(ctx context.Context, in *npool.DeleteGeneralReque
 
 	info, err := crud.Delete(ctx, id)
 	if err != nil {
-		logger.Sugar().Errorf("fail delete general: %v", err)
+		logger.Sugar().Errorw("DeleteGeneral", "error", err)
 		return &npool.DeleteGeneralResponse{}, status.Error(codes.Internal, err.Error())
 	}
 

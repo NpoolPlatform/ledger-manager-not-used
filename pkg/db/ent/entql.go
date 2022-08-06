@@ -6,6 +6,7 @@ import (
 	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/detail"
 	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/general"
 	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/profit"
+	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/withdraw"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -15,7 +16,7 @@ import (
 
 // schemaGraph holds a representation of ent/schema at runtime.
 var schemaGraph = func() *sqlgraph.Schema {
-	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 3)}
+	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 4)}
 	graph.Nodes[0] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   detail.Table,
@@ -82,6 +83,27 @@ var schemaGraph = func() *sqlgraph.Schema {
 			profit.FieldUserID:     {Type: field.TypeUUID, Column: profit.FieldUserID},
 			profit.FieldCoinTypeID: {Type: field.TypeUUID, Column: profit.FieldCoinTypeID},
 			profit.FieldIncoming:   {Type: field.TypeFloat64, Column: profit.FieldIncoming},
+		},
+	}
+	graph.Nodes[3] = &sqlgraph.Node{
+		NodeSpec: sqlgraph.NodeSpec{
+			Table:   withdraw.Table,
+			Columns: withdraw.Columns,
+			ID: &sqlgraph.FieldSpec{
+				Type:   field.TypeUUID,
+				Column: withdraw.FieldID,
+			},
+		},
+		Type: "Withdraw",
+		Fields: map[string]*sqlgraph.FieldSpec{
+			withdraw.FieldCreatedAt:  {Type: field.TypeUint32, Column: withdraw.FieldCreatedAt},
+			withdraw.FieldUpdatedAt:  {Type: field.TypeUint32, Column: withdraw.FieldUpdatedAt},
+			withdraw.FieldDeletedAt:  {Type: field.TypeUint32, Column: withdraw.FieldDeletedAt},
+			withdraw.FieldAppID:      {Type: field.TypeUUID, Column: withdraw.FieldAppID},
+			withdraw.FieldUserID:     {Type: field.TypeUUID, Column: withdraw.FieldUserID},
+			withdraw.FieldCoinTypeID: {Type: field.TypeUUID, Column: withdraw.FieldCoinTypeID},
+			withdraw.FieldAccountID:  {Type: field.TypeUUID, Column: withdraw.FieldAccountID},
+			withdraw.FieldAmount:     {Type: field.TypeFloat64, Column: withdraw.FieldAmount},
 		},
 	}
 	return graph
@@ -353,4 +375,83 @@ func (f *ProfitFilter) WhereCoinTypeID(p entql.ValueP) {
 // WhereIncoming applies the entql float64 predicate on the incoming field.
 func (f *ProfitFilter) WhereIncoming(p entql.Float64P) {
 	f.Where(p.Field(profit.FieldIncoming))
+}
+
+// addPredicate implements the predicateAdder interface.
+func (wq *WithdrawQuery) addPredicate(pred func(s *sql.Selector)) {
+	wq.predicates = append(wq.predicates, pred)
+}
+
+// Filter returns a Filter implementation to apply filters on the WithdrawQuery builder.
+func (wq *WithdrawQuery) Filter() *WithdrawFilter {
+	return &WithdrawFilter{wq}
+}
+
+// addPredicate implements the predicateAdder interface.
+func (m *WithdrawMutation) addPredicate(pred func(s *sql.Selector)) {
+	m.predicates = append(m.predicates, pred)
+}
+
+// Filter returns an entql.Where implementation to apply filters on the WithdrawMutation builder.
+func (m *WithdrawMutation) Filter() *WithdrawFilter {
+	return &WithdrawFilter{m}
+}
+
+// WithdrawFilter provides a generic filtering capability at runtime for WithdrawQuery.
+type WithdrawFilter struct {
+	predicateAdder
+}
+
+// Where applies the entql predicate on the query filter.
+func (f *WithdrawFilter) Where(p entql.P) {
+	f.addPredicate(func(s *sql.Selector) {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[3].Type, p, s); err != nil {
+			s.AddError(err)
+		}
+	})
+}
+
+// WhereID applies the entql [16]byte predicate on the id field.
+func (f *WithdrawFilter) WhereID(p entql.ValueP) {
+	f.Where(p.Field(withdraw.FieldID))
+}
+
+// WhereCreatedAt applies the entql uint32 predicate on the created_at field.
+func (f *WithdrawFilter) WhereCreatedAt(p entql.Uint32P) {
+	f.Where(p.Field(withdraw.FieldCreatedAt))
+}
+
+// WhereUpdatedAt applies the entql uint32 predicate on the updated_at field.
+func (f *WithdrawFilter) WhereUpdatedAt(p entql.Uint32P) {
+	f.Where(p.Field(withdraw.FieldUpdatedAt))
+}
+
+// WhereDeletedAt applies the entql uint32 predicate on the deleted_at field.
+func (f *WithdrawFilter) WhereDeletedAt(p entql.Uint32P) {
+	f.Where(p.Field(withdraw.FieldDeletedAt))
+}
+
+// WhereAppID applies the entql [16]byte predicate on the app_id field.
+func (f *WithdrawFilter) WhereAppID(p entql.ValueP) {
+	f.Where(p.Field(withdraw.FieldAppID))
+}
+
+// WhereUserID applies the entql [16]byte predicate on the user_id field.
+func (f *WithdrawFilter) WhereUserID(p entql.ValueP) {
+	f.Where(p.Field(withdraw.FieldUserID))
+}
+
+// WhereCoinTypeID applies the entql [16]byte predicate on the coin_type_id field.
+func (f *WithdrawFilter) WhereCoinTypeID(p entql.ValueP) {
+	f.Where(p.Field(withdraw.FieldCoinTypeID))
+}
+
+// WhereAccountID applies the entql [16]byte predicate on the account_id field.
+func (f *WithdrawFilter) WhereAccountID(p entql.ValueP) {
+	f.Where(p.Field(withdraw.FieldAccountID))
+}
+
+// WhereAmount applies the entql float64 predicate on the amount field.
+func (f *WithdrawFilter) WhereAmount(p entql.Float64P) {
+	f.Where(p.Field(withdraw.FieldAmount))
 }

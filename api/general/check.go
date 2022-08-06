@@ -15,43 +15,43 @@ import (
 
 func validate(info *npool.GeneralReq) error {
 	if info.AppID == nil {
-		logger.Sugar().Error("AppID is empty")
+		logger.Sugar().Errorw("validate", "AppID", info.AppID)
 		return status.Error(codes.InvalidArgument, "AppID is empty")
 	}
 
 	if _, err := uuid.Parse(info.GetAppID()); err != nil {
-		logger.Sugar().Error("AppID is invalid: %v", err)
+		logger.Sugar().Errorw("validate", "AppID", info.GetAppID(), "error", err)
 		return status.Error(codes.InvalidArgument, fmt.Sprintf("AppID is invalid: %v", err))
 	}
 
 	if info.UserID == nil {
-		logger.Sugar().Error("UserID is empty")
+		logger.Sugar().Errorw("validate", "UserID", info.UserID)
 		return status.Error(codes.InvalidArgument, "UserID is empty")
 	}
 
 	if _, err := uuid.Parse(info.GetUserID()); err != nil {
-		logger.Sugar().Error("UserID is invalid: %v", err)
+		logger.Sugar().Errorw("validate", "UserID", info.GetUserID(), "error", err)
 		return status.Error(codes.InvalidArgument, fmt.Sprintf("UserID is invalid: %v", err))
 	}
 
 	if info.CoinTypeID == nil {
-		logger.Sugar().Error("CoinTypeID is empty")
-		return status.Error(codes.InvalidArgument, "UserID is empty")
+		logger.Sugar().Errorw("validate", "CoinTypeID", info.CoinTypeID)
+		return status.Error(codes.InvalidArgument, "CoinTypeID is empty")
 	}
 
 	if _, err := uuid.Parse(info.GetCoinTypeID()); err != nil {
-		logger.Sugar().Error("CoinTypeID is invalid: %v", err)
+		logger.Sugar().Errorw("validate", "CoinTypeID", info.GetCoinTypeID(), "error", err)
 		return status.Error(codes.InvalidArgument, fmt.Sprintf("CoinTypeID is invalid: %v", err))
 	}
 
 	if info.Incoming != nil {
 		incoming, err := decimal.NewFromString(info.GetIncoming())
 		if err != nil {
-			logger.Sugar().Error("Incoming is invalid")
+			logger.Sugar().Errorw("validate", "Incoming", info.GetIncoming(), "error", err)
 			return status.Error(codes.InvalidArgument, fmt.Sprintf("Incoming is invalid: %v", err))
 		}
 		if incoming.Cmp(decimal.NewFromInt(0)) < 0 {
-			logger.Sugar().Error("Incoming is less than 0")
+			logger.Sugar().Errorw("validate", "Incoming", info.GetIncoming(), "error", "less than 0")
 			return status.Error(codes.InvalidArgument, "Incoming is less than 0")
 		}
 	}
@@ -59,11 +59,11 @@ func validate(info *npool.GeneralReq) error {
 	if info.Outcoming != nil {
 		outcoming, err := decimal.NewFromString(info.GetOutcoming())
 		if err != nil {
-			logger.Sugar().Error("Outcoming is invalid")
+			logger.Sugar().Errorw("validate", "Outcoming", info.GetOutcoming(), "error", err)
 			return status.Error(codes.InvalidArgument, fmt.Sprintf("Outcoming is invalid: %v", err))
 		}
 		if outcoming.Cmp(decimal.NewFromInt(0)) < 0 {
-			logger.Sugar().Error("Outcoming is less than 0")
+			logger.Sugar().Errorw("validate", "Outcoming", info.GetOutcoming(), "error", "less than 0")
 			return status.Error(codes.InvalidArgument, "Outcoming is less than 0")
 		}
 	}

@@ -46,7 +46,7 @@ func (s *Server) CreateProfit(ctx context.Context, in *npool.CreateProfitRequest
 
 	info, err := crud.Create(ctx, in.GetInfo())
 	if err != nil {
-		logger.Sugar().Errorf("fail create profit: %v", err.Error())
+		logger.Sugar().Errorw("CreateProfit", "error", err)
 		return &npool.CreateProfitResponse{}, status.Error(codes.Internal, err.Error())
 	}
 
@@ -82,7 +82,7 @@ func (s *Server) CreateProfits(ctx context.Context, in *npool.CreateProfitsReque
 
 	rows, err := crud.CreateBulk(ctx, in.GetInfos())
 	if err != nil {
-		logger.Sugar().Errorf("fail create profits: %v", err)
+		logger.Sugar().Errorw("CreateProfits", "error", err)
 		return &npool.CreateProfitsResponse{}, status.Error(codes.Internal, err.Error())
 	}
 
@@ -148,7 +148,7 @@ func (s *Server) GetProfit(ctx context.Context, in *npool.GetProfitRequest) (*np
 
 	info, err := crud.Row(ctx, id)
 	if err != nil {
-		logger.Sugar().Errorf("fail get profit: %v", err)
+		logger.Sugar().Errorw("GetProfit", "error", err)
 		return &npool.GetProfitResponse{}, status.Error(codes.Internal, err.Error())
 	}
 
@@ -175,7 +175,7 @@ func (s *Server) GetProfitOnly(ctx context.Context, in *npool.GetProfitOnlyReque
 
 	info, err := crud.RowOnly(ctx, in.GetConds())
 	if err != nil {
-		logger.Sugar().Errorf("fail get profits: %v", err)
+		logger.Sugar().Errorw("GetProfitOnly", "error", err)
 		return &npool.GetProfitOnlyResponse{}, status.Error(codes.Internal, err.Error())
 	}
 
@@ -203,7 +203,7 @@ func (s *Server) GetProfits(ctx context.Context, in *npool.GetProfitsRequest) (*
 
 	rows, total, err := crud.Rows(ctx, in.GetConds(), int(in.GetOffset()), int(in.GetLimit()))
 	if err != nil {
-		logger.Sugar().Errorf("fail get profits: %v", err)
+		logger.Sugar().Errorw("GetProfits", "error", err)
 		return &npool.GetProfitsResponse{}, status.Error(codes.Internal, err.Error())
 	}
 
@@ -237,7 +237,7 @@ func (s *Server) ExistProfit(ctx context.Context, in *npool.ExistProfitRequest) 
 
 	exist, err := crud.Exist(ctx, id)
 	if err != nil {
-		logger.Sugar().Errorf("fail check profit: %v", err)
+		logger.Sugar().Errorw("ExistProfit", "error", err)
 		return &npool.ExistProfitResponse{}, status.Error(codes.Internal, err.Error())
 	}
 
@@ -265,7 +265,7 @@ func (s *Server) ExistProfitConds(ctx context.Context,
 
 	exist, err := crud.ExistConds(ctx, in.GetConds())
 	if err != nil {
-		logger.Sugar().Errorf("fail check profit: %v", err)
+		logger.Sugar().Errorw("ExistProfitConds", "error", err)
 		return &npool.ExistProfitCondsResponse{}, status.Error(codes.Internal, err.Error())
 	}
 
@@ -292,7 +292,7 @@ func (s *Server) CountProfits(ctx context.Context, in *npool.CountProfitsRequest
 
 	total, err := crud.Count(ctx, in.GetConds())
 	if err != nil {
-		logger.Sugar().Errorf("fail count profits: %v", err)
+		logger.Sugar().Errorw("CountProfits", "error", err)
 		return &npool.CountProfitsResponse{}, status.Error(codes.Internal, err.Error())
 	}
 
@@ -325,7 +325,7 @@ func (s *Server) DeleteProfit(ctx context.Context, in *npool.DeleteProfitRequest
 
 	info, err := crud.Delete(ctx, id)
 	if err != nil {
-		logger.Sugar().Errorf("fail delete profit: %v", err)
+		logger.Sugar().Errorw("DeleteProfit", "error", err)
 		return &npool.DeleteProfitResponse{}, status.Error(codes.Internal, err.Error())
 	}
 

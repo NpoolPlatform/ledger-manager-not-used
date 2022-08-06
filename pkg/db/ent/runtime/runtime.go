@@ -9,6 +9,7 @@ import (
 	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/general"
 	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/profit"
 	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/schema"
+	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/withdraw"
 	"github.com/google/uuid"
 
 	"entgo.io/ent"
@@ -167,6 +168,54 @@ func init() {
 	profitDescID := profitFields[0].Descriptor()
 	// profit.DefaultID holds the default value on creation for the id field.
 	profit.DefaultID = profitDescID.Default.(func() uuid.UUID)
+	withdrawMixin := schema.Withdraw{}.Mixin()
+	withdraw.Policy = privacy.NewPolicies(withdrawMixin[0], schema.Withdraw{})
+	withdraw.Hooks[0] = func(next ent.Mutator) ent.Mutator {
+		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+			if err := withdraw.Policy.EvalMutation(ctx, m); err != nil {
+				return nil, err
+			}
+			return next.Mutate(ctx, m)
+		})
+	}
+	withdrawMixinFields0 := withdrawMixin[0].Fields()
+	_ = withdrawMixinFields0
+	withdrawFields := schema.Withdraw{}.Fields()
+	_ = withdrawFields
+	// withdrawDescCreatedAt is the schema descriptor for created_at field.
+	withdrawDescCreatedAt := withdrawMixinFields0[0].Descriptor()
+	// withdraw.DefaultCreatedAt holds the default value on creation for the created_at field.
+	withdraw.DefaultCreatedAt = withdrawDescCreatedAt.Default.(func() uint32)
+	// withdrawDescUpdatedAt is the schema descriptor for updated_at field.
+	withdrawDescUpdatedAt := withdrawMixinFields0[1].Descriptor()
+	// withdraw.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	withdraw.DefaultUpdatedAt = withdrawDescUpdatedAt.Default.(func() uint32)
+	// withdraw.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	withdraw.UpdateDefaultUpdatedAt = withdrawDescUpdatedAt.UpdateDefault.(func() uint32)
+	// withdrawDescDeletedAt is the schema descriptor for deleted_at field.
+	withdrawDescDeletedAt := withdrawMixinFields0[2].Descriptor()
+	// withdraw.DefaultDeletedAt holds the default value on creation for the deleted_at field.
+	withdraw.DefaultDeletedAt = withdrawDescDeletedAt.Default.(func() uint32)
+	// withdrawDescAppID is the schema descriptor for app_id field.
+	withdrawDescAppID := withdrawFields[1].Descriptor()
+	// withdraw.DefaultAppID holds the default value on creation for the app_id field.
+	withdraw.DefaultAppID = withdrawDescAppID.Default.(func() uuid.UUID)
+	// withdrawDescUserID is the schema descriptor for user_id field.
+	withdrawDescUserID := withdrawFields[2].Descriptor()
+	// withdraw.DefaultUserID holds the default value on creation for the user_id field.
+	withdraw.DefaultUserID = withdrawDescUserID.Default.(func() uuid.UUID)
+	// withdrawDescCoinTypeID is the schema descriptor for coin_type_id field.
+	withdrawDescCoinTypeID := withdrawFields[3].Descriptor()
+	// withdraw.DefaultCoinTypeID holds the default value on creation for the coin_type_id field.
+	withdraw.DefaultCoinTypeID = withdrawDescCoinTypeID.Default.(func() uuid.UUID)
+	// withdrawDescAccountID is the schema descriptor for account_id field.
+	withdrawDescAccountID := withdrawFields[4].Descriptor()
+	// withdraw.DefaultAccountID holds the default value on creation for the account_id field.
+	withdraw.DefaultAccountID = withdrawDescAccountID.Default.(func() uuid.UUID)
+	// withdrawDescID is the schema descriptor for id field.
+	withdrawDescID := withdrawFields[0].Descriptor()
+	// withdraw.DefaultID holds the default value on creation for the id field.
+	withdraw.DefaultID = withdrawDescID.Default.(func() uuid.UUID)
 }
 
 const (

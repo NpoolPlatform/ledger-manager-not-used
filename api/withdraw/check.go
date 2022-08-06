@@ -1,4 +1,4 @@
-package profit
+package withdraw
 
 import (
 	"fmt"
@@ -8,12 +8,12 @@ import (
 	"google.golang.org/grpc/status"
 
 	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
-	npool "github.com/NpoolPlatform/message/npool/ledger/mgr/v1/ledger/profit"
+	npool "github.com/NpoolPlatform/message/npool/ledger/mgr/v1/ledger/withdraw"
 
 	"github.com/google/uuid"
 )
 
-func validate(info *npool.ProfitReq) error {
+func validate(info *npool.WithdrawReq) error {
 	if info.AppID == nil {
 		logger.Sugar().Errorw("validate", "AppID", info.AppID)
 		return status.Error(codes.InvalidArgument, "AppID is empty")
@@ -44,25 +44,35 @@ func validate(info *npool.ProfitReq) error {
 		return status.Error(codes.InvalidArgument, fmt.Sprintf("CoinTypeID is invalid: %v", err))
 	}
 
-	if info.Incoming == nil {
-		logger.Sugar().Errorw("validate", "Incoming", info.Incoming)
-		return status.Error(codes.InvalidArgument, "Incoming is empty")
+	if info.AccountID == nil {
+		logger.Sugar().Errorw("validate", "AccountID", info.AccountID)
+		return status.Error(codes.InvalidArgument, "AccountID is empty")
 	}
 
-	incoming, err := decimal.NewFromString(info.GetIncoming())
-	if err != nil {
-		logger.Sugar().Errorw("validate", "Incoming", info.GetIncoming(), "error", err)
-		return status.Error(codes.InvalidArgument, fmt.Sprintf("Incoming is invalid: %v", err))
+	if _, err := uuid.Parse(info.GetAccountID()); err != nil {
+		logger.Sugar().Errorw("validate", "AccountID", info.GetAccountID(), "error", err)
+		return status.Error(codes.InvalidArgument, fmt.Sprintf("AccountID is invalid: %v", err))
 	}
-	if incoming.Cmp(decimal.NewFromInt(0)) <= 0 {
-		logger.Sugar().Errorw("validate", "Incoming", info.GetIncoming(), "error", "less than 0")
-		return status.Error(codes.InvalidArgument, "Incoming is less than 0")
+
+	if info.Amount == nil {
+		logger.Sugar().Errorw("validate", "Amount", info.Amount)
+		return status.Error(codes.InvalidArgument, "Amount is empty")
+	}
+
+	amount, err := decimal.NewFromString(info.GetAmount())
+	if err != nil {
+		logger.Sugar().Errorw("validate", "Amount", info.GetAmount(), "error", err)
+		return status.Error(codes.InvalidArgument, fmt.Sprintf("Amount is invalid: %v", err))
+	}
+	if amount.Cmp(decimal.NewFromInt(0)) <= 0 {
+		logger.Sugar().Errorw("validate", "Amount", info.GetAmount(), "error", "less than 0")
+		return status.Error(codes.InvalidArgument, "Amount is less than 0")
 	}
 
 	return nil
 }
 
-func duplicate(infos []*npool.ProfitReq) error {
+func duplicate(infos []*npool.WithdrawReq) error {
 	keys := map[string]struct{}{}
 	apps := map[string]struct{}{}
 

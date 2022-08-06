@@ -46,7 +46,7 @@ func (s *Server) CreateDetail(ctx context.Context, in *npool.CreateDetailRequest
 
 	info, err := crud.Create(ctx, in.GetInfo())
 	if err != nil {
-		logger.Sugar().Errorf("fail create detail: %v", err.Error())
+		logger.Sugar().Errorw("CreateDetail", "error", err)
 		return &npool.CreateDetailResponse{}, status.Error(codes.Internal, err.Error())
 	}
 
@@ -82,7 +82,7 @@ func (s *Server) CreateDetails(ctx context.Context, in *npool.CreateDetailsReque
 
 	rows, err := crud.CreateBulk(ctx, in.GetInfos())
 	if err != nil {
-		logger.Sugar().Errorf("fail create details: %v", err)
+		logger.Sugar().Errorw("CreateDetails", "error", err)
 		return &npool.CreateDetailsResponse{}, status.Error(codes.Internal, err.Error())
 	}
 
@@ -115,7 +115,7 @@ func (s *Server) GetDetail(ctx context.Context, in *npool.GetDetailRequest) (*np
 
 	info, err := crud.Row(ctx, id)
 	if err != nil {
-		logger.Sugar().Errorf("fail get detail: %v", err)
+		logger.Sugar().Errorw("GetDetail", "error", err)
 		return &npool.GetDetailResponse{}, status.Error(codes.Internal, err.Error())
 	}
 
@@ -142,7 +142,7 @@ func (s *Server) GetDetailOnly(ctx context.Context, in *npool.GetDetailOnlyReque
 
 	info, err := crud.RowOnly(ctx, in.GetConds())
 	if err != nil {
-		logger.Sugar().Errorf("fail get details: %v", err)
+		logger.Sugar().Errorw("GetDetailOnly", "error", err)
 		return &npool.GetDetailOnlyResponse{}, status.Error(codes.Internal, err.Error())
 	}
 
@@ -170,7 +170,7 @@ func (s *Server) GetDetails(ctx context.Context, in *npool.GetDetailsRequest) (*
 
 	rows, total, err := crud.Rows(ctx, in.GetConds(), int(in.GetOffset()), int(in.GetLimit()))
 	if err != nil {
-		logger.Sugar().Errorf("fail get details: %v", err)
+		logger.Sugar().Errorw("GetDetails", "error", err)
 		return &npool.GetDetailsResponse{}, status.Error(codes.Internal, err.Error())
 	}
 
@@ -204,7 +204,7 @@ func (s *Server) ExistDetail(ctx context.Context, in *npool.ExistDetailRequest) 
 
 	exist, err := crud.Exist(ctx, id)
 	if err != nil {
-		logger.Sugar().Errorf("fail check detail: %v", err)
+		logger.Sugar().Errorw("ExistDetail", "error", err)
 		return &npool.ExistDetailResponse{}, status.Error(codes.Internal, err.Error())
 	}
 
@@ -232,7 +232,7 @@ func (s *Server) ExistDetailConds(ctx context.Context,
 
 	exist, err := crud.ExistConds(ctx, in.GetConds())
 	if err != nil {
-		logger.Sugar().Errorf("fail check detail: %v", err)
+		logger.Sugar().Errorw("ExistDetailConds", "error", err)
 		return &npool.ExistDetailCondsResponse{}, status.Error(codes.Internal, err.Error())
 	}
 
@@ -259,7 +259,7 @@ func (s *Server) CountDetails(ctx context.Context, in *npool.CountDetailsRequest
 
 	total, err := crud.Count(ctx, in.GetConds())
 	if err != nil {
-		logger.Sugar().Errorf("fail count details: %v", err)
+		logger.Sugar().Errorw("CountDetails", "error", err)
 		return &npool.CountDetailsResponse{}, status.Error(codes.Internal, err.Error())
 	}
 

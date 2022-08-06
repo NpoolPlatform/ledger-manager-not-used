@@ -14,3 +14,6 @@ type General func(*sql.Selector)
 
 // Profit is the predicate function for profit builders.
 type Profit func(*sql.Selector)
+
+// Withdraw is the predicate function for withdraw builders.
+type Withdraw func(*sql.Selector)

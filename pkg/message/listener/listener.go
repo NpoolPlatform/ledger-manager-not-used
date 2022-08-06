@@ -13,7 +13,7 @@ func listenTemplateExample() {
 			return nil
 		})
 		if err != nil {
-			logger.Sugar().Errorf("fail to consume example: %v", err)
+			logger.Sugar().Errorw("listenTemplateExample", "error", err)
 			return
 		}
 	}

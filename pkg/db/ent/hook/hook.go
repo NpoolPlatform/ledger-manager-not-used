@@ -48,6 +48,19 @@ func (f ProfitFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, erro
 	return f(ctx, mv)
 }
 
+// The WithdrawFunc type is an adapter to allow the use of ordinary
+// function as Withdraw mutator.
+type WithdrawFunc func(context.Context, *ent.WithdrawMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f WithdrawFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.WithdrawMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.WithdrawMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // Condition is a hook condition function.
 type Condition func(context.Context, ent.Mutation) bool
 

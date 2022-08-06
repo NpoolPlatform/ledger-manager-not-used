@@ -8,6 +8,7 @@ import (
 	"github.com/NpoolPlatform/ledger-manager/api/detail"
 	"github.com/NpoolPlatform/ledger-manager/api/general"
 	"github.com/NpoolPlatform/ledger-manager/api/profit"
+	"github.com/NpoolPlatform/ledger-manager/api/withdraw"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"
@@ -22,6 +23,7 @@ func Register(server grpc.ServiceRegistrar) {
 	general.Register(server)
 	detail.Register(server)
 	profit.Register(server)
+	withdraw.Register(server)
 }
 
 func RegisterGateway(mux *runtime.ServeMux, endpoint string, opts []grpc.DialOption) error {

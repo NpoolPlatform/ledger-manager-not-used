@@ -67,11 +67,30 @@ var (
 		Columns:    ProfitsColumns,
 		PrimaryKey: []*schema.Column{ProfitsColumns[0]},
 	}
+	// WithdrawsColumns holds the columns for the "withdraws" table.
+	WithdrawsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID, Unique: true},
+		{Name: "created_at", Type: field.TypeUint32},
+		{Name: "updated_at", Type: field.TypeUint32},
+		{Name: "deleted_at", Type: field.TypeUint32},
+		{Name: "app_id", Type: field.TypeUUID, Nullable: true},
+		{Name: "user_id", Type: field.TypeUUID, Nullable: true},
+		{Name: "coin_type_id", Type: field.TypeUUID, Nullable: true},
+		{Name: "account_id", Type: field.TypeUUID, Nullable: true},
+		{Name: "amount", Type: field.TypeFloat64, Nullable: true, SchemaType: map[string]string{"mysql": "decimal(37, 18)"}},
+	}
+	// WithdrawsTable holds the schema information for the "withdraws" table.
+	WithdrawsTable = &schema.Table{
+		Name:       "withdraws",
+		Columns:    WithdrawsColumns,
+		PrimaryKey: []*schema.Column{WithdrawsColumns[0]},
+	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		DetailsTable,
 		GeneralsTable,
 		ProfitsTable,
+		WithdrawsTable,
 	}
 )
 
