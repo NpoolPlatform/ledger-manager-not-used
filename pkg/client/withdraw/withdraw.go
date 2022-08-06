@@ -66,9 +66,9 @@ func CreateWithdraws(ctx context.Context, in []*npool.WithdrawReq) ([]*npool.Wit
 	return infos.([]*npool.Withdraw), nil
 }
 
-func AddWithdraw(ctx context.Context, in *npool.WithdrawReq) (*npool.Withdraw, error) {
+func UpdateWithdraw(ctx context.Context, in *npool.WithdrawReq) (*npool.Withdraw, error) {
 	info, err := withCRUD(ctx, func(_ctx context.Context, cli npool.ManagerClient) (cruder.Any, error) {
-		resp, err := cli.AddWithdraw(ctx, &npool.AddWithdrawRequest{
+		resp, err := cli.UpdateWithdraw(ctx, &npool.UpdateWithdrawRequest{
 			Info: in,
 		})
 		if err != nil {

@@ -121,7 +121,7 @@ func UpdateSet(info *ent.Withdraw, in *npool.WithdrawReq) (*ent.WithdrawUpdateOn
 	return stm, nil
 }
 
-func AddFields(ctx context.Context, in *npool.WithdrawReq) (*ent.Withdraw, error) {
+func Update(ctx context.Context, in *npool.WithdrawReq) (*ent.Withdraw, error) {
 	var info *ent.Withdraw
 	var err error
 

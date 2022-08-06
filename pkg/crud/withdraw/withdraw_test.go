@@ -113,7 +113,7 @@ func createBulk(t *testing.T) {
 }
 
 func add(t *testing.T) {
-	info, err := AddFields(context.Background(), &req)
+	info, err := Update(context.Background(), &req)
 	if assert.Nil(t, err) {
 		entity.UpdatedAt = info.UpdatedAt
 		assert.Equal(t, info.String(), entity.String())

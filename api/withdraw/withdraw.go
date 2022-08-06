@@ -91,7 +91,7 @@ func (s *Server) CreateWithdraws(ctx context.Context, in *npool.CreateWithdrawsR
 	}, nil
 }
 
-func (s *Server) AddWithdraw(ctx context.Context, in *npool.AddWithdrawRequest) (*npool.AddWithdrawResponse, error) {
+func (s *Server) UpdateWithdraw(ctx context.Context, in *npool.UpdateWithdrawRequest) (*npool.UpdateWithdrawResponse, error) {
 	var err error
 
 	_, span := otel.Tracer(constant.ServiceName).Start(ctx, "GetWithdraw")
@@ -108,18 +108,18 @@ func (s *Server) AddWithdraw(ctx context.Context, in *npool.AddWithdrawRequest) 
 
 	_, err = uuid.Parse(in.GetInfo().GetID())
 	if err != nil {
-		return &npool.AddWithdrawResponse{}, status.Error(codes.InvalidArgument, err.Error())
+		return &npool.UpdateWithdrawResponse{}, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	span = commontracer.TraceInvoker(span, "withdraw", "crud", "AddFields")
+	span = commontracer.TraceInvoker(span, "withdraw", "crud", "UpdateFields")
 
-	info, err := crud.AddFields(ctx, in.GetInfo())
+	info, err := crud.Update(ctx, in.GetInfo())
 	if err != nil {
-		logger.Sugar().Errorw("AddWithdraw", "error", err)
-		return &npool.AddWithdrawResponse{}, status.Error(codes.InvalidArgument, err.Error())
+		logger.Sugar().Errorw("UpdateWithdraw", "error", err)
+		return &npool.UpdateWithdrawResponse{}, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	return &npool.AddWithdrawResponse{
+	return &npool.UpdateWithdrawResponse{
 		Info: converter.Ent2Grpc(info),
 	}, nil
 }
