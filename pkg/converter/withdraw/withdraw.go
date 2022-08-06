@@ -11,13 +11,16 @@ func Ent2Grpc(row *ent.Withdraw) *npool.Withdraw {
 	}
 
 	return &npool.Withdraw{
-		ID:         row.ID.String(),
-		AppID:      row.AppID.String(),
-		UserID:     row.UserID.String(),
-		CoinTypeID: row.CoinTypeID.String(),
-		AccountID:  row.AccountID.String(),
-		Amount:     row.Amount.String(),
-		CreatedAt:  row.CreatedAt,
+		ID:                    row.ID.String(),
+		AppID:                 row.AppID.String(),
+		UserID:                row.UserID.String(),
+		CoinTypeID:            row.CoinTypeID.String(),
+		AccountID:             row.AccountID.String(),
+		Amount:                row.Amount.String(),
+		CreatedAt:             row.CreatedAt,
+		PlatformTransactionID: row.PlatformTransactionID.String(),
+		ChainTransactionID:    row.ChainTransactionID,
+		State:                 npool.WithdrawState(npool.WithdrawState_value[row.State]),
 	}
 }
 
