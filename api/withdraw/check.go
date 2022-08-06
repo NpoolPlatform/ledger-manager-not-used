@@ -98,5 +98,5 @@ func duplicate(infos []*npool.WithdrawReq) error {
 }
 
 func Validate(info *npool.WithdrawReq) error {
-	return valudate(info)
+	return validate(info)
 }
