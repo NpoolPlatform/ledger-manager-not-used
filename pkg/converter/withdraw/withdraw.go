@@ -17,6 +17,7 @@ func Ent2Grpc(row *ent.Withdraw) *npool.Withdraw {
 		CoinTypeID: row.CoinTypeID.String(),
 		AccountID:  row.AccountID.String(),
 		Amount:     row.Amount.String(),
+		CreatedAt:  row.CreatedAt,
 	}
 }
 

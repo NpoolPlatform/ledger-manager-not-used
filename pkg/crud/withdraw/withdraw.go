@@ -235,6 +235,18 @@ func setQueryConds(conds *npool.Conds, cli *ent.Client) (*ent.WithdrawQuery, err
 			return nil, fmt.Errorf("invalid withdraw field")
 		}
 	}
+	if conds.CreatedAt != nil {
+		switch conds.GetCreatedAt().GetOp() {
+		case cruder.LT:
+			stm.Where(withdraw.CreatedAtLT(conds.GetCreatedAt().GetValue()))
+		case cruder.GT:
+			stm.Where(withdraw.CreatedAtGT(conds.GetCreatedAt().GetValue()))
+		case cruder.EQ:
+			stm.Where(withdraw.CreatedAtEQ(conds.GetCreatedAt().GetValue()))
+		default:
+			return nil, fmt.Errorf("invalid withdraw field")
+		}
+	}
 	return stm, nil
 }
 
