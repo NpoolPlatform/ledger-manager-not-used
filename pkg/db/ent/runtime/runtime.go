@@ -212,6 +212,18 @@ func init() {
 	withdrawDescAccountID := withdrawFields[4].Descriptor()
 	// withdraw.DefaultAccountID holds the default value on creation for the account_id field.
 	withdraw.DefaultAccountID = withdrawDescAccountID.Default.(func() uuid.UUID)
+	// withdrawDescPlatformTransactionID is the schema descriptor for platform_transaction_id field.
+	withdrawDescPlatformTransactionID := withdrawFields[5].Descriptor()
+	// withdraw.DefaultPlatformTransactionID holds the default value on creation for the platform_transaction_id field.
+	withdraw.DefaultPlatformTransactionID = withdrawDescPlatformTransactionID.Default.(func() uuid.UUID)
+	// withdrawDescChainTransactionID is the schema descriptor for chain_transaction_id field.
+	withdrawDescChainTransactionID := withdrawFields[6].Descriptor()
+	// withdraw.DefaultChainTransactionID holds the default value on creation for the chain_transaction_id field.
+	withdraw.DefaultChainTransactionID = withdrawDescChainTransactionID.Default.(string)
+	// withdrawDescState is the schema descriptor for state field.
+	withdrawDescState := withdrawFields[7].Descriptor()
+	// withdraw.DefaultState holds the default value on creation for the state field.
+	withdraw.DefaultState = withdrawDescState.Default.(string)
 	// withdrawDescID is the schema descriptor for id field.
 	withdrawDescID := withdrawFields[0].Descriptor()
 	// withdraw.DefaultID holds the default value on creation for the id field.

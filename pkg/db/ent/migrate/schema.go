@@ -77,6 +77,9 @@ var (
 		{Name: "user_id", Type: field.TypeUUID, Nullable: true},
 		{Name: "coin_type_id", Type: field.TypeUUID, Nullable: true},
 		{Name: "account_id", Type: field.TypeUUID, Nullable: true},
+		{Name: "platform_transaction_id", Type: field.TypeUUID, Nullable: true},
+		{Name: "chain_transaction_id", Type: field.TypeString, Nullable: true, Default: ""},
+		{Name: "state", Type: field.TypeString, Nullable: true, Default: "DefaultWithdrawState"},
 		{Name: "amount", Type: field.TypeFloat64, Nullable: true, SchemaType: map[string]string{"mysql": "decimal(37, 18)"}},
 	}
 	// WithdrawsTable holds the schema information for the "withdraws" table.

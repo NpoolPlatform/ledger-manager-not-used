@@ -164,6 +164,66 @@ func (wu *WithdrawUpdate) ClearAccountID() *WithdrawUpdate {
 	return wu
 }
 
+// SetPlatformTransactionID sets the "platform_transaction_id" field.
+func (wu *WithdrawUpdate) SetPlatformTransactionID(u uuid.UUID) *WithdrawUpdate {
+	wu.mutation.SetPlatformTransactionID(u)
+	return wu
+}
+
+// SetNillablePlatformTransactionID sets the "platform_transaction_id" field if the given value is not nil.
+func (wu *WithdrawUpdate) SetNillablePlatformTransactionID(u *uuid.UUID) *WithdrawUpdate {
+	if u != nil {
+		wu.SetPlatformTransactionID(*u)
+	}
+	return wu
+}
+
+// ClearPlatformTransactionID clears the value of the "platform_transaction_id" field.
+func (wu *WithdrawUpdate) ClearPlatformTransactionID() *WithdrawUpdate {
+	wu.mutation.ClearPlatformTransactionID()
+	return wu
+}
+
+// SetChainTransactionID sets the "chain_transaction_id" field.
+func (wu *WithdrawUpdate) SetChainTransactionID(s string) *WithdrawUpdate {
+	wu.mutation.SetChainTransactionID(s)
+	return wu
+}
+
+// SetNillableChainTransactionID sets the "chain_transaction_id" field if the given value is not nil.
+func (wu *WithdrawUpdate) SetNillableChainTransactionID(s *string) *WithdrawUpdate {
+	if s != nil {
+		wu.SetChainTransactionID(*s)
+	}
+	return wu
+}
+
+// ClearChainTransactionID clears the value of the "chain_transaction_id" field.
+func (wu *WithdrawUpdate) ClearChainTransactionID() *WithdrawUpdate {
+	wu.mutation.ClearChainTransactionID()
+	return wu
+}
+
+// SetState sets the "state" field.
+func (wu *WithdrawUpdate) SetState(s string) *WithdrawUpdate {
+	wu.mutation.SetState(s)
+	return wu
+}
+
+// SetNillableState sets the "state" field if the given value is not nil.
+func (wu *WithdrawUpdate) SetNillableState(s *string) *WithdrawUpdate {
+	if s != nil {
+		wu.SetState(*s)
+	}
+	return wu
+}
+
+// ClearState clears the value of the "state" field.
+func (wu *WithdrawUpdate) ClearState() *WithdrawUpdate {
+	wu.mutation.ClearState()
+	return wu
+}
+
 // SetAmount sets the "amount" field.
 func (wu *WithdrawUpdate) SetAmount(d decimal.Decimal) *WithdrawUpdate {
 	wu.mutation.ResetAmount()
@@ -377,6 +437,45 @@ func (wu *WithdrawUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: withdraw.FieldAccountID,
 		})
 	}
+	if value, ok := wu.mutation.PlatformTransactionID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUUID,
+			Value:  value,
+			Column: withdraw.FieldPlatformTransactionID,
+		})
+	}
+	if wu.mutation.PlatformTransactionIDCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeUUID,
+			Column: withdraw.FieldPlatformTransactionID,
+		})
+	}
+	if value, ok := wu.mutation.ChainTransactionID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: withdraw.FieldChainTransactionID,
+		})
+	}
+	if wu.mutation.ChainTransactionIDCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: withdraw.FieldChainTransactionID,
+		})
+	}
+	if value, ok := wu.mutation.State(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: withdraw.FieldState,
+		})
+	}
+	if wu.mutation.StateCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: withdraw.FieldState,
+		})
+	}
 	if value, ok := wu.mutation.Amount(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeFloat64,
@@ -548,6 +647,66 @@ func (wuo *WithdrawUpdateOne) SetNillableAccountID(u *uuid.UUID) *WithdrawUpdate
 // ClearAccountID clears the value of the "account_id" field.
 func (wuo *WithdrawUpdateOne) ClearAccountID() *WithdrawUpdateOne {
 	wuo.mutation.ClearAccountID()
+	return wuo
+}
+
+// SetPlatformTransactionID sets the "platform_transaction_id" field.
+func (wuo *WithdrawUpdateOne) SetPlatformTransactionID(u uuid.UUID) *WithdrawUpdateOne {
+	wuo.mutation.SetPlatformTransactionID(u)
+	return wuo
+}
+
+// SetNillablePlatformTransactionID sets the "platform_transaction_id" field if the given value is not nil.
+func (wuo *WithdrawUpdateOne) SetNillablePlatformTransactionID(u *uuid.UUID) *WithdrawUpdateOne {
+	if u != nil {
+		wuo.SetPlatformTransactionID(*u)
+	}
+	return wuo
+}
+
+// ClearPlatformTransactionID clears the value of the "platform_transaction_id" field.
+func (wuo *WithdrawUpdateOne) ClearPlatformTransactionID() *WithdrawUpdateOne {
+	wuo.mutation.ClearPlatformTransactionID()
+	return wuo
+}
+
+// SetChainTransactionID sets the "chain_transaction_id" field.
+func (wuo *WithdrawUpdateOne) SetChainTransactionID(s string) *WithdrawUpdateOne {
+	wuo.mutation.SetChainTransactionID(s)
+	return wuo
+}
+
+// SetNillableChainTransactionID sets the "chain_transaction_id" field if the given value is not nil.
+func (wuo *WithdrawUpdateOne) SetNillableChainTransactionID(s *string) *WithdrawUpdateOne {
+	if s != nil {
+		wuo.SetChainTransactionID(*s)
+	}
+	return wuo
+}
+
+// ClearChainTransactionID clears the value of the "chain_transaction_id" field.
+func (wuo *WithdrawUpdateOne) ClearChainTransactionID() *WithdrawUpdateOne {
+	wuo.mutation.ClearChainTransactionID()
+	return wuo
+}
+
+// SetState sets the "state" field.
+func (wuo *WithdrawUpdateOne) SetState(s string) *WithdrawUpdateOne {
+	wuo.mutation.SetState(s)
+	return wuo
+}
+
+// SetNillableState sets the "state" field if the given value is not nil.
+func (wuo *WithdrawUpdateOne) SetNillableState(s *string) *WithdrawUpdateOne {
+	if s != nil {
+		wuo.SetState(*s)
+	}
+	return wuo
+}
+
+// ClearState clears the value of the "state" field.
+func (wuo *WithdrawUpdateOne) ClearState() *WithdrawUpdateOne {
+	wuo.mutation.ClearState()
 	return wuo
 }
 
@@ -786,6 +945,45 @@ func (wuo *WithdrawUpdateOne) sqlSave(ctx context.Context) (_node *Withdraw, err
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeUUID,
 			Column: withdraw.FieldAccountID,
+		})
+	}
+	if value, ok := wuo.mutation.PlatformTransactionID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUUID,
+			Value:  value,
+			Column: withdraw.FieldPlatformTransactionID,
+		})
+	}
+	if wuo.mutation.PlatformTransactionIDCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeUUID,
+			Column: withdraw.FieldPlatformTransactionID,
+		})
+	}
+	if value, ok := wuo.mutation.ChainTransactionID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: withdraw.FieldChainTransactionID,
+		})
+	}
+	if wuo.mutation.ChainTransactionIDCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: withdraw.FieldChainTransactionID,
+		})
+	}
+	if value, ok := wuo.mutation.State(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: withdraw.FieldState,
+		})
+	}
+	if wuo.mutation.StateCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: withdraw.FieldState,
 		})
 	}
 	if value, ok := wuo.mutation.Amount(); ok {

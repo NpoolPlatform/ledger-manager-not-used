@@ -7,6 +7,8 @@ import (
 	"github.com/NpoolPlatform/ledger-manager/pkg/db/mixin"
 	"github.com/google/uuid"
 	"github.com/shopspring/decimal"
+
+	npool "github.com/NpoolPlatform/message/npool/ledger/mgr/v1/ledger/withdraw"
 )
 
 // Withdraw holds the schema definition for the Withdraw entity.
@@ -51,6 +53,20 @@ func (Withdraw) Fields() []ent.Field {
 			Default(func() uuid.UUID {
 				return uuid.UUID{}
 			}),
+		field.
+			UUID("platform_transaction_id", uuid.UUID{}).
+			Optional().
+			Default(func() uuid.UUID {
+				return uuid.UUID{}
+			}),
+		field.
+			String("chain_transaction_id").
+			Optional().
+			Default(""),
+		field.
+			String("state").
+			Optional().
+			Default(npool.WithdrawState_DefaultWithdrawState.String()),
 		field.
 			Float("amount").
 			GoType(decimal.Decimal{}).

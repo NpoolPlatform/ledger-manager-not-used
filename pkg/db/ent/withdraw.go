@@ -31,6 +31,12 @@ type Withdraw struct {
 	CoinTypeID uuid.UUID `json:"coin_type_id,omitempty"`
 	// AccountID holds the value of the "account_id" field.
 	AccountID uuid.UUID `json:"account_id,omitempty"`
+	// PlatformTransactionID holds the value of the "platform_transaction_id" field.
+	PlatformTransactionID uuid.UUID `json:"platform_transaction_id,omitempty"`
+	// ChainTransactionID holds the value of the "chain_transaction_id" field.
+	ChainTransactionID string `json:"chain_transaction_id,omitempty"`
+	// State holds the value of the "state" field.
+	State string `json:"state,omitempty"`
 	// Amount holds the value of the "amount" field.
 	Amount decimal.Decimal `json:"amount,omitempty"`
 }
@@ -44,7 +50,9 @@ func (*Withdraw) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(decimal.Decimal)
 		case withdraw.FieldCreatedAt, withdraw.FieldUpdatedAt, withdraw.FieldDeletedAt:
 			values[i] = new(sql.NullInt64)
-		case withdraw.FieldID, withdraw.FieldAppID, withdraw.FieldUserID, withdraw.FieldCoinTypeID, withdraw.FieldAccountID:
+		case withdraw.FieldChainTransactionID, withdraw.FieldState:
+			values[i] = new(sql.NullString)
+		case withdraw.FieldID, withdraw.FieldAppID, withdraw.FieldUserID, withdraw.FieldCoinTypeID, withdraw.FieldAccountID, withdraw.FieldPlatformTransactionID:
 			values[i] = new(uuid.UUID)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Withdraw", columns[i])
@@ -109,6 +117,24 @@ func (w *Withdraw) assignValues(columns []string, values []interface{}) error {
 			} else if value != nil {
 				w.AccountID = *value
 			}
+		case withdraw.FieldPlatformTransactionID:
+			if value, ok := values[i].(*uuid.UUID); !ok {
+				return fmt.Errorf("unexpected type %T for field platform_transaction_id", values[i])
+			} else if value != nil {
+				w.PlatformTransactionID = *value
+			}
+		case withdraw.FieldChainTransactionID:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field chain_transaction_id", values[i])
+			} else if value.Valid {
+				w.ChainTransactionID = value.String
+			}
+		case withdraw.FieldState:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field state", values[i])
+			} else if value.Valid {
+				w.State = value.String
+			}
 		case withdraw.FieldAmount:
 			if value, ok := values[i].(*decimal.Decimal); !ok {
 				return fmt.Errorf("unexpected type %T for field amount", values[i])
@@ -157,6 +183,12 @@ func (w *Withdraw) String() string {
 	builder.WriteString(fmt.Sprintf("%v", w.CoinTypeID))
 	builder.WriteString(", account_id=")
 	builder.WriteString(fmt.Sprintf("%v", w.AccountID))
+	builder.WriteString(", platform_transaction_id=")
+	builder.WriteString(fmt.Sprintf("%v", w.PlatformTransactionID))
+	builder.WriteString(", chain_transaction_id=")
+	builder.WriteString(w.ChainTransactionID)
+	builder.WriteString(", state=")
+	builder.WriteString(w.State)
 	builder.WriteString(", amount=")
 	builder.WriteString(fmt.Sprintf("%v", w.Amount))
 	builder.WriteByte(')')

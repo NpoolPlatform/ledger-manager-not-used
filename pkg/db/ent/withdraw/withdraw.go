@@ -26,6 +26,12 @@ const (
 	FieldCoinTypeID = "coin_type_id"
 	// FieldAccountID holds the string denoting the account_id field in the database.
 	FieldAccountID = "account_id"
+	// FieldPlatformTransactionID holds the string denoting the platform_transaction_id field in the database.
+	FieldPlatformTransactionID = "platform_transaction_id"
+	// FieldChainTransactionID holds the string denoting the chain_transaction_id field in the database.
+	FieldChainTransactionID = "chain_transaction_id"
+	// FieldState holds the string denoting the state field in the database.
+	FieldState = "state"
 	// FieldAmount holds the string denoting the amount field in the database.
 	FieldAmount = "amount"
 	// Table holds the table name of the withdraw in the database.
@@ -42,6 +48,9 @@ var Columns = []string{
 	FieldUserID,
 	FieldCoinTypeID,
 	FieldAccountID,
+	FieldPlatformTransactionID,
+	FieldChainTransactionID,
+	FieldState,
 	FieldAmount,
 }
 
@@ -80,6 +89,12 @@ var (
 	DefaultCoinTypeID func() uuid.UUID
 	// DefaultAccountID holds the default value on creation for the "account_id" field.
 	DefaultAccountID func() uuid.UUID
+	// DefaultPlatformTransactionID holds the default value on creation for the "platform_transaction_id" field.
+	DefaultPlatformTransactionID func() uuid.UUID
+	// DefaultChainTransactionID holds the default value on creation for the "chain_transaction_id" field.
+	DefaultChainTransactionID string
+	// DefaultState holds the default value on creation for the "state" field.
+	DefaultState string
 	// DefaultID holds the default value on creation for the "id" field.
 	DefaultID func() uuid.UUID
 )

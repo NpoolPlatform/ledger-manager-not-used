@@ -37,8 +37,12 @@ func CreateSet(c *ent.WithdrawCreate, in *npool.WithdrawReq) *ent.WithdrawCreate
 	if in.AccountID != nil {
 		c.SetAccountID(uuid.MustParse(in.GetAccountID()))
 	}
+	if in.PlatformTransactionID != nil {
+		c.SetPlatformTransactionID(uuid.MustParse(in.GetPlatformTransactionID()))
+	}
 
 	c.SetAmount(decimal.NewFromInt(0))
+	c.SetState(npool.WithdrawState_Reviewing.String())
 
 	return c
 }
@@ -103,6 +107,17 @@ func CreateBulk(ctx context.Context, in []*npool.WithdrawReq) ([]*ent.Withdraw, 
 
 func UpdateSet(info *ent.Withdraw, in *npool.WithdrawReq) (*ent.WithdrawUpdateOne, error) {
 	stm := info.Update()
+
+	if in.PlatformTransactionID != nil {
+		stm.SetPlatformTransactionID(uuid.MustParse(in.GetPlatformTransactionID()))
+	}
+	if in.ChainTransactionID != nil {
+		stm.SetChainTransactionID(in.GetChainTransactionID())
+	}
+	if in.State != nil {
+		stm.SetState(in.GetState().String())
+	}
+
 	return stm, nil
 }
 
@@ -215,6 +230,14 @@ func setQueryConds(conds *npool.Conds, cli *ent.Client) (*ent.WithdrawQuery, err
 		switch conds.GetAccountID().GetOp() {
 		case cruder.EQ:
 			stm.Where(withdraw.AccountID(uuid.MustParse(conds.GetAccountID().GetValue())))
+		default:
+			return nil, fmt.Errorf("invalid withdraw field")
+		}
+	}
+	if conds.State != nil {
+		switch conds.GetState().GetOp() {
+		case cruder.EQ:
+			stm.Where(withdraw.State(npool.WithdrawState(conds.GetState().GetValue()).String()))
 		default:
 			return nil, fmt.Errorf("invalid withdraw field")
 		}

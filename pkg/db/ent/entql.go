@@ -96,14 +96,17 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		Type: "Withdraw",
 		Fields: map[string]*sqlgraph.FieldSpec{
-			withdraw.FieldCreatedAt:  {Type: field.TypeUint32, Column: withdraw.FieldCreatedAt},
-			withdraw.FieldUpdatedAt:  {Type: field.TypeUint32, Column: withdraw.FieldUpdatedAt},
-			withdraw.FieldDeletedAt:  {Type: field.TypeUint32, Column: withdraw.FieldDeletedAt},
-			withdraw.FieldAppID:      {Type: field.TypeUUID, Column: withdraw.FieldAppID},
-			withdraw.FieldUserID:     {Type: field.TypeUUID, Column: withdraw.FieldUserID},
-			withdraw.FieldCoinTypeID: {Type: field.TypeUUID, Column: withdraw.FieldCoinTypeID},
-			withdraw.FieldAccountID:  {Type: field.TypeUUID, Column: withdraw.FieldAccountID},
-			withdraw.FieldAmount:     {Type: field.TypeFloat64, Column: withdraw.FieldAmount},
+			withdraw.FieldCreatedAt:             {Type: field.TypeUint32, Column: withdraw.FieldCreatedAt},
+			withdraw.FieldUpdatedAt:             {Type: field.TypeUint32, Column: withdraw.FieldUpdatedAt},
+			withdraw.FieldDeletedAt:             {Type: field.TypeUint32, Column: withdraw.FieldDeletedAt},
+			withdraw.FieldAppID:                 {Type: field.TypeUUID, Column: withdraw.FieldAppID},
+			withdraw.FieldUserID:                {Type: field.TypeUUID, Column: withdraw.FieldUserID},
+			withdraw.FieldCoinTypeID:            {Type: field.TypeUUID, Column: withdraw.FieldCoinTypeID},
+			withdraw.FieldAccountID:             {Type: field.TypeUUID, Column: withdraw.FieldAccountID},
+			withdraw.FieldPlatformTransactionID: {Type: field.TypeUUID, Column: withdraw.FieldPlatformTransactionID},
+			withdraw.FieldChainTransactionID:    {Type: field.TypeString, Column: withdraw.FieldChainTransactionID},
+			withdraw.FieldState:                 {Type: field.TypeString, Column: withdraw.FieldState},
+			withdraw.FieldAmount:                {Type: field.TypeFloat64, Column: withdraw.FieldAmount},
 		},
 	}
 	return graph
@@ -449,6 +452,21 @@ func (f *WithdrawFilter) WhereCoinTypeID(p entql.ValueP) {
 // WhereAccountID applies the entql [16]byte predicate on the account_id field.
 func (f *WithdrawFilter) WhereAccountID(p entql.ValueP) {
 	f.Where(p.Field(withdraw.FieldAccountID))
+}
+
+// WherePlatformTransactionID applies the entql [16]byte predicate on the platform_transaction_id field.
+func (f *WithdrawFilter) WherePlatformTransactionID(p entql.ValueP) {
+	f.Where(p.Field(withdraw.FieldPlatformTransactionID))
+}
+
+// WhereChainTransactionID applies the entql string predicate on the chain_transaction_id field.
+func (f *WithdrawFilter) WhereChainTransactionID(p entql.StringP) {
+	f.Where(p.Field(withdraw.FieldChainTransactionID))
+}
+
+// WhereState applies the entql string predicate on the state field.
+func (f *WithdrawFilter) WhereState(p entql.StringP) {
+	f.Where(p.Field(withdraw.FieldState))
 }
 
 // WhereAmount applies the entql float64 predicate on the amount field.

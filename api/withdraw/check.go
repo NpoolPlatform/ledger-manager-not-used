@@ -13,6 +13,7 @@ import (
 	"github.com/google/uuid"
 )
 
+// nolint
 func validate(info *npool.WithdrawReq) error {
 	if info.AppID == nil {
 		logger.Sugar().Errorw("validate", "AppID", info.AppID)
@@ -54,6 +55,13 @@ func validate(info *npool.WithdrawReq) error {
 		return status.Error(codes.InvalidArgument, fmt.Sprintf("AccountID is invalid: %v", err))
 	}
 
+	if info.PlatformTransactionID != nil {
+		if _, err := uuid.Parse(info.GetPlatformTransactionID()); err != nil {
+			logger.Sugar().Errorw("validate", "PlatformTransactionID", info.GetPlatformTransactionID(), "error", err)
+			return status.Error(codes.InvalidArgument, fmt.Sprintf("PlatformTransactionID is invalid: %v", err))
+		}
+	}
+
 	if info.Amount == nil {
 		logger.Sugar().Errorw("validate", "Amount", info.Amount)
 		return status.Error(codes.InvalidArgument, "Amount is empty")
@@ -67,6 +75,19 @@ func validate(info *npool.WithdrawReq) error {
 	if amount.Cmp(decimal.NewFromInt(0)) <= 0 {
 		logger.Sugar().Errorw("validate", "Amount", info.GetAmount(), "error", "less than 0")
 		return status.Error(codes.InvalidArgument, "Amount is less than 0")
+	}
+
+	if info.State != nil {
+		switch info.GetState() {
+		case npool.WithdrawState_Reviewing:
+		case npool.WithdrawState_Transferring:
+		case npool.WithdrawState_Rejected:
+		case npool.WithdrawState_TransactionFail:
+		case npool.WithdrawState_Successful:
+		default:
+			logger.Sugar().Errorw("validate", "State", info.GetState())
+			return status.Error(codes.InvalidArgument, "State is invalid")
+		}
 	}
 
 	return nil

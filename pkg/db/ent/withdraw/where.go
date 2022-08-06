@@ -141,6 +141,27 @@ func AccountID(v uuid.UUID) predicate.Withdraw {
 	})
 }
 
+// PlatformTransactionID applies equality check predicate on the "platform_transaction_id" field. It's identical to PlatformTransactionIDEQ.
+func PlatformTransactionID(v uuid.UUID) predicate.Withdraw {
+	return predicate.Withdraw(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldPlatformTransactionID), v))
+	})
+}
+
+// ChainTransactionID applies equality check predicate on the "chain_transaction_id" field. It's identical to ChainTransactionIDEQ.
+func ChainTransactionID(v string) predicate.Withdraw {
+	return predicate.Withdraw(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldChainTransactionID), v))
+	})
+}
+
+// State applies equality check predicate on the "state" field. It's identical to StateEQ.
+func State(v string) predicate.Withdraw {
+	return predicate.Withdraw(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldState), v))
+	})
+}
+
 // Amount applies equality check predicate on the "amount" field. It's identical to AmountEQ.
 func Amount(v decimal.Decimal) predicate.Withdraw {
 	return predicate.Withdraw(func(s *sql.Selector) {
@@ -733,6 +754,346 @@ func AccountIDIsNil() predicate.Withdraw {
 func AccountIDNotNil() predicate.Withdraw {
 	return predicate.Withdraw(func(s *sql.Selector) {
 		s.Where(sql.NotNull(s.C(FieldAccountID)))
+	})
+}
+
+// PlatformTransactionIDEQ applies the EQ predicate on the "platform_transaction_id" field.
+func PlatformTransactionIDEQ(v uuid.UUID) predicate.Withdraw {
+	return predicate.Withdraw(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldPlatformTransactionID), v))
+	})
+}
+
+// PlatformTransactionIDNEQ applies the NEQ predicate on the "platform_transaction_id" field.
+func PlatformTransactionIDNEQ(v uuid.UUID) predicate.Withdraw {
+	return predicate.Withdraw(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldPlatformTransactionID), v))
+	})
+}
+
+// PlatformTransactionIDIn applies the In predicate on the "platform_transaction_id" field.
+func PlatformTransactionIDIn(vs ...uuid.UUID) predicate.Withdraw {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Withdraw(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldPlatformTransactionID), v...))
+	})
+}
+
+// PlatformTransactionIDNotIn applies the NotIn predicate on the "platform_transaction_id" field.
+func PlatformTransactionIDNotIn(vs ...uuid.UUID) predicate.Withdraw {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Withdraw(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldPlatformTransactionID), v...))
+	})
+}
+
+// PlatformTransactionIDGT applies the GT predicate on the "platform_transaction_id" field.
+func PlatformTransactionIDGT(v uuid.UUID) predicate.Withdraw {
+	return predicate.Withdraw(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldPlatformTransactionID), v))
+	})
+}
+
+// PlatformTransactionIDGTE applies the GTE predicate on the "platform_transaction_id" field.
+func PlatformTransactionIDGTE(v uuid.UUID) predicate.Withdraw {
+	return predicate.Withdraw(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldPlatformTransactionID), v))
+	})
+}
+
+// PlatformTransactionIDLT applies the LT predicate on the "platform_transaction_id" field.
+func PlatformTransactionIDLT(v uuid.UUID) predicate.Withdraw {
+	return predicate.Withdraw(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldPlatformTransactionID), v))
+	})
+}
+
+// PlatformTransactionIDLTE applies the LTE predicate on the "platform_transaction_id" field.
+func PlatformTransactionIDLTE(v uuid.UUID) predicate.Withdraw {
+	return predicate.Withdraw(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldPlatformTransactionID), v))
+	})
+}
+
+// PlatformTransactionIDIsNil applies the IsNil predicate on the "platform_transaction_id" field.
+func PlatformTransactionIDIsNil() predicate.Withdraw {
+	return predicate.Withdraw(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldPlatformTransactionID)))
+	})
+}
+
+// PlatformTransactionIDNotNil applies the NotNil predicate on the "platform_transaction_id" field.
+func PlatformTransactionIDNotNil() predicate.Withdraw {
+	return predicate.Withdraw(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldPlatformTransactionID)))
+	})
+}
+
+// ChainTransactionIDEQ applies the EQ predicate on the "chain_transaction_id" field.
+func ChainTransactionIDEQ(v string) predicate.Withdraw {
+	return predicate.Withdraw(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldChainTransactionID), v))
+	})
+}
+
+// ChainTransactionIDNEQ applies the NEQ predicate on the "chain_transaction_id" field.
+func ChainTransactionIDNEQ(v string) predicate.Withdraw {
+	return predicate.Withdraw(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldChainTransactionID), v))
+	})
+}
+
+// ChainTransactionIDIn applies the In predicate on the "chain_transaction_id" field.
+func ChainTransactionIDIn(vs ...string) predicate.Withdraw {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Withdraw(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldChainTransactionID), v...))
+	})
+}
+
+// ChainTransactionIDNotIn applies the NotIn predicate on the "chain_transaction_id" field.
+func ChainTransactionIDNotIn(vs ...string) predicate.Withdraw {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Withdraw(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldChainTransactionID), v...))
+	})
+}
+
+// ChainTransactionIDGT applies the GT predicate on the "chain_transaction_id" field.
+func ChainTransactionIDGT(v string) predicate.Withdraw {
+	return predicate.Withdraw(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldChainTransactionID), v))
+	})
+}
+
+// ChainTransactionIDGTE applies the GTE predicate on the "chain_transaction_id" field.
+func ChainTransactionIDGTE(v string) predicate.Withdraw {
+	return predicate.Withdraw(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldChainTransactionID), v))
+	})
+}
+
+// ChainTransactionIDLT applies the LT predicate on the "chain_transaction_id" field.
+func ChainTransactionIDLT(v string) predicate.Withdraw {
+	return predicate.Withdraw(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldChainTransactionID), v))
+	})
+}
+
+// ChainTransactionIDLTE applies the LTE predicate on the "chain_transaction_id" field.
+func ChainTransactionIDLTE(v string) predicate.Withdraw {
+	return predicate.Withdraw(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldChainTransactionID), v))
+	})
+}
+
+// ChainTransactionIDContains applies the Contains predicate on the "chain_transaction_id" field.
+func ChainTransactionIDContains(v string) predicate.Withdraw {
+	return predicate.Withdraw(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldChainTransactionID), v))
+	})
+}
+
+// ChainTransactionIDHasPrefix applies the HasPrefix predicate on the "chain_transaction_id" field.
+func ChainTransactionIDHasPrefix(v string) predicate.Withdraw {
+	return predicate.Withdraw(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldChainTransactionID), v))
+	})
+}
+
+// ChainTransactionIDHasSuffix applies the HasSuffix predicate on the "chain_transaction_id" field.
+func ChainTransactionIDHasSuffix(v string) predicate.Withdraw {
+	return predicate.Withdraw(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldChainTransactionID), v))
+	})
+}
+
+// ChainTransactionIDIsNil applies the IsNil predicate on the "chain_transaction_id" field.
+func ChainTransactionIDIsNil() predicate.Withdraw {
+	return predicate.Withdraw(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldChainTransactionID)))
+	})
+}
+
+// ChainTransactionIDNotNil applies the NotNil predicate on the "chain_transaction_id" field.
+func ChainTransactionIDNotNil() predicate.Withdraw {
+	return predicate.Withdraw(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldChainTransactionID)))
+	})
+}
+
+// ChainTransactionIDEqualFold applies the EqualFold predicate on the "chain_transaction_id" field.
+func ChainTransactionIDEqualFold(v string) predicate.Withdraw {
+	return predicate.Withdraw(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldChainTransactionID), v))
+	})
+}
+
+// ChainTransactionIDContainsFold applies the ContainsFold predicate on the "chain_transaction_id" field.
+func ChainTransactionIDContainsFold(v string) predicate.Withdraw {
+	return predicate.Withdraw(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldChainTransactionID), v))
+	})
+}
+
+// StateEQ applies the EQ predicate on the "state" field.
+func StateEQ(v string) predicate.Withdraw {
+	return predicate.Withdraw(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldState), v))
+	})
+}
+
+// StateNEQ applies the NEQ predicate on the "state" field.
+func StateNEQ(v string) predicate.Withdraw {
+	return predicate.Withdraw(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldState), v))
+	})
+}
+
+// StateIn applies the In predicate on the "state" field.
+func StateIn(vs ...string) predicate.Withdraw {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Withdraw(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldState), v...))
+	})
+}
+
+// StateNotIn applies the NotIn predicate on the "state" field.
+func StateNotIn(vs ...string) predicate.Withdraw {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Withdraw(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldState), v...))
+	})
+}
+
+// StateGT applies the GT predicate on the "state" field.
+func StateGT(v string) predicate.Withdraw {
+	return predicate.Withdraw(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldState), v))
+	})
+}
+
+// StateGTE applies the GTE predicate on the "state" field.
+func StateGTE(v string) predicate.Withdraw {
+	return predicate.Withdraw(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldState), v))
+	})
+}
+
+// StateLT applies the LT predicate on the "state" field.
+func StateLT(v string) predicate.Withdraw {
+	return predicate.Withdraw(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldState), v))
+	})
+}
+
+// StateLTE applies the LTE predicate on the "state" field.
+func StateLTE(v string) predicate.Withdraw {
+	return predicate.Withdraw(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldState), v))
+	})
+}
+
+// StateContains applies the Contains predicate on the "state" field.
+func StateContains(v string) predicate.Withdraw {
+	return predicate.Withdraw(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldState), v))
+	})
+}
+
+// StateHasPrefix applies the HasPrefix predicate on the "state" field.
+func StateHasPrefix(v string) predicate.Withdraw {
+	return predicate.Withdraw(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldState), v))
+	})
+}
+
+// StateHasSuffix applies the HasSuffix predicate on the "state" field.
+func StateHasSuffix(v string) predicate.Withdraw {
+	return predicate.Withdraw(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldState), v))
+	})
+}
+
+// StateIsNil applies the IsNil predicate on the "state" field.
+func StateIsNil() predicate.Withdraw {
+	return predicate.Withdraw(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldState)))
+	})
+}
+
+// StateNotNil applies the NotNil predicate on the "state" field.
+func StateNotNil() predicate.Withdraw {
+	return predicate.Withdraw(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldState)))
+	})
+}
+
+// StateEqualFold applies the EqualFold predicate on the "state" field.
+func StateEqualFold(v string) predicate.Withdraw {
+	return predicate.Withdraw(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldState), v))
+	})
+}
+
+// StateContainsFold applies the ContainsFold predicate on the "state" field.
+func StateContainsFold(v string) predicate.Withdraw {
+	return predicate.Withdraw(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldState), v))
 	})
 }
 

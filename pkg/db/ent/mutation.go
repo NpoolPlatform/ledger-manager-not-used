@@ -3325,25 +3325,28 @@ func (m *ProfitMutation) ResetEdge(name string) error {
 // WithdrawMutation represents an operation that mutates the Withdraw nodes in the graph.
 type WithdrawMutation struct {
 	config
-	op            Op
-	typ           string
-	id            *uuid.UUID
-	created_at    *uint32
-	addcreated_at *int32
-	updated_at    *uint32
-	addupdated_at *int32
-	deleted_at    *uint32
-	adddeleted_at *int32
-	app_id        *uuid.UUID
-	user_id       *uuid.UUID
-	coin_type_id  *uuid.UUID
-	account_id    *uuid.UUID
-	amount        *decimal.Decimal
-	addamount     *decimal.Decimal
-	clearedFields map[string]struct{}
-	done          bool
-	oldValue      func(context.Context) (*Withdraw, error)
-	predicates    []predicate.Withdraw
+	op                      Op
+	typ                     string
+	id                      *uuid.UUID
+	created_at              *uint32
+	addcreated_at           *int32
+	updated_at              *uint32
+	addupdated_at           *int32
+	deleted_at              *uint32
+	adddeleted_at           *int32
+	app_id                  *uuid.UUID
+	user_id                 *uuid.UUID
+	coin_type_id            *uuid.UUID
+	account_id              *uuid.UUID
+	platform_transaction_id *uuid.UUID
+	chain_transaction_id    *string
+	state                   *string
+	amount                  *decimal.Decimal
+	addamount               *decimal.Decimal
+	clearedFields           map[string]struct{}
+	done                    bool
+	oldValue                func(context.Context) (*Withdraw, error)
+	predicates              []predicate.Withdraw
 }
 
 var _ ent.Mutation = (*WithdrawMutation)(nil)
@@ -3814,6 +3817,153 @@ func (m *WithdrawMutation) ResetAccountID() {
 	delete(m.clearedFields, withdraw.FieldAccountID)
 }
 
+// SetPlatformTransactionID sets the "platform_transaction_id" field.
+func (m *WithdrawMutation) SetPlatformTransactionID(u uuid.UUID) {
+	m.platform_transaction_id = &u
+}
+
+// PlatformTransactionID returns the value of the "platform_transaction_id" field in the mutation.
+func (m *WithdrawMutation) PlatformTransactionID() (r uuid.UUID, exists bool) {
+	v := m.platform_transaction_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPlatformTransactionID returns the old "platform_transaction_id" field's value of the Withdraw entity.
+// If the Withdraw object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WithdrawMutation) OldPlatformTransactionID(ctx context.Context) (v uuid.UUID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPlatformTransactionID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPlatformTransactionID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPlatformTransactionID: %w", err)
+	}
+	return oldValue.PlatformTransactionID, nil
+}
+
+// ClearPlatformTransactionID clears the value of the "platform_transaction_id" field.
+func (m *WithdrawMutation) ClearPlatformTransactionID() {
+	m.platform_transaction_id = nil
+	m.clearedFields[withdraw.FieldPlatformTransactionID] = struct{}{}
+}
+
+// PlatformTransactionIDCleared returns if the "platform_transaction_id" field was cleared in this mutation.
+func (m *WithdrawMutation) PlatformTransactionIDCleared() bool {
+	_, ok := m.clearedFields[withdraw.FieldPlatformTransactionID]
+	return ok
+}
+
+// ResetPlatformTransactionID resets all changes to the "platform_transaction_id" field.
+func (m *WithdrawMutation) ResetPlatformTransactionID() {
+	m.platform_transaction_id = nil
+	delete(m.clearedFields, withdraw.FieldPlatformTransactionID)
+}
+
+// SetChainTransactionID sets the "chain_transaction_id" field.
+func (m *WithdrawMutation) SetChainTransactionID(s string) {
+	m.chain_transaction_id = &s
+}
+
+// ChainTransactionID returns the value of the "chain_transaction_id" field in the mutation.
+func (m *WithdrawMutation) ChainTransactionID() (r string, exists bool) {
+	v := m.chain_transaction_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldChainTransactionID returns the old "chain_transaction_id" field's value of the Withdraw entity.
+// If the Withdraw object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WithdrawMutation) OldChainTransactionID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldChainTransactionID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldChainTransactionID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldChainTransactionID: %w", err)
+	}
+	return oldValue.ChainTransactionID, nil
+}
+
+// ClearChainTransactionID clears the value of the "chain_transaction_id" field.
+func (m *WithdrawMutation) ClearChainTransactionID() {
+	m.chain_transaction_id = nil
+	m.clearedFields[withdraw.FieldChainTransactionID] = struct{}{}
+}
+
+// ChainTransactionIDCleared returns if the "chain_transaction_id" field was cleared in this mutation.
+func (m *WithdrawMutation) ChainTransactionIDCleared() bool {
+	_, ok := m.clearedFields[withdraw.FieldChainTransactionID]
+	return ok
+}
+
+// ResetChainTransactionID resets all changes to the "chain_transaction_id" field.
+func (m *WithdrawMutation) ResetChainTransactionID() {
+	m.chain_transaction_id = nil
+	delete(m.clearedFields, withdraw.FieldChainTransactionID)
+}
+
+// SetState sets the "state" field.
+func (m *WithdrawMutation) SetState(s string) {
+	m.state = &s
+}
+
+// State returns the value of the "state" field in the mutation.
+func (m *WithdrawMutation) State() (r string, exists bool) {
+	v := m.state
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldState returns the old "state" field's value of the Withdraw entity.
+// If the Withdraw object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WithdrawMutation) OldState(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldState is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldState requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldState: %w", err)
+	}
+	return oldValue.State, nil
+}
+
+// ClearState clears the value of the "state" field.
+func (m *WithdrawMutation) ClearState() {
+	m.state = nil
+	m.clearedFields[withdraw.FieldState] = struct{}{}
+}
+
+// StateCleared returns if the "state" field was cleared in this mutation.
+func (m *WithdrawMutation) StateCleared() bool {
+	_, ok := m.clearedFields[withdraw.FieldState]
+	return ok
+}
+
+// ResetState resets all changes to the "state" field.
+func (m *WithdrawMutation) ResetState() {
+	m.state = nil
+	delete(m.clearedFields, withdraw.FieldState)
+}
+
 // SetAmount sets the "amount" field.
 func (m *WithdrawMutation) SetAmount(d decimal.Decimal) {
 	m.amount = &d
@@ -3903,7 +4053,7 @@ func (m *WithdrawMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *WithdrawMutation) Fields() []string {
-	fields := make([]string, 0, 8)
+	fields := make([]string, 0, 11)
 	if m.created_at != nil {
 		fields = append(fields, withdraw.FieldCreatedAt)
 	}
@@ -3924,6 +4074,15 @@ func (m *WithdrawMutation) Fields() []string {
 	}
 	if m.account_id != nil {
 		fields = append(fields, withdraw.FieldAccountID)
+	}
+	if m.platform_transaction_id != nil {
+		fields = append(fields, withdraw.FieldPlatformTransactionID)
+	}
+	if m.chain_transaction_id != nil {
+		fields = append(fields, withdraw.FieldChainTransactionID)
+	}
+	if m.state != nil {
+		fields = append(fields, withdraw.FieldState)
 	}
 	if m.amount != nil {
 		fields = append(fields, withdraw.FieldAmount)
@@ -3950,6 +4109,12 @@ func (m *WithdrawMutation) Field(name string) (ent.Value, bool) {
 		return m.CoinTypeID()
 	case withdraw.FieldAccountID:
 		return m.AccountID()
+	case withdraw.FieldPlatformTransactionID:
+		return m.PlatformTransactionID()
+	case withdraw.FieldChainTransactionID:
+		return m.ChainTransactionID()
+	case withdraw.FieldState:
+		return m.State()
 	case withdraw.FieldAmount:
 		return m.Amount()
 	}
@@ -3975,6 +4140,12 @@ func (m *WithdrawMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldCoinTypeID(ctx)
 	case withdraw.FieldAccountID:
 		return m.OldAccountID(ctx)
+	case withdraw.FieldPlatformTransactionID:
+		return m.OldPlatformTransactionID(ctx)
+	case withdraw.FieldChainTransactionID:
+		return m.OldChainTransactionID(ctx)
+	case withdraw.FieldState:
+		return m.OldState(ctx)
 	case withdraw.FieldAmount:
 		return m.OldAmount(ctx)
 	}
@@ -4034,6 +4205,27 @@ func (m *WithdrawMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetAccountID(v)
+		return nil
+	case withdraw.FieldPlatformTransactionID:
+		v, ok := value.(uuid.UUID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPlatformTransactionID(v)
+		return nil
+	case withdraw.FieldChainTransactionID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetChainTransactionID(v)
+		return nil
+	case withdraw.FieldState:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetState(v)
 		return nil
 	case withdraw.FieldAmount:
 		v, ok := value.(decimal.Decimal)
@@ -4135,6 +4327,15 @@ func (m *WithdrawMutation) ClearedFields() []string {
 	if m.FieldCleared(withdraw.FieldAccountID) {
 		fields = append(fields, withdraw.FieldAccountID)
 	}
+	if m.FieldCleared(withdraw.FieldPlatformTransactionID) {
+		fields = append(fields, withdraw.FieldPlatformTransactionID)
+	}
+	if m.FieldCleared(withdraw.FieldChainTransactionID) {
+		fields = append(fields, withdraw.FieldChainTransactionID)
+	}
+	if m.FieldCleared(withdraw.FieldState) {
+		fields = append(fields, withdraw.FieldState)
+	}
 	if m.FieldCleared(withdraw.FieldAmount) {
 		fields = append(fields, withdraw.FieldAmount)
 	}
@@ -4163,6 +4364,15 @@ func (m *WithdrawMutation) ClearField(name string) error {
 		return nil
 	case withdraw.FieldAccountID:
 		m.ClearAccountID()
+		return nil
+	case withdraw.FieldPlatformTransactionID:
+		m.ClearPlatformTransactionID()
+		return nil
+	case withdraw.FieldChainTransactionID:
+		m.ClearChainTransactionID()
+		return nil
+	case withdraw.FieldState:
+		m.ClearState()
 		return nil
 	case withdraw.FieldAmount:
 		m.ClearAmount()
@@ -4195,6 +4405,15 @@ func (m *WithdrawMutation) ResetField(name string) error {
 		return nil
 	case withdraw.FieldAccountID:
 		m.ResetAccountID()
+		return nil
+	case withdraw.FieldPlatformTransactionID:
+		m.ResetPlatformTransactionID()
+		return nil
+	case withdraw.FieldChainTransactionID:
+		m.ResetChainTransactionID()
+		return nil
+	case withdraw.FieldState:
+		m.ResetState()
 		return nil
 	case withdraw.FieldAmount:
 		m.ResetAmount()

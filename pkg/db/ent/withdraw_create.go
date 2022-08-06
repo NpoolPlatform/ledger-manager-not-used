@@ -122,6 +122,48 @@ func (wc *WithdrawCreate) SetNillableAccountID(u *uuid.UUID) *WithdrawCreate {
 	return wc
 }
 
+// SetPlatformTransactionID sets the "platform_transaction_id" field.
+func (wc *WithdrawCreate) SetPlatformTransactionID(u uuid.UUID) *WithdrawCreate {
+	wc.mutation.SetPlatformTransactionID(u)
+	return wc
+}
+
+// SetNillablePlatformTransactionID sets the "platform_transaction_id" field if the given value is not nil.
+func (wc *WithdrawCreate) SetNillablePlatformTransactionID(u *uuid.UUID) *WithdrawCreate {
+	if u != nil {
+		wc.SetPlatformTransactionID(*u)
+	}
+	return wc
+}
+
+// SetChainTransactionID sets the "chain_transaction_id" field.
+func (wc *WithdrawCreate) SetChainTransactionID(s string) *WithdrawCreate {
+	wc.mutation.SetChainTransactionID(s)
+	return wc
+}
+
+// SetNillableChainTransactionID sets the "chain_transaction_id" field if the given value is not nil.
+func (wc *WithdrawCreate) SetNillableChainTransactionID(s *string) *WithdrawCreate {
+	if s != nil {
+		wc.SetChainTransactionID(*s)
+	}
+	return wc
+}
+
+// SetState sets the "state" field.
+func (wc *WithdrawCreate) SetState(s string) *WithdrawCreate {
+	wc.mutation.SetState(s)
+	return wc
+}
+
+// SetNillableState sets the "state" field if the given value is not nil.
+func (wc *WithdrawCreate) SetNillableState(s *string) *WithdrawCreate {
+	if s != nil {
+		wc.SetState(*s)
+	}
+	return wc
+}
+
 // SetAmount sets the "amount" field.
 func (wc *WithdrawCreate) SetAmount(d decimal.Decimal) *WithdrawCreate {
 	wc.mutation.SetAmount(d)
@@ -272,6 +314,21 @@ func (wc *WithdrawCreate) defaults() error {
 		v := withdraw.DefaultAccountID()
 		wc.mutation.SetAccountID(v)
 	}
+	if _, ok := wc.mutation.PlatformTransactionID(); !ok {
+		if withdraw.DefaultPlatformTransactionID == nil {
+			return fmt.Errorf("ent: uninitialized withdraw.DefaultPlatformTransactionID (forgotten import ent/runtime?)")
+		}
+		v := withdraw.DefaultPlatformTransactionID()
+		wc.mutation.SetPlatformTransactionID(v)
+	}
+	if _, ok := wc.mutation.ChainTransactionID(); !ok {
+		v := withdraw.DefaultChainTransactionID
+		wc.mutation.SetChainTransactionID(v)
+	}
+	if _, ok := wc.mutation.State(); !ok {
+		v := withdraw.DefaultState
+		wc.mutation.SetState(v)
+	}
 	if _, ok := wc.mutation.ID(); !ok {
 		if withdraw.DefaultID == nil {
 			return fmt.Errorf("ent: uninitialized withdraw.DefaultID (forgotten import ent/runtime?)")
@@ -385,6 +442,30 @@ func (wc *WithdrawCreate) createSpec() (*Withdraw, *sqlgraph.CreateSpec) {
 			Column: withdraw.FieldAccountID,
 		})
 		_node.AccountID = value
+	}
+	if value, ok := wc.mutation.PlatformTransactionID(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeUUID,
+			Value:  value,
+			Column: withdraw.FieldPlatformTransactionID,
+		})
+		_node.PlatformTransactionID = value
+	}
+	if value, ok := wc.mutation.ChainTransactionID(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: withdraw.FieldChainTransactionID,
+		})
+		_node.ChainTransactionID = value
+	}
+	if value, ok := wc.mutation.State(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: withdraw.FieldState,
+		})
+		_node.State = value
 	}
 	if value, ok := wc.mutation.Amount(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -571,6 +652,60 @@ func (u *WithdrawUpsert) UpdateAccountID() *WithdrawUpsert {
 // ClearAccountID clears the value of the "account_id" field.
 func (u *WithdrawUpsert) ClearAccountID() *WithdrawUpsert {
 	u.SetNull(withdraw.FieldAccountID)
+	return u
+}
+
+// SetPlatformTransactionID sets the "platform_transaction_id" field.
+func (u *WithdrawUpsert) SetPlatformTransactionID(v uuid.UUID) *WithdrawUpsert {
+	u.Set(withdraw.FieldPlatformTransactionID, v)
+	return u
+}
+
+// UpdatePlatformTransactionID sets the "platform_transaction_id" field to the value that was provided on create.
+func (u *WithdrawUpsert) UpdatePlatformTransactionID() *WithdrawUpsert {
+	u.SetExcluded(withdraw.FieldPlatformTransactionID)
+	return u
+}
+
+// ClearPlatformTransactionID clears the value of the "platform_transaction_id" field.
+func (u *WithdrawUpsert) ClearPlatformTransactionID() *WithdrawUpsert {
+	u.SetNull(withdraw.FieldPlatformTransactionID)
+	return u
+}
+
+// SetChainTransactionID sets the "chain_transaction_id" field.
+func (u *WithdrawUpsert) SetChainTransactionID(v string) *WithdrawUpsert {
+	u.Set(withdraw.FieldChainTransactionID, v)
+	return u
+}
+
+// UpdateChainTransactionID sets the "chain_transaction_id" field to the value that was provided on create.
+func (u *WithdrawUpsert) UpdateChainTransactionID() *WithdrawUpsert {
+	u.SetExcluded(withdraw.FieldChainTransactionID)
+	return u
+}
+
+// ClearChainTransactionID clears the value of the "chain_transaction_id" field.
+func (u *WithdrawUpsert) ClearChainTransactionID() *WithdrawUpsert {
+	u.SetNull(withdraw.FieldChainTransactionID)
+	return u
+}
+
+// SetState sets the "state" field.
+func (u *WithdrawUpsert) SetState(v string) *WithdrawUpsert {
+	u.Set(withdraw.FieldState, v)
+	return u
+}
+
+// UpdateState sets the "state" field to the value that was provided on create.
+func (u *WithdrawUpsert) UpdateState() *WithdrawUpsert {
+	u.SetExcluded(withdraw.FieldState)
+	return u
+}
+
+// ClearState clears the value of the "state" field.
+func (u *WithdrawUpsert) ClearState() *WithdrawUpsert {
+	u.SetNull(withdraw.FieldState)
 	return u
 }
 
@@ -792,6 +927,69 @@ func (u *WithdrawUpsertOne) UpdateAccountID() *WithdrawUpsertOne {
 func (u *WithdrawUpsertOne) ClearAccountID() *WithdrawUpsertOne {
 	return u.Update(func(s *WithdrawUpsert) {
 		s.ClearAccountID()
+	})
+}
+
+// SetPlatformTransactionID sets the "platform_transaction_id" field.
+func (u *WithdrawUpsertOne) SetPlatformTransactionID(v uuid.UUID) *WithdrawUpsertOne {
+	return u.Update(func(s *WithdrawUpsert) {
+		s.SetPlatformTransactionID(v)
+	})
+}
+
+// UpdatePlatformTransactionID sets the "platform_transaction_id" field to the value that was provided on create.
+func (u *WithdrawUpsertOne) UpdatePlatformTransactionID() *WithdrawUpsertOne {
+	return u.Update(func(s *WithdrawUpsert) {
+		s.UpdatePlatformTransactionID()
+	})
+}
+
+// ClearPlatformTransactionID clears the value of the "platform_transaction_id" field.
+func (u *WithdrawUpsertOne) ClearPlatformTransactionID() *WithdrawUpsertOne {
+	return u.Update(func(s *WithdrawUpsert) {
+		s.ClearPlatformTransactionID()
+	})
+}
+
+// SetChainTransactionID sets the "chain_transaction_id" field.
+func (u *WithdrawUpsertOne) SetChainTransactionID(v string) *WithdrawUpsertOne {
+	return u.Update(func(s *WithdrawUpsert) {
+		s.SetChainTransactionID(v)
+	})
+}
+
+// UpdateChainTransactionID sets the "chain_transaction_id" field to the value that was provided on create.
+func (u *WithdrawUpsertOne) UpdateChainTransactionID() *WithdrawUpsertOne {
+	return u.Update(func(s *WithdrawUpsert) {
+		s.UpdateChainTransactionID()
+	})
+}
+
+// ClearChainTransactionID clears the value of the "chain_transaction_id" field.
+func (u *WithdrawUpsertOne) ClearChainTransactionID() *WithdrawUpsertOne {
+	return u.Update(func(s *WithdrawUpsert) {
+		s.ClearChainTransactionID()
+	})
+}
+
+// SetState sets the "state" field.
+func (u *WithdrawUpsertOne) SetState(v string) *WithdrawUpsertOne {
+	return u.Update(func(s *WithdrawUpsert) {
+		s.SetState(v)
+	})
+}
+
+// UpdateState sets the "state" field to the value that was provided on create.
+func (u *WithdrawUpsertOne) UpdateState() *WithdrawUpsertOne {
+	return u.Update(func(s *WithdrawUpsert) {
+		s.UpdateState()
+	})
+}
+
+// ClearState clears the value of the "state" field.
+func (u *WithdrawUpsertOne) ClearState() *WithdrawUpsertOne {
+	return u.Update(func(s *WithdrawUpsert) {
+		s.ClearState()
 	})
 }
 
@@ -1183,6 +1381,69 @@ func (u *WithdrawUpsertBulk) UpdateAccountID() *WithdrawUpsertBulk {
 func (u *WithdrawUpsertBulk) ClearAccountID() *WithdrawUpsertBulk {
 	return u.Update(func(s *WithdrawUpsert) {
 		s.ClearAccountID()
+	})
+}
+
+// SetPlatformTransactionID sets the "platform_transaction_id" field.
+func (u *WithdrawUpsertBulk) SetPlatformTransactionID(v uuid.UUID) *WithdrawUpsertBulk {
+	return u.Update(func(s *WithdrawUpsert) {
+		s.SetPlatformTransactionID(v)
+	})
+}
+
+// UpdatePlatformTransactionID sets the "platform_transaction_id" field to the value that was provided on create.
+func (u *WithdrawUpsertBulk) UpdatePlatformTransactionID() *WithdrawUpsertBulk {
+	return u.Update(func(s *WithdrawUpsert) {
+		s.UpdatePlatformTransactionID()
+	})
+}
+
+// ClearPlatformTransactionID clears the value of the "platform_transaction_id" field.
+func (u *WithdrawUpsertBulk) ClearPlatformTransactionID() *WithdrawUpsertBulk {
+	return u.Update(func(s *WithdrawUpsert) {
+		s.ClearPlatformTransactionID()
+	})
+}
+
+// SetChainTransactionID sets the "chain_transaction_id" field.
+func (u *WithdrawUpsertBulk) SetChainTransactionID(v string) *WithdrawUpsertBulk {
+	return u.Update(func(s *WithdrawUpsert) {
+		s.SetChainTransactionID(v)
+	})
+}
+
+// UpdateChainTransactionID sets the "chain_transaction_id" field to the value that was provided on create.
+func (u *WithdrawUpsertBulk) UpdateChainTransactionID() *WithdrawUpsertBulk {
+	return u.Update(func(s *WithdrawUpsert) {
+		s.UpdateChainTransactionID()
+	})
+}
+
+// ClearChainTransactionID clears the value of the "chain_transaction_id" field.
+func (u *WithdrawUpsertBulk) ClearChainTransactionID() *WithdrawUpsertBulk {
+	return u.Update(func(s *WithdrawUpsert) {
+		s.ClearChainTransactionID()
+	})
+}
+
+// SetState sets the "state" field.
+func (u *WithdrawUpsertBulk) SetState(v string) *WithdrawUpsertBulk {
+	return u.Update(func(s *WithdrawUpsert) {
+		s.SetState(v)
+	})
+}
+
+// UpdateState sets the "state" field to the value that was provided on create.
+func (u *WithdrawUpsertBulk) UpdateState() *WithdrawUpsertBulk {
+	return u.Update(func(s *WithdrawUpsert) {
+		s.UpdateState()
+	})
+}
+
+// ClearState clears the value of the "state" field.
+func (u *WithdrawUpsertBulk) ClearState() *WithdrawUpsertBulk {
+	return u.Update(func(s *WithdrawUpsert) {
+		s.ClearState()
 	})
 }
 
