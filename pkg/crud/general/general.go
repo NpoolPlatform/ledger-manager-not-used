@@ -180,7 +180,8 @@ func UpdateSet(info *ent.General, in *npool.GeneralReq) (*ent.GeneralUpdateOne, 
 		stm = stm.AddSpendable(spendable)
 	}
 
-	logger.Sugar().Infow("UpdateSet", "I", incoming, "O", outcoming, "L", locked, "S", spendable)
+	logger.Sugar().Infow("UpdateSet", "AI", incoming, "AO", outcoming, "AL", locked, "AS", spendable)
+	logger.Sugar().Infow("UpdateSet", "II", info.Incoming, "IO", info.Outcoming, "IL", info.Locked, "IS", info.Spendable)
 
 	return stm, nil
 }
