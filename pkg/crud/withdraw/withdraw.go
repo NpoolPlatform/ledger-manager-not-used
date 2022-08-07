@@ -40,6 +40,9 @@ func CreateSet(c *ent.WithdrawCreate, in *npool.WithdrawReq) *ent.WithdrawCreate
 	if in.PlatformTransactionID != nil {
 		c.SetPlatformTransactionID(uuid.MustParse(in.GetPlatformTransactionID()))
 	}
+	if in.FromOldID != nil {
+		c.SetFromOldID(uuid.MustParse(in.GetFromOldID()))
+	}
 
 	c.SetAmount(decimal.NewFromInt(0))
 	c.SetState(npool.WithdrawState_Reviewing.String())
@@ -230,6 +233,14 @@ func setQueryConds(conds *npool.Conds, cli *ent.Client) (*ent.WithdrawQuery, err
 		switch conds.GetAccountID().GetOp() {
 		case cruder.EQ:
 			stm.Where(withdraw.AccountID(uuid.MustParse(conds.GetAccountID().GetValue())))
+		default:
+			return nil, fmt.Errorf("invalid withdraw field")
+		}
+	}
+	if conds.FromOldID != nil {
+		switch conds.GetFromOldID().GetOp() {
+		case cruder.EQ:
+			stm.Where(withdraw.FromOldID(uuid.MustParse(conds.GetFromOldID().GetValue())))
 		default:
 			return nil, fmt.Errorf("invalid withdraw field")
 		}

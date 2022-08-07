@@ -251,6 +251,26 @@ func (wu *WithdrawUpdate) ClearAmount() *WithdrawUpdate {
 	return wu
 }
 
+// SetFromOldID sets the "from_old_id" field.
+func (wu *WithdrawUpdate) SetFromOldID(u uuid.UUID) *WithdrawUpdate {
+	wu.mutation.SetFromOldID(u)
+	return wu
+}
+
+// SetNillableFromOldID sets the "from_old_id" field if the given value is not nil.
+func (wu *WithdrawUpdate) SetNillableFromOldID(u *uuid.UUID) *WithdrawUpdate {
+	if u != nil {
+		wu.SetFromOldID(*u)
+	}
+	return wu
+}
+
+// ClearFromOldID clears the value of the "from_old_id" field.
+func (wu *WithdrawUpdate) ClearFromOldID() *WithdrawUpdate {
+	wu.mutation.ClearFromOldID()
+	return wu
+}
+
 // Mutation returns the WithdrawMutation object of the builder.
 func (wu *WithdrawUpdate) Mutation() *WithdrawMutation {
 	return wu.mutation
@@ -496,6 +516,19 @@ func (wu *WithdrawUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: withdraw.FieldAmount,
 		})
 	}
+	if value, ok := wu.mutation.FromOldID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUUID,
+			Value:  value,
+			Column: withdraw.FieldFromOldID,
+		})
+	}
+	if wu.mutation.FromOldIDCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeUUID,
+			Column: withdraw.FieldFromOldID,
+		})
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, wu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{withdraw.Label}
@@ -734,6 +767,26 @@ func (wuo *WithdrawUpdateOne) AddAmount(d decimal.Decimal) *WithdrawUpdateOne {
 // ClearAmount clears the value of the "amount" field.
 func (wuo *WithdrawUpdateOne) ClearAmount() *WithdrawUpdateOne {
 	wuo.mutation.ClearAmount()
+	return wuo
+}
+
+// SetFromOldID sets the "from_old_id" field.
+func (wuo *WithdrawUpdateOne) SetFromOldID(u uuid.UUID) *WithdrawUpdateOne {
+	wuo.mutation.SetFromOldID(u)
+	return wuo
+}
+
+// SetNillableFromOldID sets the "from_old_id" field if the given value is not nil.
+func (wuo *WithdrawUpdateOne) SetNillableFromOldID(u *uuid.UUID) *WithdrawUpdateOne {
+	if u != nil {
+		wuo.SetFromOldID(*u)
+	}
+	return wuo
+}
+
+// ClearFromOldID clears the value of the "from_old_id" field.
+func (wuo *WithdrawUpdateOne) ClearFromOldID() *WithdrawUpdateOne {
+	wuo.mutation.ClearFromOldID()
 	return wuo
 }
 
@@ -1004,6 +1057,19 @@ func (wuo *WithdrawUpdateOne) sqlSave(ctx context.Context) (_node *Withdraw, err
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeFloat64,
 			Column: withdraw.FieldAmount,
+		})
+	}
+	if value, ok := wuo.mutation.FromOldID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUUID,
+			Value:  value,
+			Column: withdraw.FieldFromOldID,
+		})
+	}
+	if wuo.mutation.FromOldIDCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeUUID,
+			Column: withdraw.FieldFromOldID,
 		})
 	}
 	_node = &Withdraw{config: wuo.config}

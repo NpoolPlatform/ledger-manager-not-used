@@ -34,6 +34,8 @@ const (
 	FieldState = "state"
 	// FieldAmount holds the string denoting the amount field in the database.
 	FieldAmount = "amount"
+	// FieldFromOldID holds the string denoting the from_old_id field in the database.
+	FieldFromOldID = "from_old_id"
 	// Table holds the table name of the withdraw in the database.
 	Table = "withdraws"
 )
@@ -52,6 +54,7 @@ var Columns = []string{
 	FieldChainTransactionID,
 	FieldState,
 	FieldAmount,
+	FieldFromOldID,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -95,6 +98,8 @@ var (
 	DefaultChainTransactionID string
 	// DefaultState holds the default value on creation for the "state" field.
 	DefaultState string
+	// DefaultFromOldID holds the default value on creation for the "from_old_id" field.
+	DefaultFromOldID func() uuid.UUID
 	// DefaultID holds the default value on creation for the "id" field.
 	DefaultID func() uuid.UUID
 )

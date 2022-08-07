@@ -19,6 +19,7 @@ func Ent2Grpc(row *ent.Withdraw) *npool.Withdraw {
 		Amount:                row.Amount.String(),
 		CreatedAt:             row.CreatedAt,
 		PlatformTransactionID: row.PlatformTransactionID.String(),
+		FromOldID:             row.FromOldID.String(),
 		ChainTransactionID:    row.ChainTransactionID,
 		State:                 npool.WithdrawState(npool.WithdrawState_value[row.State]),
 	}

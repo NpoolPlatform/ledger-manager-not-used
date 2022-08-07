@@ -3343,6 +3343,7 @@ type WithdrawMutation struct {
 	state                   *string
 	amount                  *decimal.Decimal
 	addamount               *decimal.Decimal
+	from_old_id             *uuid.UUID
 	clearedFields           map[string]struct{}
 	done                    bool
 	oldValue                func(context.Context) (*Withdraw, error)
@@ -4034,6 +4035,55 @@ func (m *WithdrawMutation) ResetAmount() {
 	delete(m.clearedFields, withdraw.FieldAmount)
 }
 
+// SetFromOldID sets the "from_old_id" field.
+func (m *WithdrawMutation) SetFromOldID(u uuid.UUID) {
+	m.from_old_id = &u
+}
+
+// FromOldID returns the value of the "from_old_id" field in the mutation.
+func (m *WithdrawMutation) FromOldID() (r uuid.UUID, exists bool) {
+	v := m.from_old_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldFromOldID returns the old "from_old_id" field's value of the Withdraw entity.
+// If the Withdraw object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WithdrawMutation) OldFromOldID(ctx context.Context) (v uuid.UUID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldFromOldID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldFromOldID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldFromOldID: %w", err)
+	}
+	return oldValue.FromOldID, nil
+}
+
+// ClearFromOldID clears the value of the "from_old_id" field.
+func (m *WithdrawMutation) ClearFromOldID() {
+	m.from_old_id = nil
+	m.clearedFields[withdraw.FieldFromOldID] = struct{}{}
+}
+
+// FromOldIDCleared returns if the "from_old_id" field was cleared in this mutation.
+func (m *WithdrawMutation) FromOldIDCleared() bool {
+	_, ok := m.clearedFields[withdraw.FieldFromOldID]
+	return ok
+}
+
+// ResetFromOldID resets all changes to the "from_old_id" field.
+func (m *WithdrawMutation) ResetFromOldID() {
+	m.from_old_id = nil
+	delete(m.clearedFields, withdraw.FieldFromOldID)
+}
+
 // Where appends a list predicates to the WithdrawMutation builder.
 func (m *WithdrawMutation) Where(ps ...predicate.Withdraw) {
 	m.predicates = append(m.predicates, ps...)
@@ -4053,7 +4103,7 @@ func (m *WithdrawMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *WithdrawMutation) Fields() []string {
-	fields := make([]string, 0, 11)
+	fields := make([]string, 0, 12)
 	if m.created_at != nil {
 		fields = append(fields, withdraw.FieldCreatedAt)
 	}
@@ -4087,6 +4137,9 @@ func (m *WithdrawMutation) Fields() []string {
 	if m.amount != nil {
 		fields = append(fields, withdraw.FieldAmount)
 	}
+	if m.from_old_id != nil {
+		fields = append(fields, withdraw.FieldFromOldID)
+	}
 	return fields
 }
 
@@ -4117,6 +4170,8 @@ func (m *WithdrawMutation) Field(name string) (ent.Value, bool) {
 		return m.State()
 	case withdraw.FieldAmount:
 		return m.Amount()
+	case withdraw.FieldFromOldID:
+		return m.FromOldID()
 	}
 	return nil, false
 }
@@ -4148,6 +4203,8 @@ func (m *WithdrawMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldState(ctx)
 	case withdraw.FieldAmount:
 		return m.OldAmount(ctx)
+	case withdraw.FieldFromOldID:
+		return m.OldFromOldID(ctx)
 	}
 	return nil, fmt.Errorf("unknown Withdraw field %s", name)
 }
@@ -4233,6 +4290,13 @@ func (m *WithdrawMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetAmount(v)
+		return nil
+	case withdraw.FieldFromOldID:
+		v, ok := value.(uuid.UUID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetFromOldID(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Withdraw field %s", name)
@@ -4339,6 +4403,9 @@ func (m *WithdrawMutation) ClearedFields() []string {
 	if m.FieldCleared(withdraw.FieldAmount) {
 		fields = append(fields, withdraw.FieldAmount)
 	}
+	if m.FieldCleared(withdraw.FieldFromOldID) {
+		fields = append(fields, withdraw.FieldFromOldID)
+	}
 	return fields
 }
 
@@ -4376,6 +4443,9 @@ func (m *WithdrawMutation) ClearField(name string) error {
 		return nil
 	case withdraw.FieldAmount:
 		m.ClearAmount()
+		return nil
+	case withdraw.FieldFromOldID:
+		m.ClearFromOldID()
 		return nil
 	}
 	return fmt.Errorf("unknown Withdraw nullable field %s", name)
@@ -4417,6 +4487,9 @@ func (m *WithdrawMutation) ResetField(name string) error {
 		return nil
 	case withdraw.FieldAmount:
 		m.ResetAmount()
+		return nil
+	case withdraw.FieldFromOldID:
+		m.ResetFromOldID()
 		return nil
 	}
 	return fmt.Errorf("unknown Withdraw field %s", name)

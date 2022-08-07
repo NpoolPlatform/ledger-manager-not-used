@@ -36,6 +36,7 @@ var entity = ent.Withdraw{
 	CoinTypeID: uuid.New(),
 	AccountID:  uuid.New(),
 	Amount:     decimal.NewFromInt(0),
+	State:      npool.WithdrawState_Reviewing.String(),
 }
 
 var (
