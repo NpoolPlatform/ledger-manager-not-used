@@ -207,7 +207,7 @@ func setQueryConds(conds *npool.Conds, cli *ent.Client) (*ent.DetailQuery, error
 	if conds.IOSubType != nil {
 		switch conds.GetIOSubType().GetOp() {
 		case cruder.EQ:
-			stm.Where(detail.IoType(npool.IOSubType(conds.GetIOSubType().GetValue()).String()))
+			stm.Where(detail.IoSubType(npool.IOSubType(conds.GetIOSubType().GetValue()).String()))
 		default:
 			return nil, fmt.Errorf("invalid detail field")
 		}
