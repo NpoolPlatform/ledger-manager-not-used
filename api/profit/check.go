@@ -44,19 +44,16 @@ func validate(info *npool.ProfitReq) error {
 		return status.Error(codes.InvalidArgument, fmt.Sprintf("CoinTypeID is invalid: %v", err))
 	}
 
-	if info.Incoming == nil {
-		logger.Sugar().Errorw("validate", "Incoming", info.Incoming)
-		return status.Error(codes.InvalidArgument, "Incoming is empty")
-	}
-
-	incoming, err := decimal.NewFromString(info.GetIncoming())
-	if err != nil {
-		logger.Sugar().Errorw("validate", "Incoming", info.GetIncoming(), "error", err)
-		return status.Error(codes.InvalidArgument, fmt.Sprintf("Incoming is invalid: %v", err))
-	}
-	if incoming.Cmp(decimal.NewFromInt(0)) <= 0 {
-		logger.Sugar().Errorw("validate", "Incoming", info.GetIncoming(), "error", "less than 0")
-		return status.Error(codes.InvalidArgument, "Incoming is less than 0")
+	if info.Incoming != nil {
+		incoming, err := decimal.NewFromString(info.GetIncoming())
+		if err != nil {
+			logger.Sugar().Errorw("validate", "Incoming", info.GetIncoming(), "error", err)
+			return status.Error(codes.InvalidArgument, fmt.Sprintf("Incoming is invalid: %v", err))
+		}
+		if incoming.Cmp(decimal.NewFromInt(0)) <= 0 {
+			logger.Sugar().Errorw("validate", "Incoming", info.GetIncoming(), "error", "less than 0")
+			return status.Error(codes.InvalidArgument, "Incoming is less than 0")
+		}
 	}
 
 	return nil
