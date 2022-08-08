@@ -127,10 +127,10 @@ func createBulk(t *testing.T) {
 }
 
 func add(t *testing.T) {
-	incoming = "30"
-	locked = "10"
-	outcoming = "10"
-	spendable = "10"
+	incoming = "60"
+	locked = "0"
+	outcoming = "0"
+	spendable = "60"
 
 	req.Incoming = &incoming
 	req.Locked = &locked
@@ -143,6 +143,25 @@ func add(t *testing.T) {
 	entity.Spendable, _ = decimal.NewFromString(spendable)
 
 	info, err := AddFields(context.Background(), &req)
+	if assert.Nil(t, err) {
+		entity.UpdatedAt = info.UpdatedAt
+		assert.Equal(t, info.String(), entity.String())
+	}
+
+	incoming = "0"
+	locked = "0"
+	outcoming = "55.2487"
+	spendable = "-55.2487"
+
+	req.Incoming = &incoming
+	req.Locked = &locked
+	req.Outcoming = &outcoming
+	req.Spendable = &spendable
+
+	entity.Outcoming, _ = decimal.NewFromString(outcoming)
+	entity.Spendable = entity.Incoming.Add(decimal.RequireFromString(spendable))
+
+	info, err = AddFields(context.Background(), &req)
 	if assert.Nil(t, err) {
 		entity.UpdatedAt = info.UpdatedAt
 		assert.Equal(t, info.String(), entity.String())

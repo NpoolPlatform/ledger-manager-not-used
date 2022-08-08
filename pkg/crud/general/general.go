@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
+
 	constant "github.com/NpoolPlatform/ledger-manager/pkg/message/const"
 	commontracer "github.com/NpoolPlatform/ledger-manager/pkg/tracer"
 	tracer "github.com/NpoolPlatform/ledger-manager/pkg/tracer/general"
@@ -101,6 +103,7 @@ func CreateBulk(ctx context.Context, in []*npool.GeneralReq) ([]*ent.General, er
 	return rows, nil
 }
 
+// Caller info must be ForUpdate
 func UpdateSet(info *ent.General, in *npool.GeneralReq) (*ent.GeneralUpdateOne, error) { //nolint
 	incoming := decimal.NewFromInt(0)
 	if in.Incoming != nil {
@@ -142,8 +145,8 @@ func UpdateSet(info *ent.General, in *npool.GeneralReq) (*ent.GeneralUpdateOne, 
 				Add(info.Outcoming).
 				Add(spendable).
 				Add(info.Spendable),
-		) < 0 {
-		return nil, fmt.Errorf("outcoming (%v + %v) + locked (%v + %v) + spendable (%v + %v) > incoming (%v + %v)",
+		) != 0 {
+		return nil, fmt.Errorf("outcoming (%v + %v) + locked (%v + %v) + spendable (%v + %v) != incoming (%v + %v)",
 			outcoming, info.Outcoming, locked, info.Locked, spendable, info.Spendable, incoming, info.Incoming)
 	}
 
@@ -166,17 +169,24 @@ func UpdateSet(info *ent.General, in *npool.GeneralReq) (*ent.GeneralUpdateOne, 
 	stm := info.Update()
 
 	if in.Incoming != nil {
-		stm = stm.AddIncoming(incoming)
+		incoming = incoming.Add(info.Incoming)
+		stm = stm.SetIncoming(incoming)
 	}
 	if in.Outcoming != nil {
-		stm = stm.AddOutcoming(outcoming)
+		outcoming = outcoming.Add(info.Outcoming)
+		stm = stm.SetOutcoming(outcoming)
 	}
 	if in.Locked != nil {
-		stm = stm.AddLocked(locked)
+		locked = locked.Add(info.Locked)
+		stm = stm.SetLocked(locked)
 	}
 	if in.Spendable != nil {
-		stm = stm.AddSpendable(spendable)
+		spendable = spendable.Add(info.Spendable)
+		stm = stm.SetSpendable(spendable)
 	}
+
+	logger.Sugar().Infow("UpdateSet", "AI", incoming, "AO", outcoming, "AL", locked, "AS", spendable)
+	logger.Sugar().Infow("UpdateSet", "II", info.Incoming, "IO", info.Outcoming, "IL", info.Locked, "IS", info.Spendable)
 
 	return stm, nil
 }
