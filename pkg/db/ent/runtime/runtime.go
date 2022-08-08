@@ -224,10 +224,6 @@ func init() {
 	withdrawDescState := withdrawFields[7].Descriptor()
 	// withdraw.DefaultState holds the default value on creation for the state field.
 	withdraw.DefaultState = withdrawDescState.Default.(string)
-	// withdrawDescFromOldID is the schema descriptor for from_old_id field.
-	withdrawDescFromOldID := withdrawFields[9].Descriptor()
-	// withdraw.DefaultFromOldID holds the default value on creation for the from_old_id field.
-	withdraw.DefaultFromOldID = withdrawDescFromOldID.Default.(func() uuid.UUID)
 	// withdrawDescID is the schema descriptor for id field.
 	withdrawDescID := withdrawFields[0].Descriptor()
 	// withdraw.DefaultID holds the default value on creation for the id field.

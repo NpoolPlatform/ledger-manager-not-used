@@ -169,13 +169,6 @@ func Amount(v decimal.Decimal) predicate.Withdraw {
 	})
 }
 
-// FromOldID applies equality check predicate on the "from_old_id" field. It's identical to FromOldIDEQ.
-func FromOldID(v uuid.UUID) predicate.Withdraw {
-	return predicate.Withdraw(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldFromOldID), v))
-	})
-}
-
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v uint32) predicate.Withdraw {
 	return predicate.Withdraw(func(s *sql.Selector) {
@@ -1191,96 +1184,6 @@ func AmountIsNil() predicate.Withdraw {
 func AmountNotNil() predicate.Withdraw {
 	return predicate.Withdraw(func(s *sql.Selector) {
 		s.Where(sql.NotNull(s.C(FieldAmount)))
-	})
-}
-
-// FromOldIDEQ applies the EQ predicate on the "from_old_id" field.
-func FromOldIDEQ(v uuid.UUID) predicate.Withdraw {
-	return predicate.Withdraw(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldFromOldID), v))
-	})
-}
-
-// FromOldIDNEQ applies the NEQ predicate on the "from_old_id" field.
-func FromOldIDNEQ(v uuid.UUID) predicate.Withdraw {
-	return predicate.Withdraw(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldFromOldID), v))
-	})
-}
-
-// FromOldIDIn applies the In predicate on the "from_old_id" field.
-func FromOldIDIn(vs ...uuid.UUID) predicate.Withdraw {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Withdraw(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.In(s.C(FieldFromOldID), v...))
-	})
-}
-
-// FromOldIDNotIn applies the NotIn predicate on the "from_old_id" field.
-func FromOldIDNotIn(vs ...uuid.UUID) predicate.Withdraw {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Withdraw(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.NotIn(s.C(FieldFromOldID), v...))
-	})
-}
-
-// FromOldIDGT applies the GT predicate on the "from_old_id" field.
-func FromOldIDGT(v uuid.UUID) predicate.Withdraw {
-	return predicate.Withdraw(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldFromOldID), v))
-	})
-}
-
-// FromOldIDGTE applies the GTE predicate on the "from_old_id" field.
-func FromOldIDGTE(v uuid.UUID) predicate.Withdraw {
-	return predicate.Withdraw(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldFromOldID), v))
-	})
-}
-
-// FromOldIDLT applies the LT predicate on the "from_old_id" field.
-func FromOldIDLT(v uuid.UUID) predicate.Withdraw {
-	return predicate.Withdraw(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldFromOldID), v))
-	})
-}
-
-// FromOldIDLTE applies the LTE predicate on the "from_old_id" field.
-func FromOldIDLTE(v uuid.UUID) predicate.Withdraw {
-	return predicate.Withdraw(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldFromOldID), v))
-	})
-}
-
-// FromOldIDIsNil applies the IsNil predicate on the "from_old_id" field.
-func FromOldIDIsNil() predicate.Withdraw {
-	return predicate.Withdraw(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldFromOldID)))
-	})
-}
-
-// FromOldIDNotNil applies the NotNil predicate on the "from_old_id" field.
-func FromOldIDNotNil() predicate.Withdraw {
-	return predicate.Withdraw(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldFromOldID)))
 	})
 }
 

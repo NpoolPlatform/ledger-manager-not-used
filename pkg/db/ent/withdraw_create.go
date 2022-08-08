@@ -178,20 +178,6 @@ func (wc *WithdrawCreate) SetNillableAmount(d *decimal.Decimal) *WithdrawCreate 
 	return wc
 }
 
-// SetFromOldID sets the "from_old_id" field.
-func (wc *WithdrawCreate) SetFromOldID(u uuid.UUID) *WithdrawCreate {
-	wc.mutation.SetFromOldID(u)
-	return wc
-}
-
-// SetNillableFromOldID sets the "from_old_id" field if the given value is not nil.
-func (wc *WithdrawCreate) SetNillableFromOldID(u *uuid.UUID) *WithdrawCreate {
-	if u != nil {
-		wc.SetFromOldID(*u)
-	}
-	return wc
-}
-
 // SetID sets the "id" field.
 func (wc *WithdrawCreate) SetID(u uuid.UUID) *WithdrawCreate {
 	wc.mutation.SetID(u)
@@ -343,13 +329,6 @@ func (wc *WithdrawCreate) defaults() error {
 		v := withdraw.DefaultState
 		wc.mutation.SetState(v)
 	}
-	if _, ok := wc.mutation.FromOldID(); !ok {
-		if withdraw.DefaultFromOldID == nil {
-			return fmt.Errorf("ent: uninitialized withdraw.DefaultFromOldID (forgotten import ent/runtime?)")
-		}
-		v := withdraw.DefaultFromOldID()
-		wc.mutation.SetFromOldID(v)
-	}
 	if _, ok := wc.mutation.ID(); !ok {
 		if withdraw.DefaultID == nil {
 			return fmt.Errorf("ent: uninitialized withdraw.DefaultID (forgotten import ent/runtime?)")
@@ -495,14 +474,6 @@ func (wc *WithdrawCreate) createSpec() (*Withdraw, *sqlgraph.CreateSpec) {
 			Column: withdraw.FieldAmount,
 		})
 		_node.Amount = value
-	}
-	if value, ok := wc.mutation.FromOldID(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUUID,
-			Value:  value,
-			Column: withdraw.FieldFromOldID,
-		})
-		_node.FromOldID = value
 	}
 	return _node, _spec
 }
@@ -759,24 +730,6 @@ func (u *WithdrawUpsert) AddAmount(v decimal.Decimal) *WithdrawUpsert {
 // ClearAmount clears the value of the "amount" field.
 func (u *WithdrawUpsert) ClearAmount() *WithdrawUpsert {
 	u.SetNull(withdraw.FieldAmount)
-	return u
-}
-
-// SetFromOldID sets the "from_old_id" field.
-func (u *WithdrawUpsert) SetFromOldID(v uuid.UUID) *WithdrawUpsert {
-	u.Set(withdraw.FieldFromOldID, v)
-	return u
-}
-
-// UpdateFromOldID sets the "from_old_id" field to the value that was provided on create.
-func (u *WithdrawUpsert) UpdateFromOldID() *WithdrawUpsert {
-	u.SetExcluded(withdraw.FieldFromOldID)
-	return u
-}
-
-// ClearFromOldID clears the value of the "from_old_id" field.
-func (u *WithdrawUpsert) ClearFromOldID() *WithdrawUpsert {
-	u.SetNull(withdraw.FieldFromOldID)
 	return u
 }
 
@@ -1065,27 +1018,6 @@ func (u *WithdrawUpsertOne) UpdateAmount() *WithdrawUpsertOne {
 func (u *WithdrawUpsertOne) ClearAmount() *WithdrawUpsertOne {
 	return u.Update(func(s *WithdrawUpsert) {
 		s.ClearAmount()
-	})
-}
-
-// SetFromOldID sets the "from_old_id" field.
-func (u *WithdrawUpsertOne) SetFromOldID(v uuid.UUID) *WithdrawUpsertOne {
-	return u.Update(func(s *WithdrawUpsert) {
-		s.SetFromOldID(v)
-	})
-}
-
-// UpdateFromOldID sets the "from_old_id" field to the value that was provided on create.
-func (u *WithdrawUpsertOne) UpdateFromOldID() *WithdrawUpsertOne {
-	return u.Update(func(s *WithdrawUpsert) {
-		s.UpdateFromOldID()
-	})
-}
-
-// ClearFromOldID clears the value of the "from_old_id" field.
-func (u *WithdrawUpsertOne) ClearFromOldID() *WithdrawUpsertOne {
-	return u.Update(func(s *WithdrawUpsert) {
-		s.ClearFromOldID()
 	})
 }
 
@@ -1540,27 +1472,6 @@ func (u *WithdrawUpsertBulk) UpdateAmount() *WithdrawUpsertBulk {
 func (u *WithdrawUpsertBulk) ClearAmount() *WithdrawUpsertBulk {
 	return u.Update(func(s *WithdrawUpsert) {
 		s.ClearAmount()
-	})
-}
-
-// SetFromOldID sets the "from_old_id" field.
-func (u *WithdrawUpsertBulk) SetFromOldID(v uuid.UUID) *WithdrawUpsertBulk {
-	return u.Update(func(s *WithdrawUpsert) {
-		s.SetFromOldID(v)
-	})
-}
-
-// UpdateFromOldID sets the "from_old_id" field to the value that was provided on create.
-func (u *WithdrawUpsertBulk) UpdateFromOldID() *WithdrawUpsertBulk {
-	return u.Update(func(s *WithdrawUpsert) {
-		s.UpdateFromOldID()
-	})
-}
-
-// ClearFromOldID clears the value of the "from_old_id" field.
-func (u *WithdrawUpsertBulk) ClearFromOldID() *WithdrawUpsertBulk {
-	return u.Update(func(s *WithdrawUpsert) {
-		s.ClearFromOldID()
 	})
 }
 
