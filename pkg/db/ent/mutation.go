@@ -598,7 +598,7 @@ func (m *DetailMutation) Amount() (r decimal.Decimal, exists bool) {
 // OldAmount returns the old "amount" field's value of the Detail entity.
 // If the Detail object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *DetailMutation) OldAmount(ctx context.Context) (v decimal.Decimal, err error) {
+func (m *DetailMutation) OldAmount(ctx context.Context) (v *decimal.Decimal, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldAmount is only allowed on UpdateOne operations")
 	}
@@ -717,7 +717,7 @@ func (m *DetailMutation) CoinUsdCurrency() (r decimal.Decimal, exists bool) {
 // OldCoinUsdCurrency returns the old "coin_usd_currency" field's value of the Detail entity.
 // If the Detail object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *DetailMutation) OldCoinUsdCurrency(ctx context.Context) (v decimal.Decimal, err error) {
+func (m *DetailMutation) OldCoinUsdCurrency(ctx context.Context) (v *decimal.Decimal, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldCoinUsdCurrency is only allowed on UpdateOne operations")
 	}
@@ -1755,7 +1755,7 @@ func (m *GeneralMutation) Incoming() (r decimal.Decimal, exists bool) {
 // OldIncoming returns the old "incoming" field's value of the General entity.
 // If the General object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *GeneralMutation) OldIncoming(ctx context.Context) (v decimal.Decimal, err error) {
+func (m *GeneralMutation) OldIncoming(ctx context.Context) (v *decimal.Decimal, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldIncoming is only allowed on UpdateOne operations")
 	}
@@ -1825,7 +1825,7 @@ func (m *GeneralMutation) Locked() (r decimal.Decimal, exists bool) {
 // OldLocked returns the old "locked" field's value of the General entity.
 // If the General object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *GeneralMutation) OldLocked(ctx context.Context) (v decimal.Decimal, err error) {
+func (m *GeneralMutation) OldLocked(ctx context.Context) (v *decimal.Decimal, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldLocked is only allowed on UpdateOne operations")
 	}
@@ -1895,7 +1895,7 @@ func (m *GeneralMutation) Outcoming() (r decimal.Decimal, exists bool) {
 // OldOutcoming returns the old "outcoming" field's value of the General entity.
 // If the General object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *GeneralMutation) OldOutcoming(ctx context.Context) (v decimal.Decimal, err error) {
+func (m *GeneralMutation) OldOutcoming(ctx context.Context) (v *decimal.Decimal, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldOutcoming is only allowed on UpdateOne operations")
 	}
@@ -1965,7 +1965,7 @@ func (m *GeneralMutation) Spendable() (r decimal.Decimal, exists bool) {
 // OldSpendable returns the old "spendable" field's value of the General entity.
 // If the General object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *GeneralMutation) OldSpendable(ctx context.Context) (v decimal.Decimal, err error) {
+func (m *GeneralMutation) OldSpendable(ctx context.Context) (v *decimal.Decimal, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldSpendable is only allowed on UpdateOne operations")
 	}
@@ -2926,7 +2926,7 @@ func (m *ProfitMutation) Incoming() (r decimal.Decimal, exists bool) {
 // OldIncoming returns the old "incoming" field's value of the Profit entity.
 // If the Profit object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ProfitMutation) OldIncoming(ctx context.Context) (v decimal.Decimal, err error) {
+func (m *ProfitMutation) OldIncoming(ctx context.Context) (v *decimal.Decimal, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldIncoming is only allowed on UpdateOne operations")
 	}
@@ -3982,7 +3982,7 @@ func (m *WithdrawMutation) Amount() (r decimal.Decimal, exists bool) {
 // OldAmount returns the old "amount" field's value of the Withdraw entity.
 // If the Withdraw object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *WithdrawMutation) OldAmount(ctx context.Context) (v decimal.Decimal, err error) {
+func (m *WithdrawMutation) OldAmount(ctx context.Context) (v *decimal.Decimal, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldAmount is only allowed on UpdateOne operations")
 	}

@@ -30,7 +30,7 @@ type Profit struct {
 	// CoinTypeID holds the value of the "coin_type_id" field.
 	CoinTypeID uuid.UUID `json:"coin_type_id,omitempty"`
 	// Incoming holds the value of the "incoming" field.
-	Incoming decimal.Decimal `json:"incoming,omitempty"`
+	Incoming *decimal.Decimal `json:"incoming,omitempty"`
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -39,7 +39,7 @@ func (*Profit) scanValues(columns []string) ([]interface{}, error) {
 	for i := range columns {
 		switch columns[i] {
 		case profit.FieldIncoming:
-			values[i] = new(decimal.Decimal)
+			values[i] = &sql.NullScanner{S: new(decimal.Decimal)}
 		case profit.FieldCreatedAt, profit.FieldUpdatedAt, profit.FieldDeletedAt:
 			values[i] = new(sql.NullInt64)
 		case profit.FieldID, profit.FieldAppID, profit.FieldUserID, profit.FieldCoinTypeID:
@@ -102,10 +102,11 @@ func (pr *Profit) assignValues(columns []string, values []interface{}) error {
 				pr.CoinTypeID = *value
 			}
 		case profit.FieldIncoming:
-			if value, ok := values[i].(*decimal.Decimal); !ok {
+			if value, ok := values[i].(*sql.NullScanner); !ok {
 				return fmt.Errorf("unexpected type %T for field incoming", values[i])
-			} else if value != nil {
-				pr.Incoming = *value
+			} else if value.Valid {
+				pr.Incoming = new(decimal.Decimal)
+				*pr.Incoming = *value.S.(*decimal.Decimal)
 			}
 		}
 	}
@@ -147,8 +148,10 @@ func (pr *Profit) String() string {
 	builder.WriteString(fmt.Sprintf("%v", pr.UserID))
 	builder.WriteString(", coin_type_id=")
 	builder.WriteString(fmt.Sprintf("%v", pr.CoinTypeID))
-	builder.WriteString(", incoming=")
-	builder.WriteString(fmt.Sprintf("%v", pr.Incoming))
+	if v := pr.Incoming; v != nil {
+		builder.WriteString(", incoming=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteByte(')')
 	return builder.String()
 }

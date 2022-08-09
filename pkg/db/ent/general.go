@@ -30,13 +30,13 @@ type General struct {
 	// CoinTypeID holds the value of the "coin_type_id" field.
 	CoinTypeID uuid.UUID `json:"coin_type_id,omitempty"`
 	// Incoming holds the value of the "incoming" field.
-	Incoming decimal.Decimal `json:"incoming,omitempty"`
+	Incoming *decimal.Decimal `json:"incoming,omitempty"`
 	// Locked holds the value of the "locked" field.
-	Locked decimal.Decimal `json:"locked,omitempty"`
+	Locked *decimal.Decimal `json:"locked,omitempty"`
 	// Outcoming holds the value of the "outcoming" field.
-	Outcoming decimal.Decimal `json:"outcoming,omitempty"`
+	Outcoming *decimal.Decimal `json:"outcoming,omitempty"`
 	// Spendable holds the value of the "spendable" field.
-	Spendable decimal.Decimal `json:"spendable,omitempty"`
+	Spendable *decimal.Decimal `json:"spendable,omitempty"`
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -45,7 +45,7 @@ func (*General) scanValues(columns []string) ([]interface{}, error) {
 	for i := range columns {
 		switch columns[i] {
 		case general.FieldIncoming, general.FieldLocked, general.FieldOutcoming, general.FieldSpendable:
-			values[i] = new(decimal.Decimal)
+			values[i] = &sql.NullScanner{S: new(decimal.Decimal)}
 		case general.FieldCreatedAt, general.FieldUpdatedAt, general.FieldDeletedAt:
 			values[i] = new(sql.NullInt64)
 		case general.FieldID, general.FieldAppID, general.FieldUserID, general.FieldCoinTypeID:
@@ -108,28 +108,32 @@ func (ge *General) assignValues(columns []string, values []interface{}) error {
 				ge.CoinTypeID = *value
 			}
 		case general.FieldIncoming:
-			if value, ok := values[i].(*decimal.Decimal); !ok {
+			if value, ok := values[i].(*sql.NullScanner); !ok {
 				return fmt.Errorf("unexpected type %T for field incoming", values[i])
-			} else if value != nil {
-				ge.Incoming = *value
+			} else if value.Valid {
+				ge.Incoming = new(decimal.Decimal)
+				*ge.Incoming = *value.S.(*decimal.Decimal)
 			}
 		case general.FieldLocked:
-			if value, ok := values[i].(*decimal.Decimal); !ok {
+			if value, ok := values[i].(*sql.NullScanner); !ok {
 				return fmt.Errorf("unexpected type %T for field locked", values[i])
-			} else if value != nil {
-				ge.Locked = *value
+			} else if value.Valid {
+				ge.Locked = new(decimal.Decimal)
+				*ge.Locked = *value.S.(*decimal.Decimal)
 			}
 		case general.FieldOutcoming:
-			if value, ok := values[i].(*decimal.Decimal); !ok {
+			if value, ok := values[i].(*sql.NullScanner); !ok {
 				return fmt.Errorf("unexpected type %T for field outcoming", values[i])
-			} else if value != nil {
-				ge.Outcoming = *value
+			} else if value.Valid {
+				ge.Outcoming = new(decimal.Decimal)
+				*ge.Outcoming = *value.S.(*decimal.Decimal)
 			}
 		case general.FieldSpendable:
-			if value, ok := values[i].(*decimal.Decimal); !ok {
+			if value, ok := values[i].(*sql.NullScanner); !ok {
 				return fmt.Errorf("unexpected type %T for field spendable", values[i])
-			} else if value != nil {
-				ge.Spendable = *value
+			} else if value.Valid {
+				ge.Spendable = new(decimal.Decimal)
+				*ge.Spendable = *value.S.(*decimal.Decimal)
 			}
 		}
 	}
@@ -171,14 +175,22 @@ func (ge *General) String() string {
 	builder.WriteString(fmt.Sprintf("%v", ge.UserID))
 	builder.WriteString(", coin_type_id=")
 	builder.WriteString(fmt.Sprintf("%v", ge.CoinTypeID))
-	builder.WriteString(", incoming=")
-	builder.WriteString(fmt.Sprintf("%v", ge.Incoming))
-	builder.WriteString(", locked=")
-	builder.WriteString(fmt.Sprintf("%v", ge.Locked))
-	builder.WriteString(", outcoming=")
-	builder.WriteString(fmt.Sprintf("%v", ge.Outcoming))
-	builder.WriteString(", spendable=")
-	builder.WriteString(fmt.Sprintf("%v", ge.Spendable))
+	if v := ge.Incoming; v != nil {
+		builder.WriteString(", incoming=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	if v := ge.Locked; v != nil {
+		builder.WriteString(", locked=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	if v := ge.Outcoming; v != nil {
+		builder.WriteString(", outcoming=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	if v := ge.Spendable; v != nil {
+		builder.WriteString(", spendable=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteByte(')')
 	return builder.String()
 }

@@ -138,19 +138,19 @@ func UpdateSet(info *ent.General, in *npool.GeneralReq) (*ent.GeneralUpdateOne, 
 		spendable = spendable.Add(amount)
 	}
 
-	if incoming.Add(info.Incoming).
+	if incoming.Add(*info.Incoming).
 		Cmp(
-			locked.Add(info.Locked).
+			locked.Add(*info.Locked).
 				Add(outcoming).
-				Add(info.Outcoming).
+				Add(*info.Outcoming).
 				Add(spendable).
-				Add(info.Spendable),
+				Add(*info.Spendable),
 		) != 0 {
 		return nil, fmt.Errorf("outcoming (%v + %v) + locked (%v + %v) + spendable (%v + %v) != incoming (%v + %v)",
 			outcoming, info.Outcoming, locked, info.Locked, spendable, info.Spendable, incoming, info.Incoming)
 	}
 
-	if locked.Add(info.Locked).Cmp(decimal.NewFromInt(0)) < 0 {
+	if locked.Add(*info.Locked).Cmp(decimal.NewFromInt(0)) < 0 {
 		return nil, fmt.Errorf("locked + locked < 0")
 	}
 
@@ -162,26 +162,26 @@ func UpdateSet(info *ent.General, in *npool.GeneralReq) (*ent.GeneralUpdateOne, 
 		return nil, fmt.Errorf("outcoming < 0")
 	}
 
-	if spendable.Add(info.Spendable).Cmp(decimal.NewFromInt(0)) < 0 {
+	if spendable.Add(*info.Spendable).Cmp(decimal.NewFromInt(0)) < 0 {
 		return nil, fmt.Errorf("spendable + spendable < 0")
 	}
 
 	stm := info.Update()
 
 	if in.Incoming != nil {
-		incoming = incoming.Add(info.Incoming)
+		incoming = incoming.Add(*info.Incoming)
 		stm = stm.SetIncoming(incoming)
 	}
 	if in.Outcoming != nil {
-		outcoming = outcoming.Add(info.Outcoming)
+		outcoming = outcoming.Add(*info.Outcoming)
 		stm = stm.SetOutcoming(outcoming)
 	}
 	if in.Locked != nil {
-		locked = locked.Add(info.Locked)
+		locked = locked.Add(*info.Locked)
 		stm = stm.SetLocked(locked)
 	}
 	if in.Spendable != nil {
-		spendable = spendable.Add(info.Spendable)
+		spendable = spendable.Add(*info.Spendable)
 		stm = stm.SetSpendable(spendable)
 	}
 

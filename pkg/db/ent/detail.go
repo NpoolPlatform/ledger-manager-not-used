@@ -34,11 +34,11 @@ type Detail struct {
 	// IoSubType holds the value of the "io_sub_type" field.
 	IoSubType string `json:"io_sub_type,omitempty"`
 	// Amount holds the value of the "amount" field.
-	Amount decimal.Decimal `json:"amount,omitempty"`
+	Amount *decimal.Decimal `json:"amount,omitempty"`
 	// FromCoinTypeID holds the value of the "from_coin_type_id" field.
 	FromCoinTypeID uuid.UUID `json:"from_coin_type_id,omitempty"`
 	// CoinUsdCurrency holds the value of the "coin_usd_currency" field.
-	CoinUsdCurrency decimal.Decimal `json:"coin_usd_currency,omitempty"`
+	CoinUsdCurrency *decimal.Decimal `json:"coin_usd_currency,omitempty"`
 	// IoExtra holds the value of the "io_extra" field.
 	IoExtra string `json:"io_extra,omitempty"`
 }
@@ -49,7 +49,7 @@ func (*Detail) scanValues(columns []string) ([]interface{}, error) {
 	for i := range columns {
 		switch columns[i] {
 		case detail.FieldAmount, detail.FieldCoinUsdCurrency:
-			values[i] = new(decimal.Decimal)
+			values[i] = &sql.NullScanner{S: new(decimal.Decimal)}
 		case detail.FieldCreatedAt, detail.FieldUpdatedAt, detail.FieldDeletedAt:
 			values[i] = new(sql.NullInt64)
 		case detail.FieldIoType, detail.FieldIoSubType, detail.FieldIoExtra:
@@ -126,10 +126,11 @@ func (d *Detail) assignValues(columns []string, values []interface{}) error {
 				d.IoSubType = value.String
 			}
 		case detail.FieldAmount:
-			if value, ok := values[i].(*decimal.Decimal); !ok {
+			if value, ok := values[i].(*sql.NullScanner); !ok {
 				return fmt.Errorf("unexpected type %T for field amount", values[i])
-			} else if value != nil {
-				d.Amount = *value
+			} else if value.Valid {
+				d.Amount = new(decimal.Decimal)
+				*d.Amount = *value.S.(*decimal.Decimal)
 			}
 		case detail.FieldFromCoinTypeID:
 			if value, ok := values[i].(*uuid.UUID); !ok {
@@ -138,10 +139,11 @@ func (d *Detail) assignValues(columns []string, values []interface{}) error {
 				d.FromCoinTypeID = *value
 			}
 		case detail.FieldCoinUsdCurrency:
-			if value, ok := values[i].(*decimal.Decimal); !ok {
+			if value, ok := values[i].(*sql.NullScanner); !ok {
 				return fmt.Errorf("unexpected type %T for field coin_usd_currency", values[i])
-			} else if value != nil {
-				d.CoinUsdCurrency = *value
+			} else if value.Valid {
+				d.CoinUsdCurrency = new(decimal.Decimal)
+				*d.CoinUsdCurrency = *value.S.(*decimal.Decimal)
 			}
 		case detail.FieldIoExtra:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -193,12 +195,16 @@ func (d *Detail) String() string {
 	builder.WriteString(d.IoType)
 	builder.WriteString(", io_sub_type=")
 	builder.WriteString(d.IoSubType)
-	builder.WriteString(", amount=")
-	builder.WriteString(fmt.Sprintf("%v", d.Amount))
+	if v := d.Amount; v != nil {
+		builder.WriteString(", amount=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteString(", from_coin_type_id=")
 	builder.WriteString(fmt.Sprintf("%v", d.FromCoinTypeID))
-	builder.WriteString(", coin_usd_currency=")
-	builder.WriteString(fmt.Sprintf("%v", d.CoinUsdCurrency))
+	if v := d.CoinUsdCurrency; v != nil {
+		builder.WriteString(", coin_usd_currency=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteString(", io_extra=")
 	builder.WriteString(d.IoExtra)
 	builder.WriteByte(')')

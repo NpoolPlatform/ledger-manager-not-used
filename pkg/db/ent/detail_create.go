@@ -468,7 +468,7 @@ func (dc *DetailCreate) createSpec() (*Detail, *sqlgraph.CreateSpec) {
 			Value:  value,
 			Column: detail.FieldAmount,
 		})
-		_node.Amount = value
+		_node.Amount = &value
 	}
 	if value, ok := dc.mutation.FromCoinTypeID(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -484,7 +484,7 @@ func (dc *DetailCreate) createSpec() (*Detail, *sqlgraph.CreateSpec) {
 			Value:  value,
 			Column: detail.FieldCoinUsdCurrency,
 		})
-		_node.CoinUsdCurrency = value
+		_node.CoinUsdCurrency = &value
 	}
 	if value, ok := dc.mutation.IoExtra(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

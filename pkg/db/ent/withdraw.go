@@ -38,7 +38,7 @@ type Withdraw struct {
 	// State holds the value of the "state" field.
 	State string `json:"state,omitempty"`
 	// Amount holds the value of the "amount" field.
-	Amount decimal.Decimal `json:"amount,omitempty"`
+	Amount *decimal.Decimal `json:"amount,omitempty"`
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -47,7 +47,7 @@ func (*Withdraw) scanValues(columns []string) ([]interface{}, error) {
 	for i := range columns {
 		switch columns[i] {
 		case withdraw.FieldAmount:
-			values[i] = new(decimal.Decimal)
+			values[i] = &sql.NullScanner{S: new(decimal.Decimal)}
 		case withdraw.FieldCreatedAt, withdraw.FieldUpdatedAt, withdraw.FieldDeletedAt:
 			values[i] = new(sql.NullInt64)
 		case withdraw.FieldChainTransactionID, withdraw.FieldState:
@@ -136,10 +136,11 @@ func (w *Withdraw) assignValues(columns []string, values []interface{}) error {
 				w.State = value.String
 			}
 		case withdraw.FieldAmount:
-			if value, ok := values[i].(*decimal.Decimal); !ok {
+			if value, ok := values[i].(*sql.NullScanner); !ok {
 				return fmt.Errorf("unexpected type %T for field amount", values[i])
-			} else if value != nil {
-				w.Amount = *value
+			} else if value.Valid {
+				w.Amount = new(decimal.Decimal)
+				*w.Amount = *value.S.(*decimal.Decimal)
 			}
 		}
 	}
@@ -189,8 +190,10 @@ func (w *Withdraw) String() string {
 	builder.WriteString(w.ChainTransactionID)
 	builder.WriteString(", state=")
 	builder.WriteString(w.State)
-	builder.WriteString(", amount=")
-	builder.WriteString(fmt.Sprintf("%v", w.Amount))
+	if v := w.Amount; v != nil {
+		builder.WriteString(", amount=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteByte(')')
 	return builder.String()
 }

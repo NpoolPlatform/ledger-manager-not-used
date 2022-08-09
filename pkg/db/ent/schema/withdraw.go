@@ -73,7 +73,8 @@ func (Withdraw) Fields() []ent.Field {
 			SchemaType(map[string]string{
 				dialect.MySQL: "decimal(37, 18)",
 			}).
-			Optional(),
+			Optional().
+			Nillable(),
 	}
 }
 
