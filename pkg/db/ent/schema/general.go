@@ -51,32 +51,28 @@ func (General) Fields() []ent.Field {
 			SchemaType(map[string]string{
 				dialect.MySQL: "decimal(37, 18)",
 			}).
-			Optional().
-			Nillable(),
+			Optional(),
 		field.
 			Float("locked").
 			GoType(decimal.Decimal{}).
 			SchemaType(map[string]string{
 				dialect.MySQL: "decimal(37, 18)",
 			}).
-			Optional().
-			Nillable(),
+			Optional(),
 		field.
 			Float("outcoming").
 			GoType(decimal.Decimal{}).
 			SchemaType(map[string]string{
 				dialect.MySQL: "decimal(37, 18)",
 			}).
-			Optional().
-			Nillable(),
+			Optional(),
 		field.
 			Float("spendable").
 			GoType(decimal.Decimal{}).
 			SchemaType(map[string]string{
 				dialect.MySQL: "decimal(37, 18)",
 			}).
-			Optional().
-			Nillable(),
+			Optional(),
 	}
 }
 

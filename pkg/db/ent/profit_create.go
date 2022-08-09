@@ -363,7 +363,7 @@ func (pc *ProfitCreate) createSpec() (*Profit, *sqlgraph.CreateSpec) {
 			Value:  value,
 			Column: profit.FieldIncoming,
 		})
-		_node.Incoming = &value
+		_node.Incoming = value
 	}
 	return _node, _spec
 }

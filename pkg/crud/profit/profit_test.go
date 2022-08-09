@@ -108,6 +108,7 @@ func createBulk(t *testing.T) {
 func add(t *testing.T) {
 	incoming = "30"
 	req.Incoming = &incoming
+
 	entity.Incoming, _ = decimal.NewFromString(incoming)
 
 	info, err := AddFields(context.Background(), &req)

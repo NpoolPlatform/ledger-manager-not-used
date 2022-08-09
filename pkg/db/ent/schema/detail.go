@@ -61,8 +61,7 @@ func (Detail) Fields() []ent.Field {
 			SchemaType(map[string]string{
 				dialect.MySQL: "decimal(37, 18)",
 			}).
-			Optional().
-			Nillable(),
+			Optional(),
 		field.
 			UUID("from_coin_type_id", uuid.UUID{}).
 			Optional().
