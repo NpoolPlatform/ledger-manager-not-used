@@ -21,14 +21,12 @@ func Ent2Grpc(row *ent.Detail) *npool.Detail {
 		IOSubType:       npool.IOSubType(npool.IOSubType_value[row.IoSubType]),
 		Amount:          row.Amount.String(),
 		FromCoinTypeID:  row.FromCoinTypeID.String(),
-		CoinUSDCurrency: row.CoinUsdCurrency.String(),
+		CoinUSDCurrency: decimal.NewFromInt(0).String(),
 		IOExtra:         row.IoExtra,
 	}
 
 	if row.CoinUsdCurrency != nil {
 		info.CoinUSDCurrency = row.CoinUsdCurrency.String()
-	} else {
-		info.CoinUSDCurrency = decimal.NewFromInt(0).String()
 	}
 
 	return info
