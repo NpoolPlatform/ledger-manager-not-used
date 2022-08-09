@@ -294,8 +294,8 @@ func Rows(ctx context.Context, conds *npool.Conds, offset, limit int) ([]*ent.De
 
 		rows, err = stm.
 			Offset(offset).
-			Order(ent.Desc(detail.FieldUpdatedAt)).
 			Limit(limit).
+			Order(ent.Desc(detail.FieldUpdatedAt)).
 			All(_ctx)
 		if err != nil {
 			return err

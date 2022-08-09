@@ -114,13 +114,13 @@ func GetProfitOnly(ctx context.Context, conds *npool.Conds) (*npool.Profit, erro
 	return info.(*npool.Profit), nil
 }
 
-func GetProfits(ctx context.Context, conds *npool.Conds, limit, offset int32) ([]*npool.Profit, uint32, error) {
+func GetProfits(ctx context.Context, conds *npool.Conds, offset, limit int32) ([]*npool.Profit, uint32, error) {
 	var total uint32
 	infos, err := withCRUD(ctx, func(_ctx context.Context, cli npool.ManagerClient) (cruder.Any, error) {
 		resp, err := cli.GetProfits(ctx, &npool.GetProfitsRequest{
 			Conds:  conds,
-			Limit:  limit,
 			Offset: offset,
+			Limit:  limit,
 		})
 		if err != nil {
 			return nil, fmt.Errorf("fail get profits: %v", err)

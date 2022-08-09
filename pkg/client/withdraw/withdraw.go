@@ -114,13 +114,13 @@ func GetWithdrawOnly(ctx context.Context, conds *npool.Conds) (*npool.Withdraw, 
 	return info.(*npool.Withdraw), nil
 }
 
-func GetWithdraws(ctx context.Context, conds *npool.Conds, limit, offset int32) ([]*npool.Withdraw, uint32, error) {
+func GetWithdraws(ctx context.Context, conds *npool.Conds, offset, limit int32) ([]*npool.Withdraw, uint32, error) {
 	var total uint32
 	infos, err := withCRUD(ctx, func(_ctx context.Context, cli npool.ManagerClient) (cruder.Any, error) {
 		resp, err := cli.GetWithdraws(ctx, &npool.GetWithdrawsRequest{
 			Conds:  conds,
-			Limit:  limit,
 			Offset: offset,
+			Limit:  limit,
 		})
 		if err != nil {
 			return nil, fmt.Errorf("fail get withdraws: %v", err)
