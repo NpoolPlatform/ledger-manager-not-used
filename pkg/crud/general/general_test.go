@@ -29,16 +29,18 @@ func init() {
 	}
 }
 
-var entity = ent.General{
-	ID:         uuid.New(),
-	AppID:      uuid.New(),
-	UserID:     uuid.New(),
-	CoinTypeID: uuid.New(),
-	Incoming:   decimal.NewFromInt(0),
-	Locked:     decimal.NewFromInt(0),
-	Outcoming:  decimal.NewFromInt(0),
-	Spendable:  decimal.NewFromInt(0),
-}
+var (
+	entity = ent.General{
+		ID:         uuid.New(),
+		AppID:      uuid.New(),
+		UserID:     uuid.New(),
+		CoinTypeID: uuid.New(),
+		Incoming:   decimal.NewFromInt(0),
+		Locked:     decimal.NewFromInt(0),
+		Outcoming:  decimal.NewFromInt(0),
+		Spendable:  decimal.NewFromInt(0),
+	}
+)
 
 var (
 	id         = entity.ID.String()

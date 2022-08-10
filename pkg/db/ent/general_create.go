@@ -405,7 +405,7 @@ func (gc *GeneralCreate) createSpec() (*General, *sqlgraph.CreateSpec) {
 			Value:  value,
 			Column: general.FieldIncoming,
 		})
-		_node.Incoming = &value
+		_node.Incoming = value
 	}
 	if value, ok := gc.mutation.Locked(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -413,7 +413,7 @@ func (gc *GeneralCreate) createSpec() (*General, *sqlgraph.CreateSpec) {
 			Value:  value,
 			Column: general.FieldLocked,
 		})
-		_node.Locked = &value
+		_node.Locked = value
 	}
 	if value, ok := gc.mutation.Outcoming(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -421,7 +421,7 @@ func (gc *GeneralCreate) createSpec() (*General, *sqlgraph.CreateSpec) {
 			Value:  value,
 			Column: general.FieldOutcoming,
 		})
-		_node.Outcoming = &value
+		_node.Outcoming = value
 	}
 	if value, ok := gc.mutation.Spendable(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -429,7 +429,7 @@ func (gc *GeneralCreate) createSpec() (*General, *sqlgraph.CreateSpec) {
 			Value:  value,
 			Column: general.FieldSpendable,
 		})
-		_node.Spendable = &value
+		_node.Spendable = value
 	}
 	return _node, _spec
 }

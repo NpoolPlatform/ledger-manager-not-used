@@ -473,7 +473,7 @@ func (wc *WithdrawCreate) createSpec() (*Withdraw, *sqlgraph.CreateSpec) {
 			Value:  value,
 			Column: withdraw.FieldAmount,
 		})
-		_node.Amount = &value
+		_node.Amount = value
 	}
 	return _node, _spec
 }

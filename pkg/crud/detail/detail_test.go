@@ -29,18 +29,22 @@ func init() {
 	}
 }
 
-var entity = ent.Detail{
-	ID:              uuid.New(),
-	AppID:           uuid.New(),
-	UserID:          uuid.New(),
-	CoinTypeID:      uuid.New(),
-	IoType:          npool.IOType_Incoming.String(),
-	IoSubType:       npool.IOSubType_Payment.String(),
-	Amount:          decimal.RequireFromString("9999999999999999999.999999999999999999"),
-	FromCoinTypeID:  uuid.New(),
-	CoinUsdCurrency: decimal.RequireFromString("1.00045000000123012"),
-	IoExtra:         uuid.New().String(),
-}
+var (
+	currency1 = decimal.RequireFromString("1.00045000000123012")
+
+	entity = ent.Detail{
+		ID:              uuid.New(),
+		AppID:           uuid.New(),
+		UserID:          uuid.New(),
+		CoinTypeID:      uuid.New(),
+		IoType:          npool.IOType_Incoming.String(),
+		IoSubType:       npool.IOSubType_Payment.String(),
+		Amount:          decimal.RequireFromString("9999999999999999999.999999999999999999"),
+		FromCoinTypeID:  uuid.New(),
+		CoinUsdCurrency: &currency1,
+		IoExtra:         uuid.New().String(),
+	}
+)
 
 var (
 	id              = entity.ID.String()
@@ -81,6 +85,9 @@ func create(t *testing.T) {
 }
 
 func createBulk(t *testing.T) {
+	currency2 := decimal.RequireFromString("1.8902")
+	currency3 := decimal.RequireFromString("1.123")
+
 	entities := []*ent.Detail{
 		{
 			ID:              uuid.New(),
@@ -91,7 +98,7 @@ func createBulk(t *testing.T) {
 			IoSubType:       npool.IOSubType_Payment.String(),
 			Amount:          decimal.RequireFromString("10.00896"),
 			FromCoinTypeID:  uuid.New(),
-			CoinUsdCurrency: decimal.RequireFromString("1.8902"),
+			CoinUsdCurrency: &currency2,
 			IoExtra:         uuid.New().String(),
 		},
 		{
@@ -103,7 +110,7 @@ func createBulk(t *testing.T) {
 			IoSubType:       npool.IOSubType_Payment.String(),
 			Amount:          decimal.RequireFromString("11.11111"),
 			FromCoinTypeID:  uuid.New(),
-			CoinUsdCurrency: decimal.RequireFromString("1.123"),
+			CoinUsdCurrency: &currency3,
 			IoExtra:         uuid.New().String(),
 		},
 	}

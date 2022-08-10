@@ -2,7 +2,9 @@ package detail
 
 import (
 	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent"
+
 	npool "github.com/NpoolPlatform/message/npool/ledger/mgr/v1/ledger/detail"
+	"github.com/shopspring/decimal"
 )
 
 func Ent2Grpc(row *ent.Detail) *npool.Detail {
@@ -10,7 +12,7 @@ func Ent2Grpc(row *ent.Detail) *npool.Detail {
 		return nil
 	}
 
-	return &npool.Detail{
+	info := &npool.Detail{
 		ID:              row.ID.String(),
 		AppID:           row.AppID.String(),
 		UserID:          row.UserID.String(),
@@ -19,10 +21,16 @@ func Ent2Grpc(row *ent.Detail) *npool.Detail {
 		IOSubType:       npool.IOSubType(npool.IOSubType_value[row.IoSubType]),
 		Amount:          row.Amount.String(),
 		FromCoinTypeID:  row.FromCoinTypeID.String(),
-		CoinUSDCurrency: row.CoinUsdCurrency.String(),
+		CoinUSDCurrency: decimal.NewFromInt(0).String(),
 		IOExtra:         row.IoExtra,
 		CreatedAt:       row.CreatedAt,
 	}
+
+	if row.CoinUsdCurrency != nil {
+		info.CoinUSDCurrency = row.CoinUsdCurrency.String()
+	}
+
+	return info
 }
 
 func Ent2GrpcMany(rows []*ent.Detail) []*npool.Detail {

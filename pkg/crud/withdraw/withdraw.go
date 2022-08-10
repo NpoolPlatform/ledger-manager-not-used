@@ -41,7 +41,7 @@ func CreateSet(c *ent.WithdrawCreate, in *npool.WithdrawReq) *ent.WithdrawCreate
 		c.SetPlatformTransactionID(uuid.MustParse(in.GetPlatformTransactionID()))
 	}
 
-	c.SetAmount(decimal.NewFromInt(0))
+	c.SetAmount(decimal.RequireFromString(in.GetAmount()))
 	c.SetState(npool.WithdrawState_Reviewing.String())
 
 	return c
