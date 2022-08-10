@@ -21,6 +21,7 @@ func Ent2Grpc(row *ent.Detail) *npool.Detail {
 		FromCoinTypeID:  row.FromCoinTypeID.String(),
 		CoinUSDCurrency: row.CoinUsdCurrency.String(),
 		IOExtra:         row.IoExtra,
+		CreatedAt:       row.CreatedAt,
 	}
 }
 
