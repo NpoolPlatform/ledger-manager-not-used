@@ -10,7 +10,10 @@ import (
 	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/migrate"
 	"github.com/google/uuid"
 
+	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/detail"
 	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/general"
+	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/profit"
+	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/withdraw"
 
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
@@ -21,8 +24,14 @@ type Client struct {
 	config
 	// Schema is the client for creating, migrating and dropping schema.
 	Schema *migrate.Schema
+	// Detail is the client for interacting with the Detail builders.
+	Detail *DetailClient
 	// General is the client for interacting with the General builders.
 	General *GeneralClient
+	// Profit is the client for interacting with the Profit builders.
+	Profit *ProfitClient
+	// Withdraw is the client for interacting with the Withdraw builders.
+	Withdraw *WithdrawClient
 }
 
 // NewClient creates a new client configured with the given options.
@@ -36,7 +45,10 @@ func NewClient(opts ...Option) *Client {
 
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
+	c.Detail = NewDetailClient(c.config)
 	c.General = NewGeneralClient(c.config)
+	c.Profit = NewProfitClient(c.config)
+	c.Withdraw = NewWithdrawClient(c.config)
 }
 
 // Open opens a database/sql.DB specified by the driver name and
@@ -68,9 +80,12 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:     ctx,
-		config:  cfg,
-		General: NewGeneralClient(cfg),
+		ctx:      ctx,
+		config:   cfg,
+		Detail:   NewDetailClient(cfg),
+		General:  NewGeneralClient(cfg),
+		Profit:   NewProfitClient(cfg),
+		Withdraw: NewWithdrawClient(cfg),
 	}, nil
 }
 
@@ -88,16 +103,19 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		ctx:     ctx,
-		config:  cfg,
-		General: NewGeneralClient(cfg),
+		ctx:      ctx,
+		config:   cfg,
+		Detail:   NewDetailClient(cfg),
+		General:  NewGeneralClient(cfg),
+		Profit:   NewProfitClient(cfg),
+		Withdraw: NewWithdrawClient(cfg),
 	}, nil
 }
 
 // Debug returns a new debug-client. It's used to get verbose logging on specific operations.
 //
 //	client.Debug().
-//		General.
+//		Detail.
 //		Query().
 //		Count(ctx)
 //
@@ -120,7 +138,101 @@ func (c *Client) Close() error {
 // Use adds the mutation hooks to all the entity clients.
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
+	c.Detail.Use(hooks...)
 	c.General.Use(hooks...)
+	c.Profit.Use(hooks...)
+	c.Withdraw.Use(hooks...)
+}
+
+// DetailClient is a client for the Detail schema.
+type DetailClient struct {
+	config
+}
+
+// NewDetailClient returns a client for the Detail from the given config.
+func NewDetailClient(c config) *DetailClient {
+	return &DetailClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `detail.Hooks(f(g(h())))`.
+func (c *DetailClient) Use(hooks ...Hook) {
+	c.hooks.Detail = append(c.hooks.Detail, hooks...)
+}
+
+// Create returns a create builder for Detail.
+func (c *DetailClient) Create() *DetailCreate {
+	mutation := newDetailMutation(c.config, OpCreate)
+	return &DetailCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Detail entities.
+func (c *DetailClient) CreateBulk(builders ...*DetailCreate) *DetailCreateBulk {
+	return &DetailCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Detail.
+func (c *DetailClient) Update() *DetailUpdate {
+	mutation := newDetailMutation(c.config, OpUpdate)
+	return &DetailUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *DetailClient) UpdateOne(d *Detail) *DetailUpdateOne {
+	mutation := newDetailMutation(c.config, OpUpdateOne, withDetail(d))
+	return &DetailUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *DetailClient) UpdateOneID(id uuid.UUID) *DetailUpdateOne {
+	mutation := newDetailMutation(c.config, OpUpdateOne, withDetailID(id))
+	return &DetailUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Detail.
+func (c *DetailClient) Delete() *DetailDelete {
+	mutation := newDetailMutation(c.config, OpDelete)
+	return &DetailDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *DetailClient) DeleteOne(d *Detail) *DetailDeleteOne {
+	return c.DeleteOneID(d.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *DetailClient) DeleteOneID(id uuid.UUID) *DetailDeleteOne {
+	builder := c.Delete().Where(detail.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &DetailDeleteOne{builder}
+}
+
+// Query returns a query builder for Detail.
+func (c *DetailClient) Query() *DetailQuery {
+	return &DetailQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a Detail entity by its id.
+func (c *DetailClient) Get(ctx context.Context, id uuid.UUID) (*Detail, error) {
+	return c.Query().Where(detail.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *DetailClient) GetX(ctx context.Context, id uuid.UUID) *Detail {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *DetailClient) Hooks() []Hook {
+	hooks := c.hooks.Detail
+	return append(hooks[:len(hooks):len(hooks)], detail.Hooks[:]...)
 }
 
 // GeneralClient is a client for the General schema.
@@ -212,4 +324,186 @@ func (c *GeneralClient) GetX(ctx context.Context, id uuid.UUID) *General {
 func (c *GeneralClient) Hooks() []Hook {
 	hooks := c.hooks.General
 	return append(hooks[:len(hooks):len(hooks)], general.Hooks[:]...)
+}
+
+// ProfitClient is a client for the Profit schema.
+type ProfitClient struct {
+	config
+}
+
+// NewProfitClient returns a client for the Profit from the given config.
+func NewProfitClient(c config) *ProfitClient {
+	return &ProfitClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `profit.Hooks(f(g(h())))`.
+func (c *ProfitClient) Use(hooks ...Hook) {
+	c.hooks.Profit = append(c.hooks.Profit, hooks...)
+}
+
+// Create returns a create builder for Profit.
+func (c *ProfitClient) Create() *ProfitCreate {
+	mutation := newProfitMutation(c.config, OpCreate)
+	return &ProfitCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Profit entities.
+func (c *ProfitClient) CreateBulk(builders ...*ProfitCreate) *ProfitCreateBulk {
+	return &ProfitCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Profit.
+func (c *ProfitClient) Update() *ProfitUpdate {
+	mutation := newProfitMutation(c.config, OpUpdate)
+	return &ProfitUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ProfitClient) UpdateOne(pr *Profit) *ProfitUpdateOne {
+	mutation := newProfitMutation(c.config, OpUpdateOne, withProfit(pr))
+	return &ProfitUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ProfitClient) UpdateOneID(id uuid.UUID) *ProfitUpdateOne {
+	mutation := newProfitMutation(c.config, OpUpdateOne, withProfitID(id))
+	return &ProfitUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Profit.
+func (c *ProfitClient) Delete() *ProfitDelete {
+	mutation := newProfitMutation(c.config, OpDelete)
+	return &ProfitDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *ProfitClient) DeleteOne(pr *Profit) *ProfitDeleteOne {
+	return c.DeleteOneID(pr.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *ProfitClient) DeleteOneID(id uuid.UUID) *ProfitDeleteOne {
+	builder := c.Delete().Where(profit.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ProfitDeleteOne{builder}
+}
+
+// Query returns a query builder for Profit.
+func (c *ProfitClient) Query() *ProfitQuery {
+	return &ProfitQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a Profit entity by its id.
+func (c *ProfitClient) Get(ctx context.Context, id uuid.UUID) (*Profit, error) {
+	return c.Query().Where(profit.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ProfitClient) GetX(ctx context.Context, id uuid.UUID) *Profit {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *ProfitClient) Hooks() []Hook {
+	hooks := c.hooks.Profit
+	return append(hooks[:len(hooks):len(hooks)], profit.Hooks[:]...)
+}
+
+// WithdrawClient is a client for the Withdraw schema.
+type WithdrawClient struct {
+	config
+}
+
+// NewWithdrawClient returns a client for the Withdraw from the given config.
+func NewWithdrawClient(c config) *WithdrawClient {
+	return &WithdrawClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `withdraw.Hooks(f(g(h())))`.
+func (c *WithdrawClient) Use(hooks ...Hook) {
+	c.hooks.Withdraw = append(c.hooks.Withdraw, hooks...)
+}
+
+// Create returns a create builder for Withdraw.
+func (c *WithdrawClient) Create() *WithdrawCreate {
+	mutation := newWithdrawMutation(c.config, OpCreate)
+	return &WithdrawCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Withdraw entities.
+func (c *WithdrawClient) CreateBulk(builders ...*WithdrawCreate) *WithdrawCreateBulk {
+	return &WithdrawCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Withdraw.
+func (c *WithdrawClient) Update() *WithdrawUpdate {
+	mutation := newWithdrawMutation(c.config, OpUpdate)
+	return &WithdrawUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *WithdrawClient) UpdateOne(w *Withdraw) *WithdrawUpdateOne {
+	mutation := newWithdrawMutation(c.config, OpUpdateOne, withWithdraw(w))
+	return &WithdrawUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *WithdrawClient) UpdateOneID(id uuid.UUID) *WithdrawUpdateOne {
+	mutation := newWithdrawMutation(c.config, OpUpdateOne, withWithdrawID(id))
+	return &WithdrawUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Withdraw.
+func (c *WithdrawClient) Delete() *WithdrawDelete {
+	mutation := newWithdrawMutation(c.config, OpDelete)
+	return &WithdrawDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *WithdrawClient) DeleteOne(w *Withdraw) *WithdrawDeleteOne {
+	return c.DeleteOneID(w.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *WithdrawClient) DeleteOneID(id uuid.UUID) *WithdrawDeleteOne {
+	builder := c.Delete().Where(withdraw.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &WithdrawDeleteOne{builder}
+}
+
+// Query returns a query builder for Withdraw.
+func (c *WithdrawClient) Query() *WithdrawQuery {
+	return &WithdrawQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a Withdraw entity by its id.
+func (c *WithdrawClient) Get(ctx context.Context, id uuid.UUID) (*Withdraw, error) {
+	return c.Query().Where(withdraw.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *WithdrawClient) GetX(ctx context.Context, id uuid.UUID) *Withdraw {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *WithdrawClient) Hooks() []Hook {
+	hooks := c.hooks.Withdraw
+	return append(hooks[:len(hooks):len(hooks)], withdraw.Hooks[:]...)
 }

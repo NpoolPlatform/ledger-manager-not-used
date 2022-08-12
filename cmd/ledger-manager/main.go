@@ -36,11 +36,11 @@ func main() {
 		redisconst.RedisServiceName,
 	)
 	if err != nil {
-		logger.Sugar().Errorf("fail to create %v: %v", servicename.ServiceName, err)
+		logger.Sugar().Errorw("Main", "ServiceName", servicename.ServiceName, "error", err)
 		return
 	}
 	err = app.Run(os.Args)
 	if err != nil {
-		logger.Sugar().Errorf("fail to run %v: %v", servicename.ServiceName, err)
+		logger.Sugar().Errorw("Main", "ServiceName", servicename.ServiceName, "error", err)
 	}
 }

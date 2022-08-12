@@ -13,6 +13,7 @@ import (
 	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/general"
 	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/predicate"
 	"github.com/google/uuid"
+	"github.com/shopspring/decimal"
 )
 
 // GeneralUpdate is the builder for updating General entities.
@@ -144,23 +145,23 @@ func (gu *GeneralUpdate) ClearCoinTypeID() *GeneralUpdate {
 }
 
 // SetIncoming sets the "incoming" field.
-func (gu *GeneralUpdate) SetIncoming(u uint64) *GeneralUpdate {
+func (gu *GeneralUpdate) SetIncoming(d decimal.Decimal) *GeneralUpdate {
 	gu.mutation.ResetIncoming()
-	gu.mutation.SetIncoming(u)
+	gu.mutation.SetIncoming(d)
 	return gu
 }
 
 // SetNillableIncoming sets the "incoming" field if the given value is not nil.
-func (gu *GeneralUpdate) SetNillableIncoming(u *uint64) *GeneralUpdate {
-	if u != nil {
-		gu.SetIncoming(*u)
+func (gu *GeneralUpdate) SetNillableIncoming(d *decimal.Decimal) *GeneralUpdate {
+	if d != nil {
+		gu.SetIncoming(*d)
 	}
 	return gu
 }
 
-// AddIncoming adds u to the "incoming" field.
-func (gu *GeneralUpdate) AddIncoming(u int64) *GeneralUpdate {
-	gu.mutation.AddIncoming(u)
+// AddIncoming adds d to the "incoming" field.
+func (gu *GeneralUpdate) AddIncoming(d decimal.Decimal) *GeneralUpdate {
+	gu.mutation.AddIncoming(d)
 	return gu
 }
 
@@ -171,23 +172,23 @@ func (gu *GeneralUpdate) ClearIncoming() *GeneralUpdate {
 }
 
 // SetLocked sets the "locked" field.
-func (gu *GeneralUpdate) SetLocked(u uint64) *GeneralUpdate {
+func (gu *GeneralUpdate) SetLocked(d decimal.Decimal) *GeneralUpdate {
 	gu.mutation.ResetLocked()
-	gu.mutation.SetLocked(u)
+	gu.mutation.SetLocked(d)
 	return gu
 }
 
 // SetNillableLocked sets the "locked" field if the given value is not nil.
-func (gu *GeneralUpdate) SetNillableLocked(u *uint64) *GeneralUpdate {
-	if u != nil {
-		gu.SetLocked(*u)
+func (gu *GeneralUpdate) SetNillableLocked(d *decimal.Decimal) *GeneralUpdate {
+	if d != nil {
+		gu.SetLocked(*d)
 	}
 	return gu
 }
 
-// AddLocked adds u to the "locked" field.
-func (gu *GeneralUpdate) AddLocked(u int64) *GeneralUpdate {
-	gu.mutation.AddLocked(u)
+// AddLocked adds d to the "locked" field.
+func (gu *GeneralUpdate) AddLocked(d decimal.Decimal) *GeneralUpdate {
+	gu.mutation.AddLocked(d)
 	return gu
 }
 
@@ -198,23 +199,23 @@ func (gu *GeneralUpdate) ClearLocked() *GeneralUpdate {
 }
 
 // SetOutcoming sets the "outcoming" field.
-func (gu *GeneralUpdate) SetOutcoming(u uint64) *GeneralUpdate {
+func (gu *GeneralUpdate) SetOutcoming(d decimal.Decimal) *GeneralUpdate {
 	gu.mutation.ResetOutcoming()
-	gu.mutation.SetOutcoming(u)
+	gu.mutation.SetOutcoming(d)
 	return gu
 }
 
 // SetNillableOutcoming sets the "outcoming" field if the given value is not nil.
-func (gu *GeneralUpdate) SetNillableOutcoming(u *uint64) *GeneralUpdate {
-	if u != nil {
-		gu.SetOutcoming(*u)
+func (gu *GeneralUpdate) SetNillableOutcoming(d *decimal.Decimal) *GeneralUpdate {
+	if d != nil {
+		gu.SetOutcoming(*d)
 	}
 	return gu
 }
 
-// AddOutcoming adds u to the "outcoming" field.
-func (gu *GeneralUpdate) AddOutcoming(u int64) *GeneralUpdate {
-	gu.mutation.AddOutcoming(u)
+// AddOutcoming adds d to the "outcoming" field.
+func (gu *GeneralUpdate) AddOutcoming(d decimal.Decimal) *GeneralUpdate {
+	gu.mutation.AddOutcoming(d)
 	return gu
 }
 
@@ -225,23 +226,23 @@ func (gu *GeneralUpdate) ClearOutcoming() *GeneralUpdate {
 }
 
 // SetSpendable sets the "spendable" field.
-func (gu *GeneralUpdate) SetSpendable(u uint64) *GeneralUpdate {
+func (gu *GeneralUpdate) SetSpendable(d decimal.Decimal) *GeneralUpdate {
 	gu.mutation.ResetSpendable()
-	gu.mutation.SetSpendable(u)
+	gu.mutation.SetSpendable(d)
 	return gu
 }
 
 // SetNillableSpendable sets the "spendable" field if the given value is not nil.
-func (gu *GeneralUpdate) SetNillableSpendable(u *uint64) *GeneralUpdate {
-	if u != nil {
-		gu.SetSpendable(*u)
+func (gu *GeneralUpdate) SetNillableSpendable(d *decimal.Decimal) *GeneralUpdate {
+	if d != nil {
+		gu.SetSpendable(*d)
 	}
 	return gu
 }
 
-// AddSpendable adds u to the "spendable" field.
-func (gu *GeneralUpdate) AddSpendable(u int64) *GeneralUpdate {
-	gu.mutation.AddSpendable(u)
+// AddSpendable adds d to the "spendable" field.
+func (gu *GeneralUpdate) AddSpendable(d decimal.Decimal) *GeneralUpdate {
+	gu.mutation.AddSpendable(d)
 	return gu
 }
 
@@ -426,81 +427,81 @@ func (gu *GeneralUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := gu.mutation.Incoming(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint64,
+			Type:   field.TypeFloat64,
 			Value:  value,
 			Column: general.FieldIncoming,
 		})
 	}
 	if value, ok := gu.mutation.AddedIncoming(); ok {
 		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint64,
+			Type:   field.TypeFloat64,
 			Value:  value,
 			Column: general.FieldIncoming,
 		})
 	}
 	if gu.mutation.IncomingCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint64,
+			Type:   field.TypeFloat64,
 			Column: general.FieldIncoming,
 		})
 	}
 	if value, ok := gu.mutation.Locked(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint64,
+			Type:   field.TypeFloat64,
 			Value:  value,
 			Column: general.FieldLocked,
 		})
 	}
 	if value, ok := gu.mutation.AddedLocked(); ok {
 		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint64,
+			Type:   field.TypeFloat64,
 			Value:  value,
 			Column: general.FieldLocked,
 		})
 	}
 	if gu.mutation.LockedCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint64,
+			Type:   field.TypeFloat64,
 			Column: general.FieldLocked,
 		})
 	}
 	if value, ok := gu.mutation.Outcoming(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint64,
+			Type:   field.TypeFloat64,
 			Value:  value,
 			Column: general.FieldOutcoming,
 		})
 	}
 	if value, ok := gu.mutation.AddedOutcoming(); ok {
 		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint64,
+			Type:   field.TypeFloat64,
 			Value:  value,
 			Column: general.FieldOutcoming,
 		})
 	}
 	if gu.mutation.OutcomingCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint64,
+			Type:   field.TypeFloat64,
 			Column: general.FieldOutcoming,
 		})
 	}
 	if value, ok := gu.mutation.Spendable(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint64,
+			Type:   field.TypeFloat64,
 			Value:  value,
 			Column: general.FieldSpendable,
 		})
 	}
 	if value, ok := gu.mutation.AddedSpendable(); ok {
 		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint64,
+			Type:   field.TypeFloat64,
 			Value:  value,
 			Column: general.FieldSpendable,
 		})
 	}
 	if gu.mutation.SpendableCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint64,
+			Type:   field.TypeFloat64,
 			Column: general.FieldSpendable,
 		})
 	}
@@ -639,23 +640,23 @@ func (guo *GeneralUpdateOne) ClearCoinTypeID() *GeneralUpdateOne {
 }
 
 // SetIncoming sets the "incoming" field.
-func (guo *GeneralUpdateOne) SetIncoming(u uint64) *GeneralUpdateOne {
+func (guo *GeneralUpdateOne) SetIncoming(d decimal.Decimal) *GeneralUpdateOne {
 	guo.mutation.ResetIncoming()
-	guo.mutation.SetIncoming(u)
+	guo.mutation.SetIncoming(d)
 	return guo
 }
 
 // SetNillableIncoming sets the "incoming" field if the given value is not nil.
-func (guo *GeneralUpdateOne) SetNillableIncoming(u *uint64) *GeneralUpdateOne {
-	if u != nil {
-		guo.SetIncoming(*u)
+func (guo *GeneralUpdateOne) SetNillableIncoming(d *decimal.Decimal) *GeneralUpdateOne {
+	if d != nil {
+		guo.SetIncoming(*d)
 	}
 	return guo
 }
 
-// AddIncoming adds u to the "incoming" field.
-func (guo *GeneralUpdateOne) AddIncoming(u int64) *GeneralUpdateOne {
-	guo.mutation.AddIncoming(u)
+// AddIncoming adds d to the "incoming" field.
+func (guo *GeneralUpdateOne) AddIncoming(d decimal.Decimal) *GeneralUpdateOne {
+	guo.mutation.AddIncoming(d)
 	return guo
 }
 
@@ -666,23 +667,23 @@ func (guo *GeneralUpdateOne) ClearIncoming() *GeneralUpdateOne {
 }
 
 // SetLocked sets the "locked" field.
-func (guo *GeneralUpdateOne) SetLocked(u uint64) *GeneralUpdateOne {
+func (guo *GeneralUpdateOne) SetLocked(d decimal.Decimal) *GeneralUpdateOne {
 	guo.mutation.ResetLocked()
-	guo.mutation.SetLocked(u)
+	guo.mutation.SetLocked(d)
 	return guo
 }
 
 // SetNillableLocked sets the "locked" field if the given value is not nil.
-func (guo *GeneralUpdateOne) SetNillableLocked(u *uint64) *GeneralUpdateOne {
-	if u != nil {
-		guo.SetLocked(*u)
+func (guo *GeneralUpdateOne) SetNillableLocked(d *decimal.Decimal) *GeneralUpdateOne {
+	if d != nil {
+		guo.SetLocked(*d)
 	}
 	return guo
 }
 
-// AddLocked adds u to the "locked" field.
-func (guo *GeneralUpdateOne) AddLocked(u int64) *GeneralUpdateOne {
-	guo.mutation.AddLocked(u)
+// AddLocked adds d to the "locked" field.
+func (guo *GeneralUpdateOne) AddLocked(d decimal.Decimal) *GeneralUpdateOne {
+	guo.mutation.AddLocked(d)
 	return guo
 }
 
@@ -693,23 +694,23 @@ func (guo *GeneralUpdateOne) ClearLocked() *GeneralUpdateOne {
 }
 
 // SetOutcoming sets the "outcoming" field.
-func (guo *GeneralUpdateOne) SetOutcoming(u uint64) *GeneralUpdateOne {
+func (guo *GeneralUpdateOne) SetOutcoming(d decimal.Decimal) *GeneralUpdateOne {
 	guo.mutation.ResetOutcoming()
-	guo.mutation.SetOutcoming(u)
+	guo.mutation.SetOutcoming(d)
 	return guo
 }
 
 // SetNillableOutcoming sets the "outcoming" field if the given value is not nil.
-func (guo *GeneralUpdateOne) SetNillableOutcoming(u *uint64) *GeneralUpdateOne {
-	if u != nil {
-		guo.SetOutcoming(*u)
+func (guo *GeneralUpdateOne) SetNillableOutcoming(d *decimal.Decimal) *GeneralUpdateOne {
+	if d != nil {
+		guo.SetOutcoming(*d)
 	}
 	return guo
 }
 
-// AddOutcoming adds u to the "outcoming" field.
-func (guo *GeneralUpdateOne) AddOutcoming(u int64) *GeneralUpdateOne {
-	guo.mutation.AddOutcoming(u)
+// AddOutcoming adds d to the "outcoming" field.
+func (guo *GeneralUpdateOne) AddOutcoming(d decimal.Decimal) *GeneralUpdateOne {
+	guo.mutation.AddOutcoming(d)
 	return guo
 }
 
@@ -720,23 +721,23 @@ func (guo *GeneralUpdateOne) ClearOutcoming() *GeneralUpdateOne {
 }
 
 // SetSpendable sets the "spendable" field.
-func (guo *GeneralUpdateOne) SetSpendable(u uint64) *GeneralUpdateOne {
+func (guo *GeneralUpdateOne) SetSpendable(d decimal.Decimal) *GeneralUpdateOne {
 	guo.mutation.ResetSpendable()
-	guo.mutation.SetSpendable(u)
+	guo.mutation.SetSpendable(d)
 	return guo
 }
 
 // SetNillableSpendable sets the "spendable" field if the given value is not nil.
-func (guo *GeneralUpdateOne) SetNillableSpendable(u *uint64) *GeneralUpdateOne {
-	if u != nil {
-		guo.SetSpendable(*u)
+func (guo *GeneralUpdateOne) SetNillableSpendable(d *decimal.Decimal) *GeneralUpdateOne {
+	if d != nil {
+		guo.SetSpendable(*d)
 	}
 	return guo
 }
 
-// AddSpendable adds u to the "spendable" field.
-func (guo *GeneralUpdateOne) AddSpendable(u int64) *GeneralUpdateOne {
-	guo.mutation.AddSpendable(u)
+// AddSpendable adds d to the "spendable" field.
+func (guo *GeneralUpdateOne) AddSpendable(d decimal.Decimal) *GeneralUpdateOne {
+	guo.mutation.AddSpendable(d)
 	return guo
 }
 
@@ -945,81 +946,81 @@ func (guo *GeneralUpdateOne) sqlSave(ctx context.Context) (_node *General, err e
 	}
 	if value, ok := guo.mutation.Incoming(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint64,
+			Type:   field.TypeFloat64,
 			Value:  value,
 			Column: general.FieldIncoming,
 		})
 	}
 	if value, ok := guo.mutation.AddedIncoming(); ok {
 		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint64,
+			Type:   field.TypeFloat64,
 			Value:  value,
 			Column: general.FieldIncoming,
 		})
 	}
 	if guo.mutation.IncomingCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint64,
+			Type:   field.TypeFloat64,
 			Column: general.FieldIncoming,
 		})
 	}
 	if value, ok := guo.mutation.Locked(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint64,
+			Type:   field.TypeFloat64,
 			Value:  value,
 			Column: general.FieldLocked,
 		})
 	}
 	if value, ok := guo.mutation.AddedLocked(); ok {
 		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint64,
+			Type:   field.TypeFloat64,
 			Value:  value,
 			Column: general.FieldLocked,
 		})
 	}
 	if guo.mutation.LockedCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint64,
+			Type:   field.TypeFloat64,
 			Column: general.FieldLocked,
 		})
 	}
 	if value, ok := guo.mutation.Outcoming(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint64,
+			Type:   field.TypeFloat64,
 			Value:  value,
 			Column: general.FieldOutcoming,
 		})
 	}
 	if value, ok := guo.mutation.AddedOutcoming(); ok {
 		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint64,
+			Type:   field.TypeFloat64,
 			Value:  value,
 			Column: general.FieldOutcoming,
 		})
 	}
 	if guo.mutation.OutcomingCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint64,
+			Type:   field.TypeFloat64,
 			Column: general.FieldOutcoming,
 		})
 	}
 	if value, ok := guo.mutation.Spendable(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint64,
+			Type:   field.TypeFloat64,
 			Value:  value,
 			Column: general.FieldSpendable,
 		})
 	}
 	if value, ok := guo.mutation.AddedSpendable(); ok {
 		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint64,
+			Type:   field.TypeFloat64,
 			Value:  value,
 			Column: general.FieldSpendable,
 		})
 	}
 	if guo.mutation.SpendableCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint64,
+			Type:   field.TypeFloat64,
 			Column: general.FieldSpendable,
 		})
 	}

@@ -9,6 +9,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/general"
 	"github.com/google/uuid"
+	"github.com/shopspring/decimal"
 )
 
 // General is the model entity for the General schema.
@@ -29,13 +30,13 @@ type General struct {
 	// CoinTypeID holds the value of the "coin_type_id" field.
 	CoinTypeID uuid.UUID `json:"coin_type_id,omitempty"`
 	// Incoming holds the value of the "incoming" field.
-	Incoming uint64 `json:"incoming,omitempty"`
+	Incoming decimal.Decimal `json:"incoming,omitempty"`
 	// Locked holds the value of the "locked" field.
-	Locked uint64 `json:"locked,omitempty"`
+	Locked decimal.Decimal `json:"locked,omitempty"`
 	// Outcoming holds the value of the "outcoming" field.
-	Outcoming uint64 `json:"outcoming,omitempty"`
+	Outcoming decimal.Decimal `json:"outcoming,omitempty"`
 	// Spendable holds the value of the "spendable" field.
-	Spendable uint64 `json:"spendable,omitempty"`
+	Spendable decimal.Decimal `json:"spendable,omitempty"`
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -43,7 +44,9 @@ func (*General) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case general.FieldCreatedAt, general.FieldUpdatedAt, general.FieldDeletedAt, general.FieldIncoming, general.FieldLocked, general.FieldOutcoming, general.FieldSpendable:
+		case general.FieldIncoming, general.FieldLocked, general.FieldOutcoming, general.FieldSpendable:
+			values[i] = new(decimal.Decimal)
+		case general.FieldCreatedAt, general.FieldUpdatedAt, general.FieldDeletedAt:
 			values[i] = new(sql.NullInt64)
 		case general.FieldID, general.FieldAppID, general.FieldUserID, general.FieldCoinTypeID:
 			values[i] = new(uuid.UUID)
@@ -105,28 +108,28 @@ func (ge *General) assignValues(columns []string, values []interface{}) error {
 				ge.CoinTypeID = *value
 			}
 		case general.FieldIncoming:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
+			if value, ok := values[i].(*decimal.Decimal); !ok {
 				return fmt.Errorf("unexpected type %T for field incoming", values[i])
-			} else if value.Valid {
-				ge.Incoming = uint64(value.Int64)
+			} else if value != nil {
+				ge.Incoming = *value
 			}
 		case general.FieldLocked:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
+			if value, ok := values[i].(*decimal.Decimal); !ok {
 				return fmt.Errorf("unexpected type %T for field locked", values[i])
-			} else if value.Valid {
-				ge.Locked = uint64(value.Int64)
+			} else if value != nil {
+				ge.Locked = *value
 			}
 		case general.FieldOutcoming:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
+			if value, ok := values[i].(*decimal.Decimal); !ok {
 				return fmt.Errorf("unexpected type %T for field outcoming", values[i])
-			} else if value.Valid {
-				ge.Outcoming = uint64(value.Int64)
+			} else if value != nil {
+				ge.Outcoming = *value
 			}
 		case general.FieldSpendable:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
+			if value, ok := values[i].(*decimal.Decimal); !ok {
 				return fmt.Errorf("unexpected type %T for field spendable", values[i])
-			} else if value.Valid {
-				ge.Spendable = uint64(value.Int64)
+			} else if value != nil {
+				ge.Spendable = *value
 			}
 		}
 	}

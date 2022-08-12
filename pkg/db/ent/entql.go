@@ -3,7 +3,10 @@
 package ent
 
 import (
+	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/detail"
 	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/general"
+	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/profit"
+	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/withdraw"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -13,8 +16,33 @@ import (
 
 // schemaGraph holds a representation of ent/schema at runtime.
 var schemaGraph = func() *sqlgraph.Schema {
-	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 1)}
+	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 4)}
 	graph.Nodes[0] = &sqlgraph.Node{
+		NodeSpec: sqlgraph.NodeSpec{
+			Table:   detail.Table,
+			Columns: detail.Columns,
+			ID: &sqlgraph.FieldSpec{
+				Type:   field.TypeUUID,
+				Column: detail.FieldID,
+			},
+		},
+		Type: "Detail",
+		Fields: map[string]*sqlgraph.FieldSpec{
+			detail.FieldCreatedAt:       {Type: field.TypeUint32, Column: detail.FieldCreatedAt},
+			detail.FieldUpdatedAt:       {Type: field.TypeUint32, Column: detail.FieldUpdatedAt},
+			detail.FieldDeletedAt:       {Type: field.TypeUint32, Column: detail.FieldDeletedAt},
+			detail.FieldAppID:           {Type: field.TypeUUID, Column: detail.FieldAppID},
+			detail.FieldUserID:          {Type: field.TypeUUID, Column: detail.FieldUserID},
+			detail.FieldCoinTypeID:      {Type: field.TypeUUID, Column: detail.FieldCoinTypeID},
+			detail.FieldIoType:          {Type: field.TypeString, Column: detail.FieldIoType},
+			detail.FieldIoSubType:       {Type: field.TypeString, Column: detail.FieldIoSubType},
+			detail.FieldAmount:          {Type: field.TypeFloat64, Column: detail.FieldAmount},
+			detail.FieldFromCoinTypeID:  {Type: field.TypeUUID, Column: detail.FieldFromCoinTypeID},
+			detail.FieldCoinUsdCurrency: {Type: field.TypeFloat64, Column: detail.FieldCoinUsdCurrency},
+			detail.FieldIoExtra:         {Type: field.TypeString, Column: detail.FieldIoExtra},
+		},
+	}
+	graph.Nodes[1] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   general.Table,
 			Columns: general.Columns,
@@ -31,10 +59,54 @@ var schemaGraph = func() *sqlgraph.Schema {
 			general.FieldAppID:      {Type: field.TypeUUID, Column: general.FieldAppID},
 			general.FieldUserID:     {Type: field.TypeUUID, Column: general.FieldUserID},
 			general.FieldCoinTypeID: {Type: field.TypeUUID, Column: general.FieldCoinTypeID},
-			general.FieldIncoming:   {Type: field.TypeUint64, Column: general.FieldIncoming},
-			general.FieldLocked:     {Type: field.TypeUint64, Column: general.FieldLocked},
-			general.FieldOutcoming:  {Type: field.TypeUint64, Column: general.FieldOutcoming},
-			general.FieldSpendable:  {Type: field.TypeUint64, Column: general.FieldSpendable},
+			general.FieldIncoming:   {Type: field.TypeFloat64, Column: general.FieldIncoming},
+			general.FieldLocked:     {Type: field.TypeFloat64, Column: general.FieldLocked},
+			general.FieldOutcoming:  {Type: field.TypeFloat64, Column: general.FieldOutcoming},
+			general.FieldSpendable:  {Type: field.TypeFloat64, Column: general.FieldSpendable},
+		},
+	}
+	graph.Nodes[2] = &sqlgraph.Node{
+		NodeSpec: sqlgraph.NodeSpec{
+			Table:   profit.Table,
+			Columns: profit.Columns,
+			ID: &sqlgraph.FieldSpec{
+				Type:   field.TypeUUID,
+				Column: profit.FieldID,
+			},
+		},
+		Type: "Profit",
+		Fields: map[string]*sqlgraph.FieldSpec{
+			profit.FieldCreatedAt:  {Type: field.TypeUint32, Column: profit.FieldCreatedAt},
+			profit.FieldUpdatedAt:  {Type: field.TypeUint32, Column: profit.FieldUpdatedAt},
+			profit.FieldDeletedAt:  {Type: field.TypeUint32, Column: profit.FieldDeletedAt},
+			profit.FieldAppID:      {Type: field.TypeUUID, Column: profit.FieldAppID},
+			profit.FieldUserID:     {Type: field.TypeUUID, Column: profit.FieldUserID},
+			profit.FieldCoinTypeID: {Type: field.TypeUUID, Column: profit.FieldCoinTypeID},
+			profit.FieldIncoming:   {Type: field.TypeFloat64, Column: profit.FieldIncoming},
+		},
+	}
+	graph.Nodes[3] = &sqlgraph.Node{
+		NodeSpec: sqlgraph.NodeSpec{
+			Table:   withdraw.Table,
+			Columns: withdraw.Columns,
+			ID: &sqlgraph.FieldSpec{
+				Type:   field.TypeUUID,
+				Column: withdraw.FieldID,
+			},
+		},
+		Type: "Withdraw",
+		Fields: map[string]*sqlgraph.FieldSpec{
+			withdraw.FieldCreatedAt:             {Type: field.TypeUint32, Column: withdraw.FieldCreatedAt},
+			withdraw.FieldUpdatedAt:             {Type: field.TypeUint32, Column: withdraw.FieldUpdatedAt},
+			withdraw.FieldDeletedAt:             {Type: field.TypeUint32, Column: withdraw.FieldDeletedAt},
+			withdraw.FieldAppID:                 {Type: field.TypeUUID, Column: withdraw.FieldAppID},
+			withdraw.FieldUserID:                {Type: field.TypeUUID, Column: withdraw.FieldUserID},
+			withdraw.FieldCoinTypeID:            {Type: field.TypeUUID, Column: withdraw.FieldCoinTypeID},
+			withdraw.FieldAccountID:             {Type: field.TypeUUID, Column: withdraw.FieldAccountID},
+			withdraw.FieldPlatformTransactionID: {Type: field.TypeUUID, Column: withdraw.FieldPlatformTransactionID},
+			withdraw.FieldChainTransactionID:    {Type: field.TypeString, Column: withdraw.FieldChainTransactionID},
+			withdraw.FieldState:                 {Type: field.TypeString, Column: withdraw.FieldState},
+			withdraw.FieldAmount:                {Type: field.TypeFloat64, Column: withdraw.FieldAmount},
 		},
 	}
 	return graph
@@ -44,6 +116,105 @@ var schemaGraph = func() *sqlgraph.Schema {
 // All update, update-one and query builders implement this interface.
 type predicateAdder interface {
 	addPredicate(func(s *sql.Selector))
+}
+
+// addPredicate implements the predicateAdder interface.
+func (dq *DetailQuery) addPredicate(pred func(s *sql.Selector)) {
+	dq.predicates = append(dq.predicates, pred)
+}
+
+// Filter returns a Filter implementation to apply filters on the DetailQuery builder.
+func (dq *DetailQuery) Filter() *DetailFilter {
+	return &DetailFilter{dq}
+}
+
+// addPredicate implements the predicateAdder interface.
+func (m *DetailMutation) addPredicate(pred func(s *sql.Selector)) {
+	m.predicates = append(m.predicates, pred)
+}
+
+// Filter returns an entql.Where implementation to apply filters on the DetailMutation builder.
+func (m *DetailMutation) Filter() *DetailFilter {
+	return &DetailFilter{m}
+}
+
+// DetailFilter provides a generic filtering capability at runtime for DetailQuery.
+type DetailFilter struct {
+	predicateAdder
+}
+
+// Where applies the entql predicate on the query filter.
+func (f *DetailFilter) Where(p entql.P) {
+	f.addPredicate(func(s *sql.Selector) {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[0].Type, p, s); err != nil {
+			s.AddError(err)
+		}
+	})
+}
+
+// WhereID applies the entql [16]byte predicate on the id field.
+func (f *DetailFilter) WhereID(p entql.ValueP) {
+	f.Where(p.Field(detail.FieldID))
+}
+
+// WhereCreatedAt applies the entql uint32 predicate on the created_at field.
+func (f *DetailFilter) WhereCreatedAt(p entql.Uint32P) {
+	f.Where(p.Field(detail.FieldCreatedAt))
+}
+
+// WhereUpdatedAt applies the entql uint32 predicate on the updated_at field.
+func (f *DetailFilter) WhereUpdatedAt(p entql.Uint32P) {
+	f.Where(p.Field(detail.FieldUpdatedAt))
+}
+
+// WhereDeletedAt applies the entql uint32 predicate on the deleted_at field.
+func (f *DetailFilter) WhereDeletedAt(p entql.Uint32P) {
+	f.Where(p.Field(detail.FieldDeletedAt))
+}
+
+// WhereAppID applies the entql [16]byte predicate on the app_id field.
+func (f *DetailFilter) WhereAppID(p entql.ValueP) {
+	f.Where(p.Field(detail.FieldAppID))
+}
+
+// WhereUserID applies the entql [16]byte predicate on the user_id field.
+func (f *DetailFilter) WhereUserID(p entql.ValueP) {
+	f.Where(p.Field(detail.FieldUserID))
+}
+
+// WhereCoinTypeID applies the entql [16]byte predicate on the coin_type_id field.
+func (f *DetailFilter) WhereCoinTypeID(p entql.ValueP) {
+	f.Where(p.Field(detail.FieldCoinTypeID))
+}
+
+// WhereIoType applies the entql string predicate on the io_type field.
+func (f *DetailFilter) WhereIoType(p entql.StringP) {
+	f.Where(p.Field(detail.FieldIoType))
+}
+
+// WhereIoSubType applies the entql string predicate on the io_sub_type field.
+func (f *DetailFilter) WhereIoSubType(p entql.StringP) {
+	f.Where(p.Field(detail.FieldIoSubType))
+}
+
+// WhereAmount applies the entql float64 predicate on the amount field.
+func (f *DetailFilter) WhereAmount(p entql.Float64P) {
+	f.Where(p.Field(detail.FieldAmount))
+}
+
+// WhereFromCoinTypeID applies the entql [16]byte predicate on the from_coin_type_id field.
+func (f *DetailFilter) WhereFromCoinTypeID(p entql.ValueP) {
+	f.Where(p.Field(detail.FieldFromCoinTypeID))
+}
+
+// WhereCoinUsdCurrency applies the entql float64 predicate on the coin_usd_currency field.
+func (f *DetailFilter) WhereCoinUsdCurrency(p entql.Float64P) {
+	f.Where(p.Field(detail.FieldCoinUsdCurrency))
+}
+
+// WhereIoExtra applies the entql string predicate on the io_extra field.
+func (f *DetailFilter) WhereIoExtra(p entql.StringP) {
+	f.Where(p.Field(detail.FieldIoExtra))
 }
 
 // addPredicate implements the predicateAdder interface.
@@ -74,7 +245,7 @@ type GeneralFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *GeneralFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[0].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[1].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -115,22 +286,190 @@ func (f *GeneralFilter) WhereCoinTypeID(p entql.ValueP) {
 	f.Where(p.Field(general.FieldCoinTypeID))
 }
 
-// WhereIncoming applies the entql uint64 predicate on the incoming field.
-func (f *GeneralFilter) WhereIncoming(p entql.Uint64P) {
+// WhereIncoming applies the entql float64 predicate on the incoming field.
+func (f *GeneralFilter) WhereIncoming(p entql.Float64P) {
 	f.Where(p.Field(general.FieldIncoming))
 }
 
-// WhereLocked applies the entql uint64 predicate on the locked field.
-func (f *GeneralFilter) WhereLocked(p entql.Uint64P) {
+// WhereLocked applies the entql float64 predicate on the locked field.
+func (f *GeneralFilter) WhereLocked(p entql.Float64P) {
 	f.Where(p.Field(general.FieldLocked))
 }
 
-// WhereOutcoming applies the entql uint64 predicate on the outcoming field.
-func (f *GeneralFilter) WhereOutcoming(p entql.Uint64P) {
+// WhereOutcoming applies the entql float64 predicate on the outcoming field.
+func (f *GeneralFilter) WhereOutcoming(p entql.Float64P) {
 	f.Where(p.Field(general.FieldOutcoming))
 }
 
-// WhereSpendable applies the entql uint64 predicate on the spendable field.
-func (f *GeneralFilter) WhereSpendable(p entql.Uint64P) {
+// WhereSpendable applies the entql float64 predicate on the spendable field.
+func (f *GeneralFilter) WhereSpendable(p entql.Float64P) {
 	f.Where(p.Field(general.FieldSpendable))
+}
+
+// addPredicate implements the predicateAdder interface.
+func (pq *ProfitQuery) addPredicate(pred func(s *sql.Selector)) {
+	pq.predicates = append(pq.predicates, pred)
+}
+
+// Filter returns a Filter implementation to apply filters on the ProfitQuery builder.
+func (pq *ProfitQuery) Filter() *ProfitFilter {
+	return &ProfitFilter{pq}
+}
+
+// addPredicate implements the predicateAdder interface.
+func (m *ProfitMutation) addPredicate(pred func(s *sql.Selector)) {
+	m.predicates = append(m.predicates, pred)
+}
+
+// Filter returns an entql.Where implementation to apply filters on the ProfitMutation builder.
+func (m *ProfitMutation) Filter() *ProfitFilter {
+	return &ProfitFilter{m}
+}
+
+// ProfitFilter provides a generic filtering capability at runtime for ProfitQuery.
+type ProfitFilter struct {
+	predicateAdder
+}
+
+// Where applies the entql predicate on the query filter.
+func (f *ProfitFilter) Where(p entql.P) {
+	f.addPredicate(func(s *sql.Selector) {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[2].Type, p, s); err != nil {
+			s.AddError(err)
+		}
+	})
+}
+
+// WhereID applies the entql [16]byte predicate on the id field.
+func (f *ProfitFilter) WhereID(p entql.ValueP) {
+	f.Where(p.Field(profit.FieldID))
+}
+
+// WhereCreatedAt applies the entql uint32 predicate on the created_at field.
+func (f *ProfitFilter) WhereCreatedAt(p entql.Uint32P) {
+	f.Where(p.Field(profit.FieldCreatedAt))
+}
+
+// WhereUpdatedAt applies the entql uint32 predicate on the updated_at field.
+func (f *ProfitFilter) WhereUpdatedAt(p entql.Uint32P) {
+	f.Where(p.Field(profit.FieldUpdatedAt))
+}
+
+// WhereDeletedAt applies the entql uint32 predicate on the deleted_at field.
+func (f *ProfitFilter) WhereDeletedAt(p entql.Uint32P) {
+	f.Where(p.Field(profit.FieldDeletedAt))
+}
+
+// WhereAppID applies the entql [16]byte predicate on the app_id field.
+func (f *ProfitFilter) WhereAppID(p entql.ValueP) {
+	f.Where(p.Field(profit.FieldAppID))
+}
+
+// WhereUserID applies the entql [16]byte predicate on the user_id field.
+func (f *ProfitFilter) WhereUserID(p entql.ValueP) {
+	f.Where(p.Field(profit.FieldUserID))
+}
+
+// WhereCoinTypeID applies the entql [16]byte predicate on the coin_type_id field.
+func (f *ProfitFilter) WhereCoinTypeID(p entql.ValueP) {
+	f.Where(p.Field(profit.FieldCoinTypeID))
+}
+
+// WhereIncoming applies the entql float64 predicate on the incoming field.
+func (f *ProfitFilter) WhereIncoming(p entql.Float64P) {
+	f.Where(p.Field(profit.FieldIncoming))
+}
+
+// addPredicate implements the predicateAdder interface.
+func (wq *WithdrawQuery) addPredicate(pred func(s *sql.Selector)) {
+	wq.predicates = append(wq.predicates, pred)
+}
+
+// Filter returns a Filter implementation to apply filters on the WithdrawQuery builder.
+func (wq *WithdrawQuery) Filter() *WithdrawFilter {
+	return &WithdrawFilter{wq}
+}
+
+// addPredicate implements the predicateAdder interface.
+func (m *WithdrawMutation) addPredicate(pred func(s *sql.Selector)) {
+	m.predicates = append(m.predicates, pred)
+}
+
+// Filter returns an entql.Where implementation to apply filters on the WithdrawMutation builder.
+func (m *WithdrawMutation) Filter() *WithdrawFilter {
+	return &WithdrawFilter{m}
+}
+
+// WithdrawFilter provides a generic filtering capability at runtime for WithdrawQuery.
+type WithdrawFilter struct {
+	predicateAdder
+}
+
+// Where applies the entql predicate on the query filter.
+func (f *WithdrawFilter) Where(p entql.P) {
+	f.addPredicate(func(s *sql.Selector) {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[3].Type, p, s); err != nil {
+			s.AddError(err)
+		}
+	})
+}
+
+// WhereID applies the entql [16]byte predicate on the id field.
+func (f *WithdrawFilter) WhereID(p entql.ValueP) {
+	f.Where(p.Field(withdraw.FieldID))
+}
+
+// WhereCreatedAt applies the entql uint32 predicate on the created_at field.
+func (f *WithdrawFilter) WhereCreatedAt(p entql.Uint32P) {
+	f.Where(p.Field(withdraw.FieldCreatedAt))
+}
+
+// WhereUpdatedAt applies the entql uint32 predicate on the updated_at field.
+func (f *WithdrawFilter) WhereUpdatedAt(p entql.Uint32P) {
+	f.Where(p.Field(withdraw.FieldUpdatedAt))
+}
+
+// WhereDeletedAt applies the entql uint32 predicate on the deleted_at field.
+func (f *WithdrawFilter) WhereDeletedAt(p entql.Uint32P) {
+	f.Where(p.Field(withdraw.FieldDeletedAt))
+}
+
+// WhereAppID applies the entql [16]byte predicate on the app_id field.
+func (f *WithdrawFilter) WhereAppID(p entql.ValueP) {
+	f.Where(p.Field(withdraw.FieldAppID))
+}
+
+// WhereUserID applies the entql [16]byte predicate on the user_id field.
+func (f *WithdrawFilter) WhereUserID(p entql.ValueP) {
+	f.Where(p.Field(withdraw.FieldUserID))
+}
+
+// WhereCoinTypeID applies the entql [16]byte predicate on the coin_type_id field.
+func (f *WithdrawFilter) WhereCoinTypeID(p entql.ValueP) {
+	f.Where(p.Field(withdraw.FieldCoinTypeID))
+}
+
+// WhereAccountID applies the entql [16]byte predicate on the account_id field.
+func (f *WithdrawFilter) WhereAccountID(p entql.ValueP) {
+	f.Where(p.Field(withdraw.FieldAccountID))
+}
+
+// WherePlatformTransactionID applies the entql [16]byte predicate on the platform_transaction_id field.
+func (f *WithdrawFilter) WherePlatformTransactionID(p entql.ValueP) {
+	f.Where(p.Field(withdraw.FieldPlatformTransactionID))
+}
+
+// WhereChainTransactionID applies the entql string predicate on the chain_transaction_id field.
+func (f *WithdrawFilter) WhereChainTransactionID(p entql.StringP) {
+	f.Where(p.Field(withdraw.FieldChainTransactionID))
+}
+
+// WhereState applies the entql string predicate on the state field.
+func (f *WithdrawFilter) WhereState(p entql.StringP) {
+	f.Where(p.Field(withdraw.FieldState))
+}
+
+// WhereAmount applies the entql float64 predicate on the amount field.
+func (f *WithdrawFilter) WhereAmount(p entql.Float64P) {
+	f.Where(p.Field(withdraw.FieldAmount))
 }

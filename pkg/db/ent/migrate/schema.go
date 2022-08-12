@@ -8,6 +8,28 @@ import (
 )
 
 var (
+	// DetailsColumns holds the columns for the "details" table.
+	DetailsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID, Unique: true},
+		{Name: "created_at", Type: field.TypeUint32},
+		{Name: "updated_at", Type: field.TypeUint32},
+		{Name: "deleted_at", Type: field.TypeUint32},
+		{Name: "app_id", Type: field.TypeUUID, Nullable: true},
+		{Name: "user_id", Type: field.TypeUUID, Nullable: true},
+		{Name: "coin_type_id", Type: field.TypeUUID, Nullable: true},
+		{Name: "io_type", Type: field.TypeString, Nullable: true, Default: "DefaultType"},
+		{Name: "io_sub_type", Type: field.TypeString, Nullable: true, Default: "DefaultSubType"},
+		{Name: "amount", Type: field.TypeFloat64, Nullable: true, SchemaType: map[string]string{"mysql": "decimal(37, 18)"}},
+		{Name: "from_coin_type_id", Type: field.TypeUUID, Nullable: true},
+		{Name: "coin_usd_currency", Type: field.TypeFloat64, Nullable: true, SchemaType: map[string]string{"mysql": "decimal(37, 18)"}},
+		{Name: "io_extra", Type: field.TypeString, Nullable: true, Default: ""},
+	}
+	// DetailsTable holds the schema information for the "details" table.
+	DetailsTable = &schema.Table{
+		Name:       "details",
+		Columns:    DetailsColumns,
+		PrimaryKey: []*schema.Column{DetailsColumns[0]},
+	}
 	// GeneralsColumns holds the columns for the "generals" table.
 	GeneralsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID, Unique: true},
@@ -17,10 +39,10 @@ var (
 		{Name: "app_id", Type: field.TypeUUID, Nullable: true},
 		{Name: "user_id", Type: field.TypeUUID, Nullable: true},
 		{Name: "coin_type_id", Type: field.TypeUUID, Nullable: true},
-		{Name: "incoming", Type: field.TypeUint64, Nullable: true, Default: 0},
-		{Name: "locked", Type: field.TypeUint64, Nullable: true, Default: 0},
-		{Name: "outcoming", Type: field.TypeUint64, Nullable: true, Default: 0},
-		{Name: "spendable", Type: field.TypeUint64, Nullable: true, Default: 0},
+		{Name: "incoming", Type: field.TypeFloat64, Nullable: true, SchemaType: map[string]string{"mysql": "decimal(37, 18)"}},
+		{Name: "locked", Type: field.TypeFloat64, Nullable: true, SchemaType: map[string]string{"mysql": "decimal(37, 18)"}},
+		{Name: "outcoming", Type: field.TypeFloat64, Nullable: true, SchemaType: map[string]string{"mysql": "decimal(37, 18)"}},
+		{Name: "spendable", Type: field.TypeFloat64, Nullable: true, SchemaType: map[string]string{"mysql": "decimal(37, 18)"}},
 	}
 	// GeneralsTable holds the schema information for the "generals" table.
 	GeneralsTable = &schema.Table{
@@ -28,9 +50,50 @@ var (
 		Columns:    GeneralsColumns,
 		PrimaryKey: []*schema.Column{GeneralsColumns[0]},
 	}
+	// ProfitsColumns holds the columns for the "profits" table.
+	ProfitsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID, Unique: true},
+		{Name: "created_at", Type: field.TypeUint32},
+		{Name: "updated_at", Type: field.TypeUint32},
+		{Name: "deleted_at", Type: field.TypeUint32},
+		{Name: "app_id", Type: field.TypeUUID, Nullable: true},
+		{Name: "user_id", Type: field.TypeUUID, Nullable: true},
+		{Name: "coin_type_id", Type: field.TypeUUID, Nullable: true},
+		{Name: "incoming", Type: field.TypeFloat64, Nullable: true, SchemaType: map[string]string{"mysql": "decimal(37, 18)"}},
+	}
+	// ProfitsTable holds the schema information for the "profits" table.
+	ProfitsTable = &schema.Table{
+		Name:       "profits",
+		Columns:    ProfitsColumns,
+		PrimaryKey: []*schema.Column{ProfitsColumns[0]},
+	}
+	// WithdrawsColumns holds the columns for the "withdraws" table.
+	WithdrawsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID, Unique: true},
+		{Name: "created_at", Type: field.TypeUint32},
+		{Name: "updated_at", Type: field.TypeUint32},
+		{Name: "deleted_at", Type: field.TypeUint32},
+		{Name: "app_id", Type: field.TypeUUID, Nullable: true},
+		{Name: "user_id", Type: field.TypeUUID, Nullable: true},
+		{Name: "coin_type_id", Type: field.TypeUUID, Nullable: true},
+		{Name: "account_id", Type: field.TypeUUID, Nullable: true},
+		{Name: "platform_transaction_id", Type: field.TypeUUID, Nullable: true},
+		{Name: "chain_transaction_id", Type: field.TypeString, Nullable: true, Default: ""},
+		{Name: "state", Type: field.TypeString, Nullable: true, Default: "DefaultWithdrawState"},
+		{Name: "amount", Type: field.TypeFloat64, Nullable: true, SchemaType: map[string]string{"mysql": "decimal(37, 18)"}},
+	}
+	// WithdrawsTable holds the schema information for the "withdraws" table.
+	WithdrawsTable = &schema.Table{
+		Name:       "withdraws",
+		Columns:    WithdrawsColumns,
+		PrimaryKey: []*schema.Column{WithdrawsColumns[0]},
+	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
+		DetailsTable,
 		GeneralsTable,
+		ProfitsTable,
+		WithdrawsTable,
 	}
 )
 

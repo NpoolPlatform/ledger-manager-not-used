@@ -9,6 +9,19 @@ import (
 	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent"
 )
 
+// The DetailFunc type is an adapter to allow the use of ordinary
+// function as Detail mutator.
+type DetailFunc func(context.Context, *ent.DetailMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f DetailFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.DetailMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.DetailMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The GeneralFunc type is an adapter to allow the use of ordinary
 // function as General mutator.
 type GeneralFunc func(context.Context, *ent.GeneralMutation) (ent.Value, error)
@@ -18,6 +31,32 @@ func (f GeneralFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, err
 	mv, ok := m.(*ent.GeneralMutation)
 	if !ok {
 		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.GeneralMutation", m)
+	}
+	return f(ctx, mv)
+}
+
+// The ProfitFunc type is an adapter to allow the use of ordinary
+// function as Profit mutator.
+type ProfitFunc func(context.Context, *ent.ProfitMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ProfitFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.ProfitMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ProfitMutation", m)
+	}
+	return f(ctx, mv)
+}
+
+// The WithdrawFunc type is an adapter to allow the use of ordinary
+// function as Withdraw mutator.
+type WithdrawFunc func(context.Context, *ent.WithdrawMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f WithdrawFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.WithdrawMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.WithdrawMutation", m)
 	}
 	return f(ctx, mv)
 }

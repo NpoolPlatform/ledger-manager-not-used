@@ -1,10 +1,9 @@
 package main
 
 import (
-	"time"
-
 	"github.com/NpoolPlatform/ledger-manager/api"
-	db "github.com/NpoolPlatform/ledger-manager/pkg/db"
+	"github.com/NpoolPlatform/ledger-manager/pkg/db"
+	"github.com/NpoolPlatform/ledger-manager/pkg/migrator"
 
 	grpc2 "github.com/NpoolPlatform/go-service-framework/pkg/grpc"
 	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
@@ -18,20 +17,24 @@ import (
 	"google.golang.org/grpc"
 )
 
-const MsgInterval = 3 * time.Second
+// const MsgInterval = 3 * time.Second
 
 var runCmd = &cli.Command{
 	Name:    "run",
 	Aliases: []string{"s"},
 	Usage:   "Run the daemon",
 	Action: func(c *cli.Context) error {
+		if err := migrator.Migrate(c.Context); err != nil {
+			return err
+		}
+
 		if err := db.Init(); err != nil {
 			return err
 		}
 
 		go func() {
 			if err := grpc2.RunGRPC(rpcRegister); err != nil {
-				logger.Sugar().Errorf("fail to run grpc server: %v", err)
+				logger.Sugar().Errorw("Run", "err", err)
 			}
 		}()
 

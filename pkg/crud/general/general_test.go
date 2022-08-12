@@ -8,12 +8,13 @@ import (
 	"testing"
 
 	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent"
+	"github.com/shopspring/decimal"
 
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 
 	testinit "github.com/NpoolPlatform/ledger-manager/pkg/testinit"
 	valuedef "github.com/NpoolPlatform/message/npool"
-	npool "github.com/NpoolPlatform/message/npool/ledgermgr/general"
+	npool "github.com/NpoolPlatform/message/npool/ledger/mgr/v1/ledger/general"
 	"github.com/google/uuid"
 
 	"github.com/stretchr/testify/assert"
@@ -28,31 +29,38 @@ func init() {
 	}
 }
 
-var entity = ent.General{
-	ID:         uuid.New(),
-	AppID:      uuid.New(),
-	UserID:     uuid.New(),
-	CoinTypeID: uuid.New(),
-	// Incoming:   10.0,
-	// Locked:     10.0,
-	// Outcoming:  10.0,
-	// Spendable:  10.0,
-}
+var (
+	entity = ent.General{
+		ID:         uuid.New(),
+		AppID:      uuid.New(),
+		UserID:     uuid.New(),
+		CoinTypeID: uuid.New(),
+		Incoming:   decimal.NewFromInt(0),
+		Locked:     decimal.NewFromInt(0),
+		Outcoming:  decimal.NewFromInt(0),
+		Spendable:  decimal.NewFromInt(0),
+	}
+)
 
 var (
 	id         = entity.ID.String()
 	appID      = entity.AppID.String()
 	userID     = entity.UserID.String()
 	coinTypeID = entity.CoinTypeID.String()
-	req        = npool.GeneralReq{
+	incoming   = entity.Incoming.String()
+	locked     = entity.Locked.String()
+	outcoming  = entity.Outcoming.String()
+	spendable  = entity.Spendable.String()
+
+	req = npool.GeneralReq{
 		ID:         &id,
 		AppID:      &appID,
 		UserID:     &userID,
 		CoinTypeID: &coinTypeID,
-		Incoming:   &entity.Incoming,
-		Locked:     &entity.Locked,
-		Outcoming:  &entity.Outcoming,
-		Spendable:  &entity.Spendable,
+		Incoming:   &incoming,
+		Locked:     &locked,
+		Outcoming:  &outcoming,
+		Spendable:  &spendable,
 	}
 )
 
@@ -62,31 +70,33 @@ func create(t *testing.T) {
 	var err error
 	info, err = Create(context.Background(), &req)
 	if assert.Nil(t, err) {
-		assert.Equal(t, info, &entity)
+		entity.UpdatedAt = info.UpdatedAt
+		entity.CreatedAt = info.CreatedAt
+		assert.Equal(t, info.String(), entity.String())
 	}
 }
 
 func createBulk(t *testing.T) {
-	entities := []ent.General{
+	entities := []*ent.General{
 		{
 			ID:         uuid.New(),
 			AppID:      uuid.New(),
 			UserID:     uuid.New(),
 			CoinTypeID: uuid.New(),
-			// Incoming:   10.0,
-			// Locked:     10.0,
-			// Outcoming:  10.0,
-			// Spendable:  10.0,
+			Incoming:   decimal.NewFromInt(0),
+			Locked:     decimal.NewFromInt(0),
+			Outcoming:  decimal.NewFromInt(0),
+			Spendable:  decimal.NewFromInt(0),
 		},
 		{
 			ID:         uuid.New(),
 			AppID:      uuid.New(),
 			UserID:     uuid.New(),
 			CoinTypeID: uuid.New(),
-			// Incoming:   10.0,
-			// Locked:     10.0,
-			// Outcoming:  10.0,
-			// Spendable:  10.0,
+			Incoming:   decimal.NewFromInt(0),
+			Locked:     decimal.NewFromInt(0),
+			Outcoming:  decimal.NewFromInt(0),
+			Spendable:  decimal.NewFromInt(0),
 		},
 	}
 
@@ -96,22 +106,67 @@ func createBulk(t *testing.T) {
 		_appID := _entity.AppID.String()
 		_userID := _entity.UserID.String()
 		_coinTypeID := _entity.CoinTypeID.String()
+		_incoming := _entity.Incoming.String()
+		_locked := _entity.Locked.String()
+		_outcoming := _entity.Outcoming.String()
+		_spendable := _entity.Spendable.String()
 
 		reqs = append(reqs, &npool.GeneralReq{
 			ID:         &_id,
 			AppID:      &_appID,
 			UserID:     &_userID,
 			CoinTypeID: &_coinTypeID,
-			Incoming:   &_entity.Incoming,
-			Locked:     &_entity.Locked,
-			Outcoming:  &_entity.Outcoming,
-			Spendable:  &_entity.Spendable,
+			Incoming:   &_incoming,
+			Locked:     &_locked,
+			Outcoming:  &_outcoming,
+			Spendable:  &_spendable,
 		})
 	}
 	infos, err := CreateBulk(context.Background(), reqs)
 	if assert.Nil(t, err) {
 		assert.Equal(t, len(infos), 2)
-		assert.Equal(t, infos, entities)
+	}
+}
+
+func add(t *testing.T) {
+	incoming = "60"
+	locked = "0"
+	outcoming = "0"
+	spendable = "60"
+
+	req.Incoming = &incoming
+	req.Locked = &locked
+	req.Outcoming = &outcoming
+	req.Spendable = &spendable
+
+	entity.Incoming, _ = decimal.NewFromString(incoming)
+	entity.Locked, _ = decimal.NewFromString(locked)
+	entity.Outcoming, _ = decimal.NewFromString(outcoming)
+	entity.Spendable, _ = decimal.NewFromString(spendable)
+
+	info, err := AddFields(context.Background(), &req)
+	if assert.Nil(t, err) {
+		entity.UpdatedAt = info.UpdatedAt
+		assert.Equal(t, info.String(), entity.String())
+	}
+
+	incoming = "0"
+	locked = "0"
+	outcoming = "55.2487"
+	spendable = "-55.2487"
+
+	req.Incoming = &incoming
+	req.Locked = &locked
+	req.Outcoming = &outcoming
+	req.Spendable = &spendable
+
+	entity.Outcoming, _ = decimal.NewFromString(outcoming)
+	entity.Spendable = entity.Incoming.Add(decimal.RequireFromString(spendable))
+
+	info, err = AddFields(context.Background(), &req)
+	if assert.Nil(t, err) {
+		entity.UpdatedAt = info.UpdatedAt
+		assert.Equal(t, info.String(), entity.String())
 	}
 }
 
@@ -119,7 +174,7 @@ func row(t *testing.T) {
 	var err error
 	info, err = Row(context.Background(), info.ID)
 	if assert.Nil(t, err) {
-		assert.Equal(t, info, &entity)
+		assert.Equal(t, info.String(), entity.String())
 	}
 }
 
@@ -133,7 +188,7 @@ func rows(t *testing.T) {
 		}, 0, 0)
 	if assert.Nil(t, err) {
 		assert.Equal(t, total, 1)
-		assert.Equal(t, infos[0], &entity)
+		assert.Equal(t, infos[0].String(), entity.String())
 	}
 }
 
@@ -147,7 +202,7 @@ func rowOnly(t *testing.T) {
 			},
 		})
 	if assert.Nil(t, err) {
-		assert.Equal(t, info, &entity)
+		assert.Equal(t, info.String(), entity.String())
 	}
 }
 
@@ -161,7 +216,7 @@ func count(t *testing.T) {
 		},
 	)
 	if assert.Nil(t, err) {
-		assert.Equal(t, count, 1)
+		assert.Equal(t, count, uint32(1))
 	}
 }
 
@@ -189,7 +244,8 @@ func existConds(t *testing.T) {
 func deleteA(t *testing.T) {
 	info, err := Delete(context.Background(), entity.ID)
 	if assert.Nil(t, err) {
-		assert.Equal(t, info, &entity)
+		entity.DeletedAt = info.DeletedAt
+		assert.Equal(t, info.String(), entity.String())
 	}
 }
 
@@ -199,11 +255,12 @@ func TestGeneral(t *testing.T) {
 	}
 	t.Run("create", create)
 	t.Run("createBulk", createBulk)
+	t.Run("add", add)
 	t.Run("row", row)
 	t.Run("rows", rows)
 	t.Run("rowOnly", rowOnly)
 	t.Run("exist", exist)
 	t.Run("existConds", existConds)
-	t.Run("delete", deleteA)
 	t.Run("count", count)
+	t.Run("delete", deleteA)
 }
