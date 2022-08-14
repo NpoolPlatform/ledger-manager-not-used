@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
-
 	constant "github.com/NpoolPlatform/ledger-manager/pkg/message/const"
 	commontracer "github.com/NpoolPlatform/ledger-manager/pkg/tracer"
 	tracer "github.com/NpoolPlatform/ledger-manager/pkg/tracer/general"
@@ -184,9 +182,6 @@ func UpdateSet(info *ent.General, in *npool.GeneralReq) (*ent.GeneralUpdateOne, 
 		spendable = spendable.Add(info.Spendable)
 		stm = stm.SetSpendable(spendable)
 	}
-
-	logger.Sugar().Infow("UpdateSet", "AI", incoming, "AO", outcoming, "AL", locked, "AS", spendable)
-	logger.Sugar().Infow("UpdateSet", "II", info.Incoming, "IO", info.Outcoming, "IL", info.Locked, "IS", info.Spendable)
 
 	return stm, nil
 }
