@@ -149,19 +149,19 @@ func UpdateSet(info *ent.General, in *npool.GeneralReq) (*ent.GeneralUpdateOne, 
 	}
 
 	if locked.Add(info.Locked).Cmp(decimal.NewFromInt(0)) < 0 {
-		return nil, fmt.Errorf("locked + locked < 0")
+		return nil, fmt.Errorf("locked (%v) + locked (%v) < 0", locked, info.Locked)
 	}
 
 	if incoming.Cmp(decimal.NewFromInt(0)) < 0 {
-		return nil, fmt.Errorf("incoming < 0")
+		return nil, fmt.Errorf("incoming (%v) < 0", incoming)
 	}
 
 	if outcoming.Cmp(decimal.NewFromInt(0)) < 0 {
-		return nil, fmt.Errorf("outcoming < 0")
+		return nil, fmt.Errorf("outcoming (%v) < 0", outcoming)
 	}
 
 	if spendable.Add(info.Spendable).Cmp(decimal.NewFromInt(0)) < 0 {
-		return nil, fmt.Errorf("spendable + spendable < 0")
+		return nil, fmt.Errorf("spendable (%v) + spendable(%v) < 0", spendable, info.Spendable)
 	}
 
 	stm := info.Update()
