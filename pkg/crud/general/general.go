@@ -190,7 +190,7 @@ func AddFields(ctx context.Context, in *npool.GeneralReq) (*ent.General, error) 
 	var info *ent.General
 	var err error
 
-	_, span := otel.Tracer(constant.ServiceName).Start(ctx, "Create")
+	_, span := otel.Tracer(constant.ServiceName).Start(ctx, "AddFields")
 	defer span.End()
 
 	defer func() {
