@@ -92,6 +92,7 @@ func validate(info *npool.DetailReq) error { //nolint
 		case npool.IOSubType_MiningBenefit:
 		case npool.IOSubType_Commission:
 		case npool.IOSubType_TechniqueFeeCommission:
+		case npool.IOSubType_Deposit:
 		default:
 			logger.Sugar().Errorw("validate", "IOType", info.GetIOType(), "IOSubType", info.GetIOSubType())
 			return status.Error(codes.InvalidArgument, "Incoming IOSubType is invalid")
