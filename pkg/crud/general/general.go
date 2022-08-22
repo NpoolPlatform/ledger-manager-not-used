@@ -291,6 +291,21 @@ func setQueryConds(conds *npool.Conds, cli *ent.Client) (*ent.GeneralQuery, erro
 			return nil, fmt.Errorf("invalid general field")
 		}
 	}
+	if conds.CoinTypeIDs != nil {
+		ids := []uuid.UUID{}
+		for _, id := range conds.GetCoinTypeIDs().GetValue() {
+			if _, err := uuid.Parse(id); err != nil {
+				return nil, fmt.Errorf("invalid coin type id")
+			}
+			ids = append(ids, uuid.MustParse(id))
+		}
+		switch conds.GetCoinTypeIDs().GetOp() {
+		case cruder.IN:
+			stm.Where(general.CoinTypeIDIn(ids...))
+		default:
+			return nil, fmt.Errorf("invalid general field")
+		}
+	}
 	if conds.Incoming != nil {
 		incoming, err := decimal.NewFromString(conds.GetIncoming().GetValue())
 		if err != nil {
