@@ -101,6 +101,7 @@ func validate(info *npool.DetailReq) error { //nolint
 		switch info.GetIOSubType() {
 		case npool.IOSubType_Payment:
 		case npool.IOSubType_Withdrawal:
+		case npool.IOSubType_Transfer:
 		default:
 			logger.Sugar().Errorw("validate", "IOType", info.GetIOType(), "IOSubType", info.GetIOSubType())
 			return status.Error(codes.InvalidArgument, "Outcoming IOSubType is invalid")
