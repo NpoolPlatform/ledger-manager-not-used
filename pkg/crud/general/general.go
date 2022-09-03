@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
-
 	constant "github.com/NpoolPlatform/ledger-manager/pkg/message/const"
 	commontracer "github.com/NpoolPlatform/ledger-manager/pkg/tracer"
 	tracer "github.com/NpoolPlatform/ledger-manager/pkg/tracer/general"
@@ -151,19 +149,19 @@ func UpdateSet(info *ent.General, in *npool.GeneralReq) (*ent.GeneralUpdateOne, 
 	}
 
 	if locked.Add(info.Locked).Cmp(decimal.NewFromInt(0)) < 0 {
-		return nil, fmt.Errorf("locked + locked < 0")
+		return nil, fmt.Errorf("locked (%v) + locked (%v) < 0", locked, info.Locked)
 	}
 
 	if incoming.Cmp(decimal.NewFromInt(0)) < 0 {
-		return nil, fmt.Errorf("incoming < 0")
+		return nil, fmt.Errorf("incoming (%v) < 0", incoming)
 	}
 
 	if outcoming.Cmp(decimal.NewFromInt(0)) < 0 {
-		return nil, fmt.Errorf("outcoming < 0")
+		return nil, fmt.Errorf("outcoming (%v) < 0", outcoming)
 	}
 
 	if spendable.Add(info.Spendable).Cmp(decimal.NewFromInt(0)) < 0 {
-		return nil, fmt.Errorf("spendable + spendable < 0")
+		return nil, fmt.Errorf("spendable (%v) + spendable(%v) < 0", spendable, info.Spendable)
 	}
 
 	stm := info.Update()
@@ -185,9 +183,6 @@ func UpdateSet(info *ent.General, in *npool.GeneralReq) (*ent.GeneralUpdateOne, 
 		stm = stm.SetSpendable(spendable)
 	}
 
-	logger.Sugar().Infow("UpdateSet", "AI", incoming, "AO", outcoming, "AL", locked, "AS", spendable)
-	logger.Sugar().Infow("UpdateSet", "II", info.Incoming, "IO", info.Outcoming, "IL", info.Locked, "IS", info.Spendable)
-
 	return stm, nil
 }
 
@@ -195,7 +190,7 @@ func AddFields(ctx context.Context, in *npool.GeneralReq) (*ent.General, error) 
 	var info *ent.General
 	var err error
 
-	_, span := otel.Tracer(constant.ServiceName).Start(ctx, "Create")
+	_, span := otel.Tracer(constant.ServiceName).Start(ctx, "AddFields")
 	defer span.End()
 
 	defer func() {
@@ -292,6 +287,21 @@ func setQueryConds(conds *npool.Conds, cli *ent.Client) (*ent.GeneralQuery, erro
 		switch conds.GetCoinTypeID().GetOp() {
 		case cruder.EQ:
 			stm.Where(general.CoinTypeID(uuid.MustParse(conds.GetCoinTypeID().GetValue())))
+		default:
+			return nil, fmt.Errorf("invalid general field")
+		}
+	}
+	if conds.CoinTypeIDs != nil {
+		ids := []uuid.UUID{}
+		for _, id := range conds.GetCoinTypeIDs().GetValue() {
+			if _, err := uuid.Parse(id); err != nil {
+				return nil, fmt.Errorf("invalid coin type id")
+			}
+			ids = append(ids, uuid.MustParse(id))
+		}
+		switch conds.GetCoinTypeIDs().GetOp() {
+		case cruder.IN:
+			stm.Where(general.CoinTypeIDIn(ids...))
 		default:
 			return nil, fmt.Errorf("invalid general field")
 		}

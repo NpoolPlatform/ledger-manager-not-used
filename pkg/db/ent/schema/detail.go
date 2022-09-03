@@ -79,7 +79,8 @@ func (Detail) Fields() []ent.Field {
 		field.
 			String("io_extra").
 			Optional().
-			Default(""),
+			Default("").
+			MaxLen(512), //nolint
 	}
 }
 

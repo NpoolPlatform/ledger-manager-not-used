@@ -22,7 +22,7 @@ var (
 		{Name: "amount", Type: field.TypeFloat64, Nullable: true, SchemaType: map[string]string{"mysql": "decimal(37, 18)"}},
 		{Name: "from_coin_type_id", Type: field.TypeUUID, Nullable: true},
 		{Name: "coin_usd_currency", Type: field.TypeFloat64, Nullable: true, SchemaType: map[string]string{"mysql": "decimal(37, 18)"}},
-		{Name: "io_extra", Type: field.TypeString, Nullable: true, Default: ""},
+		{Name: "io_extra", Type: field.TypeString, Nullable: true, Size: 512, Default: ""},
 	}
 	// DetailsTable holds the schema information for the "details" table.
 	DetailsTable = &schema.Table{

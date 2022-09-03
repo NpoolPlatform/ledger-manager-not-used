@@ -98,6 +98,8 @@ var (
 	DefaultFromCoinTypeID func() uuid.UUID
 	// DefaultIoExtra holds the default value on creation for the "io_extra" field.
 	DefaultIoExtra string
+	// IoExtraValidator is a validator for the "io_extra" field. It is called by the builders before save.
+	IoExtraValidator func(string) error
 	// DefaultID holds the default value on creation for the "id" field.
 	DefaultID func() uuid.UUID
 )

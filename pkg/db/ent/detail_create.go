@@ -361,6 +361,11 @@ func (dc *DetailCreate) check() error {
 	if _, ok := dc.mutation.DeletedAt(); !ok {
 		return &ValidationError{Name: "deleted_at", err: errors.New(`ent: missing required field "Detail.deleted_at"`)}
 	}
+	if v, ok := dc.mutation.IoExtra(); ok {
+		if err := detail.IoExtraValidator(v); err != nil {
+			return &ValidationError{Name: "io_extra", err: fmt.Errorf(`ent: validator failed for field "Detail.io_extra": %w`, err)}
+		}
+	}
 	return nil
 }
 

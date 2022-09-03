@@ -76,6 +76,8 @@ func init() {
 	detailDescIoExtra := detailFields[9].Descriptor()
 	// detail.DefaultIoExtra holds the default value on creation for the io_extra field.
 	detail.DefaultIoExtra = detailDescIoExtra.Default.(string)
+	// detail.IoExtraValidator is a validator for the "io_extra" field. It is called by the builders before save.
+	detail.IoExtraValidator = detailDescIoExtra.Validators[0].(func(string) error)
 	// detailDescID is the schema descriptor for id field.
 	detailDescID := detailFields[0].Descriptor()
 	// detail.DefaultID holds the default value on creation for the id field.

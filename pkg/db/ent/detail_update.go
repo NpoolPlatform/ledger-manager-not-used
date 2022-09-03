@@ -293,12 +293,18 @@ func (du *DetailUpdate) Save(ctx context.Context) (int, error) {
 		return 0, err
 	}
 	if len(du.hooks) == 0 {
+		if err = du.check(); err != nil {
+			return 0, err
+		}
 		affected, err = du.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*DetailMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
+			}
+			if err = du.check(); err != nil {
+				return 0, err
 			}
 			du.mutation = mutation
 			affected, err = du.sqlSave(ctx)
@@ -348,6 +354,16 @@ func (du *DetailUpdate) defaults() error {
 		}
 		v := detail.UpdateDefaultUpdatedAt()
 		du.mutation.SetUpdatedAt(v)
+	}
+	return nil
+}
+
+// check runs all checks and user-defined validators on the builder.
+func (du *DetailUpdate) check() error {
+	if v, ok := du.mutation.IoExtra(); ok {
+		if err := detail.IoExtraValidator(v); err != nil {
+			return &ValidationError{Name: "io_extra", err: fmt.Errorf(`ent: validator failed for field "Detail.io_extra": %w`, err)}
+		}
 	}
 	return nil
 }
@@ -833,12 +849,18 @@ func (duo *DetailUpdateOne) Save(ctx context.Context) (*Detail, error) {
 		return nil, err
 	}
 	if len(duo.hooks) == 0 {
+		if err = duo.check(); err != nil {
+			return nil, err
+		}
 		node, err = duo.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*DetailMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
+			}
+			if err = duo.check(); err != nil {
+				return nil, err
 			}
 			duo.mutation = mutation
 			node, err = duo.sqlSave(ctx)
@@ -888,6 +910,16 @@ func (duo *DetailUpdateOne) defaults() error {
 		}
 		v := detail.UpdateDefaultUpdatedAt()
 		duo.mutation.SetUpdatedAt(v)
+	}
+	return nil
+}
+
+// check runs all checks and user-defined validators on the builder.
+func (duo *DetailUpdateOne) check() error {
+	if v, ok := duo.mutation.IoExtra(); ok {
+		if err := detail.IoExtraValidator(v); err != nil {
+			return &ValidationError{Name: "io_extra", err: fmt.Errorf(`ent: validator failed for field "Detail.io_extra": %w`, err)}
+		}
 	}
 	return nil
 }
