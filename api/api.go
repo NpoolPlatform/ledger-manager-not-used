@@ -7,6 +7,9 @@ import (
 
 	"github.com/NpoolPlatform/ledger-manager/api/detail"
 	"github.com/NpoolPlatform/ledger-manager/api/general"
+	mdetail "github.com/NpoolPlatform/ledger-manager/api/mining/detail"
+	mgeneral "github.com/NpoolPlatform/ledger-manager/api/mining/general"
+	"github.com/NpoolPlatform/ledger-manager/api/mining/unsold"
 	"github.com/NpoolPlatform/ledger-manager/api/profit"
 	"github.com/NpoolPlatform/ledger-manager/api/withdraw"
 
@@ -22,6 +25,9 @@ func Register(server grpc.ServiceRegistrar) {
 	ledgermgr.RegisterManagerServer(server, &Server{})
 	general.Register(server)
 	detail.Register(server)
+	mgeneral.Register(server)
+	mdetail.Register(server)
+	unsold.Register(server)
 	profit.Register(server)
 	withdraw.Register(server)
 }

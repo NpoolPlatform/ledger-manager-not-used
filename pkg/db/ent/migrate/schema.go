@@ -50,8 +50,8 @@ var (
 		Columns:    GeneralsColumns,
 		PrimaryKey: []*schema.Column{GeneralsColumns[0]},
 	}
-	// MiningProfitDetailsColumns holds the columns for the "mining_profit_details" table.
-	MiningProfitDetailsColumns = []*schema.Column{
+	// MiningDetailsColumns holds the columns for the "mining_details" table.
+	MiningDetailsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID, Unique: true},
 		{Name: "created_at", Type: field.TypeUint32},
 		{Name: "updated_at", Type: field.TypeUint32},
@@ -61,14 +61,14 @@ var (
 		{Name: "amount", Type: field.TypeFloat64, Nullable: true, SchemaType: map[string]string{"mysql": "decimal(37, 18)"}},
 		{Name: "benefit_date", Type: field.TypeUint32, Nullable: true, Default: 0},
 	}
-	// MiningProfitDetailsTable holds the schema information for the "mining_profit_details" table.
-	MiningProfitDetailsTable = &schema.Table{
-		Name:       "mining_profit_details",
-		Columns:    MiningProfitDetailsColumns,
-		PrimaryKey: []*schema.Column{MiningProfitDetailsColumns[0]},
+	// MiningDetailsTable holds the schema information for the "mining_details" table.
+	MiningDetailsTable = &schema.Table{
+		Name:       "mining_details",
+		Columns:    MiningDetailsColumns,
+		PrimaryKey: []*schema.Column{MiningDetailsColumns[0]},
 	}
-	// MiningProfitGeneralsColumns holds the columns for the "mining_profit_generals" table.
-	MiningProfitGeneralsColumns = []*schema.Column{
+	// MiningGeneralsColumns holds the columns for the "mining_generals" table.
+	MiningGeneralsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID, Unique: true},
 		{Name: "created_at", Type: field.TypeUint32},
 		{Name: "updated_at", Type: field.TypeUint32},
@@ -79,14 +79,14 @@ var (
 		{Name: "to_platform", Type: field.TypeFloat64, Nullable: true, SchemaType: map[string]string{"mysql": "decimal(37, 18)"}},
 		{Name: "to_user", Type: field.TypeFloat64, Nullable: true, SchemaType: map[string]string{"mysql": "decimal(37, 18)"}},
 	}
-	// MiningProfitGeneralsTable holds the schema information for the "mining_profit_generals" table.
-	MiningProfitGeneralsTable = &schema.Table{
-		Name:       "mining_profit_generals",
-		Columns:    MiningProfitGeneralsColumns,
-		PrimaryKey: []*schema.Column{MiningProfitGeneralsColumns[0]},
+	// MiningGeneralsTable holds the schema information for the "mining_generals" table.
+	MiningGeneralsTable = &schema.Table{
+		Name:       "mining_generals",
+		Columns:    MiningGeneralsColumns,
+		PrimaryKey: []*schema.Column{MiningGeneralsColumns[0]},
 	}
-	// MiningProfitUnsoldsColumns holds the columns for the "mining_profit_unsolds" table.
-	MiningProfitUnsoldsColumns = []*schema.Column{
+	// MiningUnsoldsColumns holds the columns for the "mining_unsolds" table.
+	MiningUnsoldsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID, Unique: true},
 		{Name: "created_at", Type: field.TypeUint32},
 		{Name: "updated_at", Type: field.TypeUint32},
@@ -96,11 +96,11 @@ var (
 		{Name: "amount", Type: field.TypeFloat64, Nullable: true, SchemaType: map[string]string{"mysql": "decimal(37, 18)"}},
 		{Name: "benefit_date", Type: field.TypeUint32, Nullable: true, Default: 0},
 	}
-	// MiningProfitUnsoldsTable holds the schema information for the "mining_profit_unsolds" table.
-	MiningProfitUnsoldsTable = &schema.Table{
-		Name:       "mining_profit_unsolds",
-		Columns:    MiningProfitUnsoldsColumns,
-		PrimaryKey: []*schema.Column{MiningProfitUnsoldsColumns[0]},
+	// MiningUnsoldsTable holds the schema information for the "mining_unsolds" table.
+	MiningUnsoldsTable = &schema.Table{
+		Name:       "mining_unsolds",
+		Columns:    MiningUnsoldsColumns,
+		PrimaryKey: []*schema.Column{MiningUnsoldsColumns[0]},
 	}
 	// ProfitsColumns holds the columns for the "profits" table.
 	ProfitsColumns = []*schema.Column{
@@ -144,9 +144,9 @@ var (
 	Tables = []*schema.Table{
 		DetailsTable,
 		GeneralsTable,
-		MiningProfitDetailsTable,
-		MiningProfitGeneralsTable,
-		MiningProfitUnsoldsTable,
+		MiningDetailsTable,
+		MiningGeneralsTable,
+		MiningUnsoldsTable,
 		ProfitsTable,
 		WithdrawsTable,
 	}

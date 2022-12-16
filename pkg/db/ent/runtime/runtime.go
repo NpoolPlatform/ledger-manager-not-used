@@ -7,9 +7,9 @@ import (
 
 	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/detail"
 	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/general"
-	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/miningprofitdetail"
-	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/miningprofitgeneral"
-	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/miningprofitunsold"
+	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/miningdetail"
+	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/mininggeneral"
+	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/miningunsold"
 	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/profit"
 	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/schema"
 	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/withdraw"
@@ -129,134 +129,134 @@ func init() {
 	generalDescID := generalFields[0].Descriptor()
 	// general.DefaultID holds the default value on creation for the id field.
 	general.DefaultID = generalDescID.Default.(func() uuid.UUID)
-	miningprofitdetailMixin := schema.MiningProfitDetail{}.Mixin()
-	miningprofitdetail.Policy = privacy.NewPolicies(miningprofitdetailMixin[0], schema.MiningProfitDetail{})
-	miningprofitdetail.Hooks[0] = func(next ent.Mutator) ent.Mutator {
+	miningdetailMixin := schema.MiningDetail{}.Mixin()
+	miningdetail.Policy = privacy.NewPolicies(miningdetailMixin[0], schema.MiningDetail{})
+	miningdetail.Hooks[0] = func(next ent.Mutator) ent.Mutator {
 		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-			if err := miningprofitdetail.Policy.EvalMutation(ctx, m); err != nil {
+			if err := miningdetail.Policy.EvalMutation(ctx, m); err != nil {
 				return nil, err
 			}
 			return next.Mutate(ctx, m)
 		})
 	}
-	miningprofitdetailMixinFields0 := miningprofitdetailMixin[0].Fields()
-	_ = miningprofitdetailMixinFields0
-	miningprofitdetailFields := schema.MiningProfitDetail{}.Fields()
-	_ = miningprofitdetailFields
-	// miningprofitdetailDescCreatedAt is the schema descriptor for created_at field.
-	miningprofitdetailDescCreatedAt := miningprofitdetailMixinFields0[0].Descriptor()
-	// miningprofitdetail.DefaultCreatedAt holds the default value on creation for the created_at field.
-	miningprofitdetail.DefaultCreatedAt = miningprofitdetailDescCreatedAt.Default.(func() uint32)
-	// miningprofitdetailDescUpdatedAt is the schema descriptor for updated_at field.
-	miningprofitdetailDescUpdatedAt := miningprofitdetailMixinFields0[1].Descriptor()
-	// miningprofitdetail.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	miningprofitdetail.DefaultUpdatedAt = miningprofitdetailDescUpdatedAt.Default.(func() uint32)
-	// miningprofitdetail.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	miningprofitdetail.UpdateDefaultUpdatedAt = miningprofitdetailDescUpdatedAt.UpdateDefault.(func() uint32)
-	// miningprofitdetailDescDeletedAt is the schema descriptor for deleted_at field.
-	miningprofitdetailDescDeletedAt := miningprofitdetailMixinFields0[2].Descriptor()
-	// miningprofitdetail.DefaultDeletedAt holds the default value on creation for the deleted_at field.
-	miningprofitdetail.DefaultDeletedAt = miningprofitdetailDescDeletedAt.Default.(func() uint32)
-	// miningprofitdetailDescGoodID is the schema descriptor for good_id field.
-	miningprofitdetailDescGoodID := miningprofitdetailFields[1].Descriptor()
-	// miningprofitdetail.DefaultGoodID holds the default value on creation for the good_id field.
-	miningprofitdetail.DefaultGoodID = miningprofitdetailDescGoodID.Default.(func() uuid.UUID)
-	// miningprofitdetailDescCoinTypeID is the schema descriptor for coin_type_id field.
-	miningprofitdetailDescCoinTypeID := miningprofitdetailFields[2].Descriptor()
-	// miningprofitdetail.DefaultCoinTypeID holds the default value on creation for the coin_type_id field.
-	miningprofitdetail.DefaultCoinTypeID = miningprofitdetailDescCoinTypeID.Default.(func() uuid.UUID)
-	// miningprofitdetailDescBenefitDate is the schema descriptor for benefit_date field.
-	miningprofitdetailDescBenefitDate := miningprofitdetailFields[4].Descriptor()
-	// miningprofitdetail.DefaultBenefitDate holds the default value on creation for the benefit_date field.
-	miningprofitdetail.DefaultBenefitDate = miningprofitdetailDescBenefitDate.Default.(uint32)
-	// miningprofitdetailDescID is the schema descriptor for id field.
-	miningprofitdetailDescID := miningprofitdetailFields[0].Descriptor()
-	// miningprofitdetail.DefaultID holds the default value on creation for the id field.
-	miningprofitdetail.DefaultID = miningprofitdetailDescID.Default.(func() uuid.UUID)
-	miningprofitgeneralMixin := schema.MiningProfitGeneral{}.Mixin()
-	miningprofitgeneral.Policy = privacy.NewPolicies(miningprofitgeneralMixin[0], schema.MiningProfitGeneral{})
-	miningprofitgeneral.Hooks[0] = func(next ent.Mutator) ent.Mutator {
+	miningdetailMixinFields0 := miningdetailMixin[0].Fields()
+	_ = miningdetailMixinFields0
+	miningdetailFields := schema.MiningDetail{}.Fields()
+	_ = miningdetailFields
+	// miningdetailDescCreatedAt is the schema descriptor for created_at field.
+	miningdetailDescCreatedAt := miningdetailMixinFields0[0].Descriptor()
+	// miningdetail.DefaultCreatedAt holds the default value on creation for the created_at field.
+	miningdetail.DefaultCreatedAt = miningdetailDescCreatedAt.Default.(func() uint32)
+	// miningdetailDescUpdatedAt is the schema descriptor for updated_at field.
+	miningdetailDescUpdatedAt := miningdetailMixinFields0[1].Descriptor()
+	// miningdetail.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	miningdetail.DefaultUpdatedAt = miningdetailDescUpdatedAt.Default.(func() uint32)
+	// miningdetail.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	miningdetail.UpdateDefaultUpdatedAt = miningdetailDescUpdatedAt.UpdateDefault.(func() uint32)
+	// miningdetailDescDeletedAt is the schema descriptor for deleted_at field.
+	miningdetailDescDeletedAt := miningdetailMixinFields0[2].Descriptor()
+	// miningdetail.DefaultDeletedAt holds the default value on creation for the deleted_at field.
+	miningdetail.DefaultDeletedAt = miningdetailDescDeletedAt.Default.(func() uint32)
+	// miningdetailDescGoodID is the schema descriptor for good_id field.
+	miningdetailDescGoodID := miningdetailFields[1].Descriptor()
+	// miningdetail.DefaultGoodID holds the default value on creation for the good_id field.
+	miningdetail.DefaultGoodID = miningdetailDescGoodID.Default.(func() uuid.UUID)
+	// miningdetailDescCoinTypeID is the schema descriptor for coin_type_id field.
+	miningdetailDescCoinTypeID := miningdetailFields[2].Descriptor()
+	// miningdetail.DefaultCoinTypeID holds the default value on creation for the coin_type_id field.
+	miningdetail.DefaultCoinTypeID = miningdetailDescCoinTypeID.Default.(func() uuid.UUID)
+	// miningdetailDescBenefitDate is the schema descriptor for benefit_date field.
+	miningdetailDescBenefitDate := miningdetailFields[4].Descriptor()
+	// miningdetail.DefaultBenefitDate holds the default value on creation for the benefit_date field.
+	miningdetail.DefaultBenefitDate = miningdetailDescBenefitDate.Default.(uint32)
+	// miningdetailDescID is the schema descriptor for id field.
+	miningdetailDescID := miningdetailFields[0].Descriptor()
+	// miningdetail.DefaultID holds the default value on creation for the id field.
+	miningdetail.DefaultID = miningdetailDescID.Default.(func() uuid.UUID)
+	mininggeneralMixin := schema.MiningGeneral{}.Mixin()
+	mininggeneral.Policy = privacy.NewPolicies(mininggeneralMixin[0], schema.MiningGeneral{})
+	mininggeneral.Hooks[0] = func(next ent.Mutator) ent.Mutator {
 		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-			if err := miningprofitgeneral.Policy.EvalMutation(ctx, m); err != nil {
+			if err := mininggeneral.Policy.EvalMutation(ctx, m); err != nil {
 				return nil, err
 			}
 			return next.Mutate(ctx, m)
 		})
 	}
-	miningprofitgeneralMixinFields0 := miningprofitgeneralMixin[0].Fields()
-	_ = miningprofitgeneralMixinFields0
-	miningprofitgeneralFields := schema.MiningProfitGeneral{}.Fields()
-	_ = miningprofitgeneralFields
-	// miningprofitgeneralDescCreatedAt is the schema descriptor for created_at field.
-	miningprofitgeneralDescCreatedAt := miningprofitgeneralMixinFields0[0].Descriptor()
-	// miningprofitgeneral.DefaultCreatedAt holds the default value on creation for the created_at field.
-	miningprofitgeneral.DefaultCreatedAt = miningprofitgeneralDescCreatedAt.Default.(func() uint32)
-	// miningprofitgeneralDescUpdatedAt is the schema descriptor for updated_at field.
-	miningprofitgeneralDescUpdatedAt := miningprofitgeneralMixinFields0[1].Descriptor()
-	// miningprofitgeneral.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	miningprofitgeneral.DefaultUpdatedAt = miningprofitgeneralDescUpdatedAt.Default.(func() uint32)
-	// miningprofitgeneral.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	miningprofitgeneral.UpdateDefaultUpdatedAt = miningprofitgeneralDescUpdatedAt.UpdateDefault.(func() uint32)
-	// miningprofitgeneralDescDeletedAt is the schema descriptor for deleted_at field.
-	miningprofitgeneralDescDeletedAt := miningprofitgeneralMixinFields0[2].Descriptor()
-	// miningprofitgeneral.DefaultDeletedAt holds the default value on creation for the deleted_at field.
-	miningprofitgeneral.DefaultDeletedAt = miningprofitgeneralDescDeletedAt.Default.(func() uint32)
-	// miningprofitgeneralDescGoodID is the schema descriptor for good_id field.
-	miningprofitgeneralDescGoodID := miningprofitgeneralFields[1].Descriptor()
-	// miningprofitgeneral.DefaultGoodID holds the default value on creation for the good_id field.
-	miningprofitgeneral.DefaultGoodID = miningprofitgeneralDescGoodID.Default.(func() uuid.UUID)
-	// miningprofitgeneralDescCoinTypeID is the schema descriptor for coin_type_id field.
-	miningprofitgeneralDescCoinTypeID := miningprofitgeneralFields[2].Descriptor()
-	// miningprofitgeneral.DefaultCoinTypeID holds the default value on creation for the coin_type_id field.
-	miningprofitgeneral.DefaultCoinTypeID = miningprofitgeneralDescCoinTypeID.Default.(func() uuid.UUID)
-	// miningprofitgeneralDescID is the schema descriptor for id field.
-	miningprofitgeneralDescID := miningprofitgeneralFields[0].Descriptor()
-	// miningprofitgeneral.DefaultID holds the default value on creation for the id field.
-	miningprofitgeneral.DefaultID = miningprofitgeneralDescID.Default.(func() uuid.UUID)
-	miningprofitunsoldMixin := schema.MiningProfitUnsold{}.Mixin()
-	miningprofitunsold.Policy = privacy.NewPolicies(miningprofitunsoldMixin[0], schema.MiningProfitUnsold{})
-	miningprofitunsold.Hooks[0] = func(next ent.Mutator) ent.Mutator {
+	mininggeneralMixinFields0 := mininggeneralMixin[0].Fields()
+	_ = mininggeneralMixinFields0
+	mininggeneralFields := schema.MiningGeneral{}.Fields()
+	_ = mininggeneralFields
+	// mininggeneralDescCreatedAt is the schema descriptor for created_at field.
+	mininggeneralDescCreatedAt := mininggeneralMixinFields0[0].Descriptor()
+	// mininggeneral.DefaultCreatedAt holds the default value on creation for the created_at field.
+	mininggeneral.DefaultCreatedAt = mininggeneralDescCreatedAt.Default.(func() uint32)
+	// mininggeneralDescUpdatedAt is the schema descriptor for updated_at field.
+	mininggeneralDescUpdatedAt := mininggeneralMixinFields0[1].Descriptor()
+	// mininggeneral.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	mininggeneral.DefaultUpdatedAt = mininggeneralDescUpdatedAt.Default.(func() uint32)
+	// mininggeneral.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	mininggeneral.UpdateDefaultUpdatedAt = mininggeneralDescUpdatedAt.UpdateDefault.(func() uint32)
+	// mininggeneralDescDeletedAt is the schema descriptor for deleted_at field.
+	mininggeneralDescDeletedAt := mininggeneralMixinFields0[2].Descriptor()
+	// mininggeneral.DefaultDeletedAt holds the default value on creation for the deleted_at field.
+	mininggeneral.DefaultDeletedAt = mininggeneralDescDeletedAt.Default.(func() uint32)
+	// mininggeneralDescGoodID is the schema descriptor for good_id field.
+	mininggeneralDescGoodID := mininggeneralFields[1].Descriptor()
+	// mininggeneral.DefaultGoodID holds the default value on creation for the good_id field.
+	mininggeneral.DefaultGoodID = mininggeneralDescGoodID.Default.(func() uuid.UUID)
+	// mininggeneralDescCoinTypeID is the schema descriptor for coin_type_id field.
+	mininggeneralDescCoinTypeID := mininggeneralFields[2].Descriptor()
+	// mininggeneral.DefaultCoinTypeID holds the default value on creation for the coin_type_id field.
+	mininggeneral.DefaultCoinTypeID = mininggeneralDescCoinTypeID.Default.(func() uuid.UUID)
+	// mininggeneralDescID is the schema descriptor for id field.
+	mininggeneralDescID := mininggeneralFields[0].Descriptor()
+	// mininggeneral.DefaultID holds the default value on creation for the id field.
+	mininggeneral.DefaultID = mininggeneralDescID.Default.(func() uuid.UUID)
+	miningunsoldMixin := schema.MiningUnsold{}.Mixin()
+	miningunsold.Policy = privacy.NewPolicies(miningunsoldMixin[0], schema.MiningUnsold{})
+	miningunsold.Hooks[0] = func(next ent.Mutator) ent.Mutator {
 		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-			if err := miningprofitunsold.Policy.EvalMutation(ctx, m); err != nil {
+			if err := miningunsold.Policy.EvalMutation(ctx, m); err != nil {
 				return nil, err
 			}
 			return next.Mutate(ctx, m)
 		})
 	}
-	miningprofitunsoldMixinFields0 := miningprofitunsoldMixin[0].Fields()
-	_ = miningprofitunsoldMixinFields0
-	miningprofitunsoldFields := schema.MiningProfitUnsold{}.Fields()
-	_ = miningprofitunsoldFields
-	// miningprofitunsoldDescCreatedAt is the schema descriptor for created_at field.
-	miningprofitunsoldDescCreatedAt := miningprofitunsoldMixinFields0[0].Descriptor()
-	// miningprofitunsold.DefaultCreatedAt holds the default value on creation for the created_at field.
-	miningprofitunsold.DefaultCreatedAt = miningprofitunsoldDescCreatedAt.Default.(func() uint32)
-	// miningprofitunsoldDescUpdatedAt is the schema descriptor for updated_at field.
-	miningprofitunsoldDescUpdatedAt := miningprofitunsoldMixinFields0[1].Descriptor()
-	// miningprofitunsold.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	miningprofitunsold.DefaultUpdatedAt = miningprofitunsoldDescUpdatedAt.Default.(func() uint32)
-	// miningprofitunsold.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	miningprofitunsold.UpdateDefaultUpdatedAt = miningprofitunsoldDescUpdatedAt.UpdateDefault.(func() uint32)
-	// miningprofitunsoldDescDeletedAt is the schema descriptor for deleted_at field.
-	miningprofitunsoldDescDeletedAt := miningprofitunsoldMixinFields0[2].Descriptor()
-	// miningprofitunsold.DefaultDeletedAt holds the default value on creation for the deleted_at field.
-	miningprofitunsold.DefaultDeletedAt = miningprofitunsoldDescDeletedAt.Default.(func() uint32)
-	// miningprofitunsoldDescGoodID is the schema descriptor for good_id field.
-	miningprofitunsoldDescGoodID := miningprofitunsoldFields[1].Descriptor()
-	// miningprofitunsold.DefaultGoodID holds the default value on creation for the good_id field.
-	miningprofitunsold.DefaultGoodID = miningprofitunsoldDescGoodID.Default.(func() uuid.UUID)
-	// miningprofitunsoldDescCoinTypeID is the schema descriptor for coin_type_id field.
-	miningprofitunsoldDescCoinTypeID := miningprofitunsoldFields[2].Descriptor()
-	// miningprofitunsold.DefaultCoinTypeID holds the default value on creation for the coin_type_id field.
-	miningprofitunsold.DefaultCoinTypeID = miningprofitunsoldDescCoinTypeID.Default.(func() uuid.UUID)
-	// miningprofitunsoldDescBenefitDate is the schema descriptor for benefit_date field.
-	miningprofitunsoldDescBenefitDate := miningprofitunsoldFields[4].Descriptor()
-	// miningprofitunsold.DefaultBenefitDate holds the default value on creation for the benefit_date field.
-	miningprofitunsold.DefaultBenefitDate = miningprofitunsoldDescBenefitDate.Default.(uint32)
-	// miningprofitunsoldDescID is the schema descriptor for id field.
-	miningprofitunsoldDescID := miningprofitunsoldFields[0].Descriptor()
-	// miningprofitunsold.DefaultID holds the default value on creation for the id field.
-	miningprofitunsold.DefaultID = miningprofitunsoldDescID.Default.(func() uuid.UUID)
+	miningunsoldMixinFields0 := miningunsoldMixin[0].Fields()
+	_ = miningunsoldMixinFields0
+	miningunsoldFields := schema.MiningUnsold{}.Fields()
+	_ = miningunsoldFields
+	// miningunsoldDescCreatedAt is the schema descriptor for created_at field.
+	miningunsoldDescCreatedAt := miningunsoldMixinFields0[0].Descriptor()
+	// miningunsold.DefaultCreatedAt holds the default value on creation for the created_at field.
+	miningunsold.DefaultCreatedAt = miningunsoldDescCreatedAt.Default.(func() uint32)
+	// miningunsoldDescUpdatedAt is the schema descriptor for updated_at field.
+	miningunsoldDescUpdatedAt := miningunsoldMixinFields0[1].Descriptor()
+	// miningunsold.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	miningunsold.DefaultUpdatedAt = miningunsoldDescUpdatedAt.Default.(func() uint32)
+	// miningunsold.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	miningunsold.UpdateDefaultUpdatedAt = miningunsoldDescUpdatedAt.UpdateDefault.(func() uint32)
+	// miningunsoldDescDeletedAt is the schema descriptor for deleted_at field.
+	miningunsoldDescDeletedAt := miningunsoldMixinFields0[2].Descriptor()
+	// miningunsold.DefaultDeletedAt holds the default value on creation for the deleted_at field.
+	miningunsold.DefaultDeletedAt = miningunsoldDescDeletedAt.Default.(func() uint32)
+	// miningunsoldDescGoodID is the schema descriptor for good_id field.
+	miningunsoldDescGoodID := miningunsoldFields[1].Descriptor()
+	// miningunsold.DefaultGoodID holds the default value on creation for the good_id field.
+	miningunsold.DefaultGoodID = miningunsoldDescGoodID.Default.(func() uuid.UUID)
+	// miningunsoldDescCoinTypeID is the schema descriptor for coin_type_id field.
+	miningunsoldDescCoinTypeID := miningunsoldFields[2].Descriptor()
+	// miningunsold.DefaultCoinTypeID holds the default value on creation for the coin_type_id field.
+	miningunsold.DefaultCoinTypeID = miningunsoldDescCoinTypeID.Default.(func() uuid.UUID)
+	// miningunsoldDescBenefitDate is the schema descriptor for benefit_date field.
+	miningunsoldDescBenefitDate := miningunsoldFields[4].Descriptor()
+	// miningunsold.DefaultBenefitDate holds the default value on creation for the benefit_date field.
+	miningunsold.DefaultBenefitDate = miningunsoldDescBenefitDate.Default.(uint32)
+	// miningunsoldDescID is the schema descriptor for id field.
+	miningunsoldDescID := miningunsoldFields[0].Descriptor()
+	// miningunsold.DefaultID holds the default value on creation for the id field.
+	miningunsold.DefaultID = miningunsoldDescID.Default.(func() uuid.UUID)
 	profitMixin := schema.Profit{}.Mixin()
 	profit.Policy = privacy.NewPolicies(profitMixin[0], schema.Profit{})
 	profit.Hooks[0] = func(next ent.Mutator) ent.Mutator {

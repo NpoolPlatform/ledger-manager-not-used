@@ -12,9 +12,9 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/detail"
 	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/general"
-	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/miningprofitdetail"
-	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/miningprofitgeneral"
-	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/miningprofitunsold"
+	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/miningdetail"
+	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/mininggeneral"
+	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/miningunsold"
 	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/profit"
 	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/withdraw"
 )
@@ -37,13 +37,13 @@ type OrderFunc func(*sql.Selector)
 // columnChecker returns a function indicates if the column exists in the given column.
 func columnChecker(table string) func(string) error {
 	checks := map[string]func(string) bool{
-		detail.Table:              detail.ValidColumn,
-		general.Table:             general.ValidColumn,
-		miningprofitdetail.Table:  miningprofitdetail.ValidColumn,
-		miningprofitgeneral.Table: miningprofitgeneral.ValidColumn,
-		miningprofitunsold.Table:  miningprofitunsold.ValidColumn,
-		profit.Table:              profit.ValidColumn,
-		withdraw.Table:            withdraw.ValidColumn,
+		detail.Table:        detail.ValidColumn,
+		general.Table:       general.ValidColumn,
+		miningdetail.Table:  miningdetail.ValidColumn,
+		mininggeneral.Table: mininggeneral.ValidColumn,
+		miningunsold.Table:  miningunsold.ValidColumn,
+		profit.Table:        profit.ValidColumn,
+		withdraw.Table:      withdraw.ValidColumn,
 	}
 	check, ok := checks[table]
 	if !ok {

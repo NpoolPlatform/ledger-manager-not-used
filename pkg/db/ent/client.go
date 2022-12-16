@@ -13,9 +13,9 @@ import (
 
 	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/detail"
 	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/general"
-	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/miningprofitdetail"
-	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/miningprofitgeneral"
-	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/miningprofitunsold"
+	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/miningdetail"
+	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/mininggeneral"
+	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/miningunsold"
 	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/profit"
 	"github.com/NpoolPlatform/ledger-manager/pkg/db/ent/withdraw"
 
@@ -32,12 +32,12 @@ type Client struct {
 	Detail *DetailClient
 	// General is the client for interacting with the General builders.
 	General *GeneralClient
-	// MiningProfitDetail is the client for interacting with the MiningProfitDetail builders.
-	MiningProfitDetail *MiningProfitDetailClient
-	// MiningProfitGeneral is the client for interacting with the MiningProfitGeneral builders.
-	MiningProfitGeneral *MiningProfitGeneralClient
-	// MiningProfitUnsold is the client for interacting with the MiningProfitUnsold builders.
-	MiningProfitUnsold *MiningProfitUnsoldClient
+	// MiningDetail is the client for interacting with the MiningDetail builders.
+	MiningDetail *MiningDetailClient
+	// MiningGeneral is the client for interacting with the MiningGeneral builders.
+	MiningGeneral *MiningGeneralClient
+	// MiningUnsold is the client for interacting with the MiningUnsold builders.
+	MiningUnsold *MiningUnsoldClient
 	// Profit is the client for interacting with the Profit builders.
 	Profit *ProfitClient
 	// Withdraw is the client for interacting with the Withdraw builders.
@@ -57,9 +57,9 @@ func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.Detail = NewDetailClient(c.config)
 	c.General = NewGeneralClient(c.config)
-	c.MiningProfitDetail = NewMiningProfitDetailClient(c.config)
-	c.MiningProfitGeneral = NewMiningProfitGeneralClient(c.config)
-	c.MiningProfitUnsold = NewMiningProfitUnsoldClient(c.config)
+	c.MiningDetail = NewMiningDetailClient(c.config)
+	c.MiningGeneral = NewMiningGeneralClient(c.config)
+	c.MiningUnsold = NewMiningUnsoldClient(c.config)
 	c.Profit = NewProfitClient(c.config)
 	c.Withdraw = NewWithdrawClient(c.config)
 }
@@ -93,15 +93,15 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:                 ctx,
-		config:              cfg,
-		Detail:              NewDetailClient(cfg),
-		General:             NewGeneralClient(cfg),
-		MiningProfitDetail:  NewMiningProfitDetailClient(cfg),
-		MiningProfitGeneral: NewMiningProfitGeneralClient(cfg),
-		MiningProfitUnsold:  NewMiningProfitUnsoldClient(cfg),
-		Profit:              NewProfitClient(cfg),
-		Withdraw:            NewWithdrawClient(cfg),
+		ctx:           ctx,
+		config:        cfg,
+		Detail:        NewDetailClient(cfg),
+		General:       NewGeneralClient(cfg),
+		MiningDetail:  NewMiningDetailClient(cfg),
+		MiningGeneral: NewMiningGeneralClient(cfg),
+		MiningUnsold:  NewMiningUnsoldClient(cfg),
+		Profit:        NewProfitClient(cfg),
+		Withdraw:      NewWithdrawClient(cfg),
 	}, nil
 }
 
@@ -119,15 +119,15 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		ctx:                 ctx,
-		config:              cfg,
-		Detail:              NewDetailClient(cfg),
-		General:             NewGeneralClient(cfg),
-		MiningProfitDetail:  NewMiningProfitDetailClient(cfg),
-		MiningProfitGeneral: NewMiningProfitGeneralClient(cfg),
-		MiningProfitUnsold:  NewMiningProfitUnsoldClient(cfg),
-		Profit:              NewProfitClient(cfg),
-		Withdraw:            NewWithdrawClient(cfg),
+		ctx:           ctx,
+		config:        cfg,
+		Detail:        NewDetailClient(cfg),
+		General:       NewGeneralClient(cfg),
+		MiningDetail:  NewMiningDetailClient(cfg),
+		MiningGeneral: NewMiningGeneralClient(cfg),
+		MiningUnsold:  NewMiningUnsoldClient(cfg),
+		Profit:        NewProfitClient(cfg),
+		Withdraw:      NewWithdrawClient(cfg),
 	}, nil
 }
 
@@ -159,9 +159,9 @@ func (c *Client) Close() error {
 func (c *Client) Use(hooks ...Hook) {
 	c.Detail.Use(hooks...)
 	c.General.Use(hooks...)
-	c.MiningProfitDetail.Use(hooks...)
-	c.MiningProfitGeneral.Use(hooks...)
-	c.MiningProfitUnsold.Use(hooks...)
+	c.MiningDetail.Use(hooks...)
+	c.MiningGeneral.Use(hooks...)
+	c.MiningUnsold.Use(hooks...)
 	c.Profit.Use(hooks...)
 	c.Withdraw.Use(hooks...)
 }
@@ -348,84 +348,84 @@ func (c *GeneralClient) Hooks() []Hook {
 	return append(hooks[:len(hooks):len(hooks)], general.Hooks[:]...)
 }
 
-// MiningProfitDetailClient is a client for the MiningProfitDetail schema.
-type MiningProfitDetailClient struct {
+// MiningDetailClient is a client for the MiningDetail schema.
+type MiningDetailClient struct {
 	config
 }
 
-// NewMiningProfitDetailClient returns a client for the MiningProfitDetail from the given config.
-func NewMiningProfitDetailClient(c config) *MiningProfitDetailClient {
-	return &MiningProfitDetailClient{config: c}
+// NewMiningDetailClient returns a client for the MiningDetail from the given config.
+func NewMiningDetailClient(c config) *MiningDetailClient {
+	return &MiningDetailClient{config: c}
 }
 
 // Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `miningprofitdetail.Hooks(f(g(h())))`.
-func (c *MiningProfitDetailClient) Use(hooks ...Hook) {
-	c.hooks.MiningProfitDetail = append(c.hooks.MiningProfitDetail, hooks...)
+// A call to `Use(f, g, h)` equals to `miningdetail.Hooks(f(g(h())))`.
+func (c *MiningDetailClient) Use(hooks ...Hook) {
+	c.hooks.MiningDetail = append(c.hooks.MiningDetail, hooks...)
 }
 
-// Create returns a builder for creating a MiningProfitDetail entity.
-func (c *MiningProfitDetailClient) Create() *MiningProfitDetailCreate {
-	mutation := newMiningProfitDetailMutation(c.config, OpCreate)
-	return &MiningProfitDetailCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Create returns a builder for creating a MiningDetail entity.
+func (c *MiningDetailClient) Create() *MiningDetailCreate {
+	mutation := newMiningDetailMutation(c.config, OpCreate)
+	return &MiningDetailCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// CreateBulk returns a builder for creating a bulk of MiningProfitDetail entities.
-func (c *MiningProfitDetailClient) CreateBulk(builders ...*MiningProfitDetailCreate) *MiningProfitDetailCreateBulk {
-	return &MiningProfitDetailCreateBulk{config: c.config, builders: builders}
+// CreateBulk returns a builder for creating a bulk of MiningDetail entities.
+func (c *MiningDetailClient) CreateBulk(builders ...*MiningDetailCreate) *MiningDetailCreateBulk {
+	return &MiningDetailCreateBulk{config: c.config, builders: builders}
 }
 
-// Update returns an update builder for MiningProfitDetail.
-func (c *MiningProfitDetailClient) Update() *MiningProfitDetailUpdate {
-	mutation := newMiningProfitDetailMutation(c.config, OpUpdate)
-	return &MiningProfitDetailUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Update returns an update builder for MiningDetail.
+func (c *MiningDetailClient) Update() *MiningDetailUpdate {
+	mutation := newMiningDetailMutation(c.config, OpUpdate)
+	return &MiningDetailUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOne returns an update builder for the given entity.
-func (c *MiningProfitDetailClient) UpdateOne(mpd *MiningProfitDetail) *MiningProfitDetailUpdateOne {
-	mutation := newMiningProfitDetailMutation(c.config, OpUpdateOne, withMiningProfitDetail(mpd))
-	return &MiningProfitDetailUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *MiningDetailClient) UpdateOne(md *MiningDetail) *MiningDetailUpdateOne {
+	mutation := newMiningDetailMutation(c.config, OpUpdateOne, withMiningDetail(md))
+	return &MiningDetailUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *MiningProfitDetailClient) UpdateOneID(id uuid.UUID) *MiningProfitDetailUpdateOne {
-	mutation := newMiningProfitDetailMutation(c.config, OpUpdateOne, withMiningProfitDetailID(id))
-	return &MiningProfitDetailUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *MiningDetailClient) UpdateOneID(id uuid.UUID) *MiningDetailUpdateOne {
+	mutation := newMiningDetailMutation(c.config, OpUpdateOne, withMiningDetailID(id))
+	return &MiningDetailUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// Delete returns a delete builder for MiningProfitDetail.
-func (c *MiningProfitDetailClient) Delete() *MiningProfitDetailDelete {
-	mutation := newMiningProfitDetailMutation(c.config, OpDelete)
-	return &MiningProfitDetailDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Delete returns a delete builder for MiningDetail.
+func (c *MiningDetailClient) Delete() *MiningDetailDelete {
+	mutation := newMiningDetailMutation(c.config, OpDelete)
+	return &MiningDetailDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // DeleteOne returns a builder for deleting the given entity.
-func (c *MiningProfitDetailClient) DeleteOne(mpd *MiningProfitDetail) *MiningProfitDetailDeleteOne {
-	return c.DeleteOneID(mpd.ID)
+func (c *MiningDetailClient) DeleteOne(md *MiningDetail) *MiningDetailDeleteOne {
+	return c.DeleteOneID(md.ID)
 }
 
 // DeleteOne returns a builder for deleting the given entity by its id.
-func (c *MiningProfitDetailClient) DeleteOneID(id uuid.UUID) *MiningProfitDetailDeleteOne {
-	builder := c.Delete().Where(miningprofitdetail.ID(id))
+func (c *MiningDetailClient) DeleteOneID(id uuid.UUID) *MiningDetailDeleteOne {
+	builder := c.Delete().Where(miningdetail.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
-	return &MiningProfitDetailDeleteOne{builder}
+	return &MiningDetailDeleteOne{builder}
 }
 
-// Query returns a query builder for MiningProfitDetail.
-func (c *MiningProfitDetailClient) Query() *MiningProfitDetailQuery {
-	return &MiningProfitDetailQuery{
+// Query returns a query builder for MiningDetail.
+func (c *MiningDetailClient) Query() *MiningDetailQuery {
+	return &MiningDetailQuery{
 		config: c.config,
 	}
 }
 
-// Get returns a MiningProfitDetail entity by its id.
-func (c *MiningProfitDetailClient) Get(ctx context.Context, id uuid.UUID) (*MiningProfitDetail, error) {
-	return c.Query().Where(miningprofitdetail.ID(id)).Only(ctx)
+// Get returns a MiningDetail entity by its id.
+func (c *MiningDetailClient) Get(ctx context.Context, id uuid.UUID) (*MiningDetail, error) {
+	return c.Query().Where(miningdetail.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *MiningProfitDetailClient) GetX(ctx context.Context, id uuid.UUID) *MiningProfitDetail {
+func (c *MiningDetailClient) GetX(ctx context.Context, id uuid.UUID) *MiningDetail {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -434,89 +434,89 @@ func (c *MiningProfitDetailClient) GetX(ctx context.Context, id uuid.UUID) *Mini
 }
 
 // Hooks returns the client hooks.
-func (c *MiningProfitDetailClient) Hooks() []Hook {
-	hooks := c.hooks.MiningProfitDetail
-	return append(hooks[:len(hooks):len(hooks)], miningprofitdetail.Hooks[:]...)
+func (c *MiningDetailClient) Hooks() []Hook {
+	hooks := c.hooks.MiningDetail
+	return append(hooks[:len(hooks):len(hooks)], miningdetail.Hooks[:]...)
 }
 
-// MiningProfitGeneralClient is a client for the MiningProfitGeneral schema.
-type MiningProfitGeneralClient struct {
+// MiningGeneralClient is a client for the MiningGeneral schema.
+type MiningGeneralClient struct {
 	config
 }
 
-// NewMiningProfitGeneralClient returns a client for the MiningProfitGeneral from the given config.
-func NewMiningProfitGeneralClient(c config) *MiningProfitGeneralClient {
-	return &MiningProfitGeneralClient{config: c}
+// NewMiningGeneralClient returns a client for the MiningGeneral from the given config.
+func NewMiningGeneralClient(c config) *MiningGeneralClient {
+	return &MiningGeneralClient{config: c}
 }
 
 // Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `miningprofitgeneral.Hooks(f(g(h())))`.
-func (c *MiningProfitGeneralClient) Use(hooks ...Hook) {
-	c.hooks.MiningProfitGeneral = append(c.hooks.MiningProfitGeneral, hooks...)
+// A call to `Use(f, g, h)` equals to `mininggeneral.Hooks(f(g(h())))`.
+func (c *MiningGeneralClient) Use(hooks ...Hook) {
+	c.hooks.MiningGeneral = append(c.hooks.MiningGeneral, hooks...)
 }
 
-// Create returns a builder for creating a MiningProfitGeneral entity.
-func (c *MiningProfitGeneralClient) Create() *MiningProfitGeneralCreate {
-	mutation := newMiningProfitGeneralMutation(c.config, OpCreate)
-	return &MiningProfitGeneralCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Create returns a builder for creating a MiningGeneral entity.
+func (c *MiningGeneralClient) Create() *MiningGeneralCreate {
+	mutation := newMiningGeneralMutation(c.config, OpCreate)
+	return &MiningGeneralCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// CreateBulk returns a builder for creating a bulk of MiningProfitGeneral entities.
-func (c *MiningProfitGeneralClient) CreateBulk(builders ...*MiningProfitGeneralCreate) *MiningProfitGeneralCreateBulk {
-	return &MiningProfitGeneralCreateBulk{config: c.config, builders: builders}
+// CreateBulk returns a builder for creating a bulk of MiningGeneral entities.
+func (c *MiningGeneralClient) CreateBulk(builders ...*MiningGeneralCreate) *MiningGeneralCreateBulk {
+	return &MiningGeneralCreateBulk{config: c.config, builders: builders}
 }
 
-// Update returns an update builder for MiningProfitGeneral.
-func (c *MiningProfitGeneralClient) Update() *MiningProfitGeneralUpdate {
-	mutation := newMiningProfitGeneralMutation(c.config, OpUpdate)
-	return &MiningProfitGeneralUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Update returns an update builder for MiningGeneral.
+func (c *MiningGeneralClient) Update() *MiningGeneralUpdate {
+	mutation := newMiningGeneralMutation(c.config, OpUpdate)
+	return &MiningGeneralUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOne returns an update builder for the given entity.
-func (c *MiningProfitGeneralClient) UpdateOne(mpg *MiningProfitGeneral) *MiningProfitGeneralUpdateOne {
-	mutation := newMiningProfitGeneralMutation(c.config, OpUpdateOne, withMiningProfitGeneral(mpg))
-	return &MiningProfitGeneralUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *MiningGeneralClient) UpdateOne(mg *MiningGeneral) *MiningGeneralUpdateOne {
+	mutation := newMiningGeneralMutation(c.config, OpUpdateOne, withMiningGeneral(mg))
+	return &MiningGeneralUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *MiningProfitGeneralClient) UpdateOneID(id uuid.UUID) *MiningProfitGeneralUpdateOne {
-	mutation := newMiningProfitGeneralMutation(c.config, OpUpdateOne, withMiningProfitGeneralID(id))
-	return &MiningProfitGeneralUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *MiningGeneralClient) UpdateOneID(id uuid.UUID) *MiningGeneralUpdateOne {
+	mutation := newMiningGeneralMutation(c.config, OpUpdateOne, withMiningGeneralID(id))
+	return &MiningGeneralUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// Delete returns a delete builder for MiningProfitGeneral.
-func (c *MiningProfitGeneralClient) Delete() *MiningProfitGeneralDelete {
-	mutation := newMiningProfitGeneralMutation(c.config, OpDelete)
-	return &MiningProfitGeneralDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Delete returns a delete builder for MiningGeneral.
+func (c *MiningGeneralClient) Delete() *MiningGeneralDelete {
+	mutation := newMiningGeneralMutation(c.config, OpDelete)
+	return &MiningGeneralDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // DeleteOne returns a builder for deleting the given entity.
-func (c *MiningProfitGeneralClient) DeleteOne(mpg *MiningProfitGeneral) *MiningProfitGeneralDeleteOne {
-	return c.DeleteOneID(mpg.ID)
+func (c *MiningGeneralClient) DeleteOne(mg *MiningGeneral) *MiningGeneralDeleteOne {
+	return c.DeleteOneID(mg.ID)
 }
 
 // DeleteOne returns a builder for deleting the given entity by its id.
-func (c *MiningProfitGeneralClient) DeleteOneID(id uuid.UUID) *MiningProfitGeneralDeleteOne {
-	builder := c.Delete().Where(miningprofitgeneral.ID(id))
+func (c *MiningGeneralClient) DeleteOneID(id uuid.UUID) *MiningGeneralDeleteOne {
+	builder := c.Delete().Where(mininggeneral.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
-	return &MiningProfitGeneralDeleteOne{builder}
+	return &MiningGeneralDeleteOne{builder}
 }
 
-// Query returns a query builder for MiningProfitGeneral.
-func (c *MiningProfitGeneralClient) Query() *MiningProfitGeneralQuery {
-	return &MiningProfitGeneralQuery{
+// Query returns a query builder for MiningGeneral.
+func (c *MiningGeneralClient) Query() *MiningGeneralQuery {
+	return &MiningGeneralQuery{
 		config: c.config,
 	}
 }
 
-// Get returns a MiningProfitGeneral entity by its id.
-func (c *MiningProfitGeneralClient) Get(ctx context.Context, id uuid.UUID) (*MiningProfitGeneral, error) {
-	return c.Query().Where(miningprofitgeneral.ID(id)).Only(ctx)
+// Get returns a MiningGeneral entity by its id.
+func (c *MiningGeneralClient) Get(ctx context.Context, id uuid.UUID) (*MiningGeneral, error) {
+	return c.Query().Where(mininggeneral.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *MiningProfitGeneralClient) GetX(ctx context.Context, id uuid.UUID) *MiningProfitGeneral {
+func (c *MiningGeneralClient) GetX(ctx context.Context, id uuid.UUID) *MiningGeneral {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -525,89 +525,89 @@ func (c *MiningProfitGeneralClient) GetX(ctx context.Context, id uuid.UUID) *Min
 }
 
 // Hooks returns the client hooks.
-func (c *MiningProfitGeneralClient) Hooks() []Hook {
-	hooks := c.hooks.MiningProfitGeneral
-	return append(hooks[:len(hooks):len(hooks)], miningprofitgeneral.Hooks[:]...)
+func (c *MiningGeneralClient) Hooks() []Hook {
+	hooks := c.hooks.MiningGeneral
+	return append(hooks[:len(hooks):len(hooks)], mininggeneral.Hooks[:]...)
 }
 
-// MiningProfitUnsoldClient is a client for the MiningProfitUnsold schema.
-type MiningProfitUnsoldClient struct {
+// MiningUnsoldClient is a client for the MiningUnsold schema.
+type MiningUnsoldClient struct {
 	config
 }
 
-// NewMiningProfitUnsoldClient returns a client for the MiningProfitUnsold from the given config.
-func NewMiningProfitUnsoldClient(c config) *MiningProfitUnsoldClient {
-	return &MiningProfitUnsoldClient{config: c}
+// NewMiningUnsoldClient returns a client for the MiningUnsold from the given config.
+func NewMiningUnsoldClient(c config) *MiningUnsoldClient {
+	return &MiningUnsoldClient{config: c}
 }
 
 // Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `miningprofitunsold.Hooks(f(g(h())))`.
-func (c *MiningProfitUnsoldClient) Use(hooks ...Hook) {
-	c.hooks.MiningProfitUnsold = append(c.hooks.MiningProfitUnsold, hooks...)
+// A call to `Use(f, g, h)` equals to `miningunsold.Hooks(f(g(h())))`.
+func (c *MiningUnsoldClient) Use(hooks ...Hook) {
+	c.hooks.MiningUnsold = append(c.hooks.MiningUnsold, hooks...)
 }
 
-// Create returns a builder for creating a MiningProfitUnsold entity.
-func (c *MiningProfitUnsoldClient) Create() *MiningProfitUnsoldCreate {
-	mutation := newMiningProfitUnsoldMutation(c.config, OpCreate)
-	return &MiningProfitUnsoldCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Create returns a builder for creating a MiningUnsold entity.
+func (c *MiningUnsoldClient) Create() *MiningUnsoldCreate {
+	mutation := newMiningUnsoldMutation(c.config, OpCreate)
+	return &MiningUnsoldCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// CreateBulk returns a builder for creating a bulk of MiningProfitUnsold entities.
-func (c *MiningProfitUnsoldClient) CreateBulk(builders ...*MiningProfitUnsoldCreate) *MiningProfitUnsoldCreateBulk {
-	return &MiningProfitUnsoldCreateBulk{config: c.config, builders: builders}
+// CreateBulk returns a builder for creating a bulk of MiningUnsold entities.
+func (c *MiningUnsoldClient) CreateBulk(builders ...*MiningUnsoldCreate) *MiningUnsoldCreateBulk {
+	return &MiningUnsoldCreateBulk{config: c.config, builders: builders}
 }
 
-// Update returns an update builder for MiningProfitUnsold.
-func (c *MiningProfitUnsoldClient) Update() *MiningProfitUnsoldUpdate {
-	mutation := newMiningProfitUnsoldMutation(c.config, OpUpdate)
-	return &MiningProfitUnsoldUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Update returns an update builder for MiningUnsold.
+func (c *MiningUnsoldClient) Update() *MiningUnsoldUpdate {
+	mutation := newMiningUnsoldMutation(c.config, OpUpdate)
+	return &MiningUnsoldUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOne returns an update builder for the given entity.
-func (c *MiningProfitUnsoldClient) UpdateOne(mpu *MiningProfitUnsold) *MiningProfitUnsoldUpdateOne {
-	mutation := newMiningProfitUnsoldMutation(c.config, OpUpdateOne, withMiningProfitUnsold(mpu))
-	return &MiningProfitUnsoldUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *MiningUnsoldClient) UpdateOne(mu *MiningUnsold) *MiningUnsoldUpdateOne {
+	mutation := newMiningUnsoldMutation(c.config, OpUpdateOne, withMiningUnsold(mu))
+	return &MiningUnsoldUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *MiningProfitUnsoldClient) UpdateOneID(id uuid.UUID) *MiningProfitUnsoldUpdateOne {
-	mutation := newMiningProfitUnsoldMutation(c.config, OpUpdateOne, withMiningProfitUnsoldID(id))
-	return &MiningProfitUnsoldUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *MiningUnsoldClient) UpdateOneID(id uuid.UUID) *MiningUnsoldUpdateOne {
+	mutation := newMiningUnsoldMutation(c.config, OpUpdateOne, withMiningUnsoldID(id))
+	return &MiningUnsoldUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// Delete returns a delete builder for MiningProfitUnsold.
-func (c *MiningProfitUnsoldClient) Delete() *MiningProfitUnsoldDelete {
-	mutation := newMiningProfitUnsoldMutation(c.config, OpDelete)
-	return &MiningProfitUnsoldDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Delete returns a delete builder for MiningUnsold.
+func (c *MiningUnsoldClient) Delete() *MiningUnsoldDelete {
+	mutation := newMiningUnsoldMutation(c.config, OpDelete)
+	return &MiningUnsoldDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // DeleteOne returns a builder for deleting the given entity.
-func (c *MiningProfitUnsoldClient) DeleteOne(mpu *MiningProfitUnsold) *MiningProfitUnsoldDeleteOne {
-	return c.DeleteOneID(mpu.ID)
+func (c *MiningUnsoldClient) DeleteOne(mu *MiningUnsold) *MiningUnsoldDeleteOne {
+	return c.DeleteOneID(mu.ID)
 }
 
 // DeleteOne returns a builder for deleting the given entity by its id.
-func (c *MiningProfitUnsoldClient) DeleteOneID(id uuid.UUID) *MiningProfitUnsoldDeleteOne {
-	builder := c.Delete().Where(miningprofitunsold.ID(id))
+func (c *MiningUnsoldClient) DeleteOneID(id uuid.UUID) *MiningUnsoldDeleteOne {
+	builder := c.Delete().Where(miningunsold.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
-	return &MiningProfitUnsoldDeleteOne{builder}
+	return &MiningUnsoldDeleteOne{builder}
 }
 
-// Query returns a query builder for MiningProfitUnsold.
-func (c *MiningProfitUnsoldClient) Query() *MiningProfitUnsoldQuery {
-	return &MiningProfitUnsoldQuery{
+// Query returns a query builder for MiningUnsold.
+func (c *MiningUnsoldClient) Query() *MiningUnsoldQuery {
+	return &MiningUnsoldQuery{
 		config: c.config,
 	}
 }
 
-// Get returns a MiningProfitUnsold entity by its id.
-func (c *MiningProfitUnsoldClient) Get(ctx context.Context, id uuid.UUID) (*MiningProfitUnsold, error) {
-	return c.Query().Where(miningprofitunsold.ID(id)).Only(ctx)
+// Get returns a MiningUnsold entity by its id.
+func (c *MiningUnsoldClient) Get(ctx context.Context, id uuid.UUID) (*MiningUnsold, error) {
+	return c.Query().Where(miningunsold.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *MiningProfitUnsoldClient) GetX(ctx context.Context, id uuid.UUID) *MiningProfitUnsold {
+func (c *MiningUnsoldClient) GetX(ctx context.Context, id uuid.UUID) *MiningUnsold {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -616,9 +616,9 @@ func (c *MiningProfitUnsoldClient) GetX(ctx context.Context, id uuid.UUID) *Mini
 }
 
 // Hooks returns the client hooks.
-func (c *MiningProfitUnsoldClient) Hooks() []Hook {
-	hooks := c.hooks.MiningProfitUnsold
-	return append(hooks[:len(hooks):len(hooks)], miningprofitunsold.Hooks[:]...)
+func (c *MiningUnsoldClient) Hooks() []Hook {
+	hooks := c.hooks.MiningUnsold
+	return append(hooks[:len(hooks):len(hooks)], miningunsold.Hooks[:]...)
 }
 
 // ProfitClient is a client for the Profit schema.

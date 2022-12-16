@@ -35,41 +35,41 @@ func (f GeneralFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, err
 	return f(ctx, mv)
 }
 
-// The MiningProfitDetailFunc type is an adapter to allow the use of ordinary
-// function as MiningProfitDetail mutator.
-type MiningProfitDetailFunc func(context.Context, *ent.MiningProfitDetailMutation) (ent.Value, error)
+// The MiningDetailFunc type is an adapter to allow the use of ordinary
+// function as MiningDetail mutator.
+type MiningDetailFunc func(context.Context, *ent.MiningDetailMutation) (ent.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f MiningProfitDetailFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	mv, ok := m.(*ent.MiningProfitDetailMutation)
+func (f MiningDetailFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.MiningDetailMutation)
 	if !ok {
-		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.MiningProfitDetailMutation", m)
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.MiningDetailMutation", m)
 	}
 	return f(ctx, mv)
 }
 
-// The MiningProfitGeneralFunc type is an adapter to allow the use of ordinary
-// function as MiningProfitGeneral mutator.
-type MiningProfitGeneralFunc func(context.Context, *ent.MiningProfitGeneralMutation) (ent.Value, error)
+// The MiningGeneralFunc type is an adapter to allow the use of ordinary
+// function as MiningGeneral mutator.
+type MiningGeneralFunc func(context.Context, *ent.MiningGeneralMutation) (ent.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f MiningProfitGeneralFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	mv, ok := m.(*ent.MiningProfitGeneralMutation)
+func (f MiningGeneralFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.MiningGeneralMutation)
 	if !ok {
-		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.MiningProfitGeneralMutation", m)
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.MiningGeneralMutation", m)
 	}
 	return f(ctx, mv)
 }
 
-// The MiningProfitUnsoldFunc type is an adapter to allow the use of ordinary
-// function as MiningProfitUnsold mutator.
-type MiningProfitUnsoldFunc func(context.Context, *ent.MiningProfitUnsoldMutation) (ent.Value, error)
+// The MiningUnsoldFunc type is an adapter to allow the use of ordinary
+// function as MiningUnsold mutator.
+type MiningUnsoldFunc func(context.Context, *ent.MiningUnsoldMutation) (ent.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f MiningProfitUnsoldFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	mv, ok := m.(*ent.MiningProfitUnsoldMutation)
+func (f MiningUnsoldFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.MiningUnsoldMutation)
 	if !ok {
-		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.MiningProfitUnsoldMutation", m)
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.MiningUnsoldMutation", m)
 	}
 	return f(ctx, mv)
 }

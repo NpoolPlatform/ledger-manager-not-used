@@ -198,76 +198,76 @@ func (f GeneralMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutatio
 	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.GeneralMutation", m)
 }
 
-// The MiningProfitDetailQueryRuleFunc type is an adapter to allow the use of ordinary
+// The MiningDetailQueryRuleFunc type is an adapter to allow the use of ordinary
 // functions as a query rule.
-type MiningProfitDetailQueryRuleFunc func(context.Context, *ent.MiningProfitDetailQuery) error
+type MiningDetailQueryRuleFunc func(context.Context, *ent.MiningDetailQuery) error
 
 // EvalQuery return f(ctx, q).
-func (f MiningProfitDetailQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
-	if q, ok := q.(*ent.MiningProfitDetailQuery); ok {
+func (f MiningDetailQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.MiningDetailQuery); ok {
 		return f(ctx, q)
 	}
-	return Denyf("ent/privacy: unexpected query type %T, expect *ent.MiningProfitDetailQuery", q)
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.MiningDetailQuery", q)
 }
 
-// The MiningProfitDetailMutationRuleFunc type is an adapter to allow the use of ordinary
+// The MiningDetailMutationRuleFunc type is an adapter to allow the use of ordinary
 // functions as a mutation rule.
-type MiningProfitDetailMutationRuleFunc func(context.Context, *ent.MiningProfitDetailMutation) error
+type MiningDetailMutationRuleFunc func(context.Context, *ent.MiningDetailMutation) error
 
 // EvalMutation calls f(ctx, m).
-func (f MiningProfitDetailMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
-	if m, ok := m.(*ent.MiningProfitDetailMutation); ok {
+func (f MiningDetailMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.MiningDetailMutation); ok {
 		return f(ctx, m)
 	}
-	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.MiningProfitDetailMutation", m)
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.MiningDetailMutation", m)
 }
 
-// The MiningProfitGeneralQueryRuleFunc type is an adapter to allow the use of ordinary
+// The MiningGeneralQueryRuleFunc type is an adapter to allow the use of ordinary
 // functions as a query rule.
-type MiningProfitGeneralQueryRuleFunc func(context.Context, *ent.MiningProfitGeneralQuery) error
+type MiningGeneralQueryRuleFunc func(context.Context, *ent.MiningGeneralQuery) error
 
 // EvalQuery return f(ctx, q).
-func (f MiningProfitGeneralQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
-	if q, ok := q.(*ent.MiningProfitGeneralQuery); ok {
+func (f MiningGeneralQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.MiningGeneralQuery); ok {
 		return f(ctx, q)
 	}
-	return Denyf("ent/privacy: unexpected query type %T, expect *ent.MiningProfitGeneralQuery", q)
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.MiningGeneralQuery", q)
 }
 
-// The MiningProfitGeneralMutationRuleFunc type is an adapter to allow the use of ordinary
+// The MiningGeneralMutationRuleFunc type is an adapter to allow the use of ordinary
 // functions as a mutation rule.
-type MiningProfitGeneralMutationRuleFunc func(context.Context, *ent.MiningProfitGeneralMutation) error
+type MiningGeneralMutationRuleFunc func(context.Context, *ent.MiningGeneralMutation) error
 
 // EvalMutation calls f(ctx, m).
-func (f MiningProfitGeneralMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
-	if m, ok := m.(*ent.MiningProfitGeneralMutation); ok {
+func (f MiningGeneralMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.MiningGeneralMutation); ok {
 		return f(ctx, m)
 	}
-	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.MiningProfitGeneralMutation", m)
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.MiningGeneralMutation", m)
 }
 
-// The MiningProfitUnsoldQueryRuleFunc type is an adapter to allow the use of ordinary
+// The MiningUnsoldQueryRuleFunc type is an adapter to allow the use of ordinary
 // functions as a query rule.
-type MiningProfitUnsoldQueryRuleFunc func(context.Context, *ent.MiningProfitUnsoldQuery) error
+type MiningUnsoldQueryRuleFunc func(context.Context, *ent.MiningUnsoldQuery) error
 
 // EvalQuery return f(ctx, q).
-func (f MiningProfitUnsoldQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
-	if q, ok := q.(*ent.MiningProfitUnsoldQuery); ok {
+func (f MiningUnsoldQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.MiningUnsoldQuery); ok {
 		return f(ctx, q)
 	}
-	return Denyf("ent/privacy: unexpected query type %T, expect *ent.MiningProfitUnsoldQuery", q)
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.MiningUnsoldQuery", q)
 }
 
-// The MiningProfitUnsoldMutationRuleFunc type is an adapter to allow the use of ordinary
+// The MiningUnsoldMutationRuleFunc type is an adapter to allow the use of ordinary
 // functions as a mutation rule.
-type MiningProfitUnsoldMutationRuleFunc func(context.Context, *ent.MiningProfitUnsoldMutation) error
+type MiningUnsoldMutationRuleFunc func(context.Context, *ent.MiningUnsoldMutation) error
 
 // EvalMutation calls f(ctx, m).
-func (f MiningProfitUnsoldMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
-	if m, ok := m.(*ent.MiningProfitUnsoldMutation); ok {
+func (f MiningUnsoldMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.MiningUnsoldMutation); ok {
 		return f(ctx, m)
 	}
-	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.MiningProfitUnsoldMutation", m)
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.MiningUnsoldMutation", m)
 }
 
 // The ProfitQueryRuleFunc type is an adapter to allow the use of ordinary
@@ -357,11 +357,11 @@ func queryFilter(q ent.Query) (Filter, error) {
 		return q.Filter(), nil
 	case *ent.GeneralQuery:
 		return q.Filter(), nil
-	case *ent.MiningProfitDetailQuery:
+	case *ent.MiningDetailQuery:
 		return q.Filter(), nil
-	case *ent.MiningProfitGeneralQuery:
+	case *ent.MiningGeneralQuery:
 		return q.Filter(), nil
-	case *ent.MiningProfitUnsoldQuery:
+	case *ent.MiningUnsoldQuery:
 		return q.Filter(), nil
 	case *ent.ProfitQuery:
 		return q.Filter(), nil
@@ -378,11 +378,11 @@ func mutationFilter(m ent.Mutation) (Filter, error) {
 		return m.Filter(), nil
 	case *ent.GeneralMutation:
 		return m.Filter(), nil
-	case *ent.MiningProfitDetailMutation:
+	case *ent.MiningDetailMutation:
 		return m.Filter(), nil
-	case *ent.MiningProfitGeneralMutation:
+	case *ent.MiningGeneralMutation:
 		return m.Filter(), nil
-	case *ent.MiningProfitUnsoldMutation:
+	case *ent.MiningUnsoldMutation:
 		return m.Filter(), nil
 	case *ent.ProfitMutation:
 		return m.Filter(), nil

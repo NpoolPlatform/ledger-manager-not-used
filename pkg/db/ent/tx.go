@@ -18,12 +18,12 @@ type Tx struct {
 	Detail *DetailClient
 	// General is the client for interacting with the General builders.
 	General *GeneralClient
-	// MiningProfitDetail is the client for interacting with the MiningProfitDetail builders.
-	MiningProfitDetail *MiningProfitDetailClient
-	// MiningProfitGeneral is the client for interacting with the MiningProfitGeneral builders.
-	MiningProfitGeneral *MiningProfitGeneralClient
-	// MiningProfitUnsold is the client for interacting with the MiningProfitUnsold builders.
-	MiningProfitUnsold *MiningProfitUnsoldClient
+	// MiningDetail is the client for interacting with the MiningDetail builders.
+	MiningDetail *MiningDetailClient
+	// MiningGeneral is the client for interacting with the MiningGeneral builders.
+	MiningGeneral *MiningGeneralClient
+	// MiningUnsold is the client for interacting with the MiningUnsold builders.
+	MiningUnsold *MiningUnsoldClient
 	// Profit is the client for interacting with the Profit builders.
 	Profit *ProfitClient
 	// Withdraw is the client for interacting with the Withdraw builders.
@@ -165,9 +165,9 @@ func (tx *Tx) Client() *Client {
 func (tx *Tx) init() {
 	tx.Detail = NewDetailClient(tx.config)
 	tx.General = NewGeneralClient(tx.config)
-	tx.MiningProfitDetail = NewMiningProfitDetailClient(tx.config)
-	tx.MiningProfitGeneral = NewMiningProfitGeneralClient(tx.config)
-	tx.MiningProfitUnsold = NewMiningProfitUnsoldClient(tx.config)
+	tx.MiningDetail = NewMiningDetailClient(tx.config)
+	tx.MiningGeneral = NewMiningGeneralClient(tx.config)
+	tx.MiningUnsold = NewMiningUnsoldClient(tx.config)
 	tx.Profit = NewProfitClient(tx.config)
 	tx.Withdraw = NewWithdrawClient(tx.config)
 }
