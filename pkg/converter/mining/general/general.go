@@ -17,6 +17,8 @@ func Ent2Grpc(row *ent.MiningGeneral) *npool.General {
 		Amount:     row.Amount.String(),
 		ToPlatform: row.ToPlatform.String(),
 		ToUser:     row.ToUser.String(),
+		CreatedAt:  row.CreatedAt,
+		UpdatedAt:  row.UpdatedAt,
 	}
 }
 
