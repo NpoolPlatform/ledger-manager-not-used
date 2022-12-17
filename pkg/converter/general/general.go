@@ -19,6 +19,8 @@ func Ent2Grpc(row *ent.General) *npool.General {
 		Locked:     row.Locked.String(),
 		Outcoming:  row.Outcoming.String(),
 		Spendable:  row.Spendable.String(),
+		CreatedAt:  row.CreatedAt,
+		UpdatedAt:  row.UpdatedAt,
 	}
 }
 
