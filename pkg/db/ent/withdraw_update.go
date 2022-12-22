@@ -165,6 +165,26 @@ func (wu *WithdrawUpdate) ClearAccountID() *WithdrawUpdate {
 	return wu
 }
 
+// SetAddress sets the "address" field.
+func (wu *WithdrawUpdate) SetAddress(s string) *WithdrawUpdate {
+	wu.mutation.SetAddress(s)
+	return wu
+}
+
+// SetNillableAddress sets the "address" field if the given value is not nil.
+func (wu *WithdrawUpdate) SetNillableAddress(s *string) *WithdrawUpdate {
+	if s != nil {
+		wu.SetAddress(*s)
+	}
+	return wu
+}
+
+// ClearAddress clears the value of the "address" field.
+func (wu *WithdrawUpdate) ClearAddress() *WithdrawUpdate {
+	wu.mutation.ClearAddress()
+	return wu
+}
+
 // SetPlatformTransactionID sets the "platform_transaction_id" field.
 func (wu *WithdrawUpdate) SetPlatformTransactionID(u uuid.UUID) *WithdrawUpdate {
 	wu.mutation.SetPlatformTransactionID(u)
@@ -444,6 +464,19 @@ func (wu *WithdrawUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: withdraw.FieldAccountID,
 		})
 	}
+	if value, ok := wu.mutation.Address(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: withdraw.FieldAddress,
+		})
+	}
+	if wu.mutation.AddressCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: withdraw.FieldAddress,
+		})
+	}
 	if value, ok := wu.mutation.PlatformTransactionID(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeUUID,
@@ -656,6 +689,26 @@ func (wuo *WithdrawUpdateOne) SetNillableAccountID(u *uuid.UUID) *WithdrawUpdate
 // ClearAccountID clears the value of the "account_id" field.
 func (wuo *WithdrawUpdateOne) ClearAccountID() *WithdrawUpdateOne {
 	wuo.mutation.ClearAccountID()
+	return wuo
+}
+
+// SetAddress sets the "address" field.
+func (wuo *WithdrawUpdateOne) SetAddress(s string) *WithdrawUpdateOne {
+	wuo.mutation.SetAddress(s)
+	return wuo
+}
+
+// SetNillableAddress sets the "address" field if the given value is not nil.
+func (wuo *WithdrawUpdateOne) SetNillableAddress(s *string) *WithdrawUpdateOne {
+	if s != nil {
+		wuo.SetAddress(*s)
+	}
+	return wuo
+}
+
+// ClearAddress clears the value of the "address" field.
+func (wuo *WithdrawUpdateOne) ClearAddress() *WithdrawUpdateOne {
+	wuo.mutation.ClearAddress()
 	return wuo
 }
 
@@ -966,6 +1019,19 @@ func (wuo *WithdrawUpdateOne) sqlSave(ctx context.Context) (_node *Withdraw, err
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeUUID,
 			Column: withdraw.FieldAccountID,
+		})
+	}
+	if value, ok := wuo.mutation.Address(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: withdraw.FieldAddress,
+		})
+	}
+	if wuo.mutation.AddressCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: withdraw.FieldAddress,
 		})
 	}
 	if value, ok := wuo.mutation.PlatformTransactionID(); ok {

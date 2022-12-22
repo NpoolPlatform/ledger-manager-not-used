@@ -37,6 +37,9 @@ func CreateSet(c *ent.WithdrawCreate, in *npool.WithdrawReq) *ent.WithdrawCreate
 	if in.AccountID != nil {
 		c.SetAccountID(uuid.MustParse(in.GetAccountID()))
 	}
+	if in.Address != nil {
+		c.SetAddress(in.GetAddress())
+	}
 	if in.PlatformTransactionID != nil {
 		c.SetPlatformTransactionID(uuid.MustParse(in.GetPlatformTransactionID()))
 	}

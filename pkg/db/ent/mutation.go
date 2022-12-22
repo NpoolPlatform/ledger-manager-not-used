@@ -6121,6 +6121,7 @@ type WithdrawMutation struct {
 	user_id                 *uuid.UUID
 	coin_type_id            *uuid.UUID
 	account_id              *uuid.UUID
+	address                 *string
 	platform_transaction_id *uuid.UUID
 	chain_transaction_id    *string
 	state                   *string
@@ -6600,6 +6601,55 @@ func (m *WithdrawMutation) ResetAccountID() {
 	delete(m.clearedFields, withdraw.FieldAccountID)
 }
 
+// SetAddress sets the "address" field.
+func (m *WithdrawMutation) SetAddress(s string) {
+	m.address = &s
+}
+
+// Address returns the value of the "address" field in the mutation.
+func (m *WithdrawMutation) Address() (r string, exists bool) {
+	v := m.address
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAddress returns the old "address" field's value of the Withdraw entity.
+// If the Withdraw object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WithdrawMutation) OldAddress(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAddress is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAddress requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAddress: %w", err)
+	}
+	return oldValue.Address, nil
+}
+
+// ClearAddress clears the value of the "address" field.
+func (m *WithdrawMutation) ClearAddress() {
+	m.address = nil
+	m.clearedFields[withdraw.FieldAddress] = struct{}{}
+}
+
+// AddressCleared returns if the "address" field was cleared in this mutation.
+func (m *WithdrawMutation) AddressCleared() bool {
+	_, ok := m.clearedFields[withdraw.FieldAddress]
+	return ok
+}
+
+// ResetAddress resets all changes to the "address" field.
+func (m *WithdrawMutation) ResetAddress() {
+	m.address = nil
+	delete(m.clearedFields, withdraw.FieldAddress)
+}
+
 // SetPlatformTransactionID sets the "platform_transaction_id" field.
 func (m *WithdrawMutation) SetPlatformTransactionID(u uuid.UUID) {
 	m.platform_transaction_id = &u
@@ -6836,7 +6886,7 @@ func (m *WithdrawMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *WithdrawMutation) Fields() []string {
-	fields := make([]string, 0, 11)
+	fields := make([]string, 0, 12)
 	if m.created_at != nil {
 		fields = append(fields, withdraw.FieldCreatedAt)
 	}
@@ -6857,6 +6907,9 @@ func (m *WithdrawMutation) Fields() []string {
 	}
 	if m.account_id != nil {
 		fields = append(fields, withdraw.FieldAccountID)
+	}
+	if m.address != nil {
+		fields = append(fields, withdraw.FieldAddress)
 	}
 	if m.platform_transaction_id != nil {
 		fields = append(fields, withdraw.FieldPlatformTransactionID)
@@ -6892,6 +6945,8 @@ func (m *WithdrawMutation) Field(name string) (ent.Value, bool) {
 		return m.CoinTypeID()
 	case withdraw.FieldAccountID:
 		return m.AccountID()
+	case withdraw.FieldAddress:
+		return m.Address()
 	case withdraw.FieldPlatformTransactionID:
 		return m.PlatformTransactionID()
 	case withdraw.FieldChainTransactionID:
@@ -6923,6 +6978,8 @@ func (m *WithdrawMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldCoinTypeID(ctx)
 	case withdraw.FieldAccountID:
 		return m.OldAccountID(ctx)
+	case withdraw.FieldAddress:
+		return m.OldAddress(ctx)
 	case withdraw.FieldPlatformTransactionID:
 		return m.OldPlatformTransactionID(ctx)
 	case withdraw.FieldChainTransactionID:
@@ -6988,6 +7045,13 @@ func (m *WithdrawMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetAccountID(v)
+		return nil
+	case withdraw.FieldAddress:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAddress(v)
 		return nil
 	case withdraw.FieldPlatformTransactionID:
 		v, ok := value.(uuid.UUID)
@@ -7110,6 +7174,9 @@ func (m *WithdrawMutation) ClearedFields() []string {
 	if m.FieldCleared(withdraw.FieldAccountID) {
 		fields = append(fields, withdraw.FieldAccountID)
 	}
+	if m.FieldCleared(withdraw.FieldAddress) {
+		fields = append(fields, withdraw.FieldAddress)
+	}
 	if m.FieldCleared(withdraw.FieldPlatformTransactionID) {
 		fields = append(fields, withdraw.FieldPlatformTransactionID)
 	}
@@ -7147,6 +7214,9 @@ func (m *WithdrawMutation) ClearField(name string) error {
 		return nil
 	case withdraw.FieldAccountID:
 		m.ClearAccountID()
+		return nil
+	case withdraw.FieldAddress:
+		m.ClearAddress()
 		return nil
 	case withdraw.FieldPlatformTransactionID:
 		m.ClearPlatformTransactionID()
@@ -7188,6 +7258,9 @@ func (m *WithdrawMutation) ResetField(name string) error {
 		return nil
 	case withdraw.FieldAccountID:
 		m.ResetAccountID()
+		return nil
+	case withdraw.FieldAddress:
+		m.ResetAddress()
 		return nil
 	case withdraw.FieldPlatformTransactionID:
 		m.ResetPlatformTransactionID()

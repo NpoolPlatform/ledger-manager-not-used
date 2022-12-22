@@ -167,6 +167,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			withdraw.FieldUserID:                {Type: field.TypeUUID, Column: withdraw.FieldUserID},
 			withdraw.FieldCoinTypeID:            {Type: field.TypeUUID, Column: withdraw.FieldCoinTypeID},
 			withdraw.FieldAccountID:             {Type: field.TypeUUID, Column: withdraw.FieldAccountID},
+			withdraw.FieldAddress:               {Type: field.TypeString, Column: withdraw.FieldAddress},
 			withdraw.FieldPlatformTransactionID: {Type: field.TypeUUID, Column: withdraw.FieldPlatformTransactionID},
 			withdraw.FieldChainTransactionID:    {Type: field.TypeString, Column: withdraw.FieldChainTransactionID},
 			withdraw.FieldState:                 {Type: field.TypeString, Column: withdraw.FieldState},
@@ -750,6 +751,11 @@ func (f *WithdrawFilter) WhereCoinTypeID(p entql.ValueP) {
 // WhereAccountID applies the entql [16]byte predicate on the account_id field.
 func (f *WithdrawFilter) WhereAccountID(p entql.ValueP) {
 	f.Where(p.Field(withdraw.FieldAccountID))
+}
+
+// WhereAddress applies the entql string predicate on the address field.
+func (f *WithdrawFilter) WhereAddress(p entql.StringP) {
+	f.Where(p.Field(withdraw.FieldAddress))
 }
 
 // WherePlatformTransactionID applies the entql [16]byte predicate on the platform_transaction_id field.

@@ -54,6 +54,10 @@ func (Withdraw) Fields() []ent.Field {
 				return uuid.UUID{}
 			}),
 		field.
+			String("address").
+			Optional().
+			Default(""),
+		field.
 			UUID("platform_transaction_id", uuid.UUID{}).
 			Optional().
 			Default(func() uuid.UUID {

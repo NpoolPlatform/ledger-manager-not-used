@@ -26,6 +26,8 @@ const (
 	FieldCoinTypeID = "coin_type_id"
 	// FieldAccountID holds the string denoting the account_id field in the database.
 	FieldAccountID = "account_id"
+	// FieldAddress holds the string denoting the address field in the database.
+	FieldAddress = "address"
 	// FieldPlatformTransactionID holds the string denoting the platform_transaction_id field in the database.
 	FieldPlatformTransactionID = "platform_transaction_id"
 	// FieldChainTransactionID holds the string denoting the chain_transaction_id field in the database.
@@ -48,6 +50,7 @@ var Columns = []string{
 	FieldUserID,
 	FieldCoinTypeID,
 	FieldAccountID,
+	FieldAddress,
 	FieldPlatformTransactionID,
 	FieldChainTransactionID,
 	FieldState,
@@ -89,6 +92,8 @@ var (
 	DefaultCoinTypeID func() uuid.UUID
 	// DefaultAccountID holds the default value on creation for the "account_id" field.
 	DefaultAccountID func() uuid.UUID
+	// DefaultAddress holds the default value on creation for the "address" field.
+	DefaultAddress string
 	// DefaultPlatformTransactionID holds the default value on creation for the "platform_transaction_id" field.
 	DefaultPlatformTransactionID func() uuid.UUID
 	// DefaultChainTransactionID holds the default value on creation for the "chain_transaction_id" field.

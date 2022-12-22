@@ -31,6 +31,8 @@ type Withdraw struct {
 	CoinTypeID uuid.UUID `json:"coin_type_id,omitempty"`
 	// AccountID holds the value of the "account_id" field.
 	AccountID uuid.UUID `json:"account_id,omitempty"`
+	// Address holds the value of the "address" field.
+	Address string `json:"address,omitempty"`
 	// PlatformTransactionID holds the value of the "platform_transaction_id" field.
 	PlatformTransactionID uuid.UUID `json:"platform_transaction_id,omitempty"`
 	// ChainTransactionID holds the value of the "chain_transaction_id" field.
@@ -50,7 +52,7 @@ func (*Withdraw) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(decimal.Decimal)
 		case withdraw.FieldCreatedAt, withdraw.FieldUpdatedAt, withdraw.FieldDeletedAt:
 			values[i] = new(sql.NullInt64)
-		case withdraw.FieldChainTransactionID, withdraw.FieldState:
+		case withdraw.FieldAddress, withdraw.FieldChainTransactionID, withdraw.FieldState:
 			values[i] = new(sql.NullString)
 		case withdraw.FieldID, withdraw.FieldAppID, withdraw.FieldUserID, withdraw.FieldCoinTypeID, withdraw.FieldAccountID, withdraw.FieldPlatformTransactionID:
 			values[i] = new(uuid.UUID)
@@ -116,6 +118,12 @@ func (w *Withdraw) assignValues(columns []string, values []interface{}) error {
 				return fmt.Errorf("unexpected type %T for field account_id", values[i])
 			} else if value != nil {
 				w.AccountID = *value
+			}
+		case withdraw.FieldAddress:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field address", values[i])
+			} else if value.Valid {
+				w.Address = value.String
 			}
 		case withdraw.FieldPlatformTransactionID:
 			if value, ok := values[i].(*uuid.UUID); !ok {
@@ -189,6 +197,9 @@ func (w *Withdraw) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("account_id=")
 	builder.WriteString(fmt.Sprintf("%v", w.AccountID))
+	builder.WriteString(", ")
+	builder.WriteString("address=")
+	builder.WriteString(w.Address)
 	builder.WriteString(", ")
 	builder.WriteString("platform_transaction_id=")
 	builder.WriteString(fmt.Sprintf("%v", w.PlatformTransactionID))

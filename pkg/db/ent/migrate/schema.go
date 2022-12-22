@@ -129,6 +129,7 @@ var (
 		{Name: "user_id", Type: field.TypeUUID, Nullable: true},
 		{Name: "coin_type_id", Type: field.TypeUUID, Nullable: true},
 		{Name: "account_id", Type: field.TypeUUID, Nullable: true},
+		{Name: "address", Type: field.TypeString, Nullable: true, Default: ""},
 		{Name: "platform_transaction_id", Type: field.TypeUUID, Nullable: true},
 		{Name: "chain_transaction_id", Type: field.TypeString, Nullable: true, Default: ""},
 		{Name: "state", Type: field.TypeString, Nullable: true, Default: "DefaultWithdrawState"},

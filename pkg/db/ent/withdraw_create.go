@@ -122,6 +122,20 @@ func (wc *WithdrawCreate) SetNillableAccountID(u *uuid.UUID) *WithdrawCreate {
 	return wc
 }
 
+// SetAddress sets the "address" field.
+func (wc *WithdrawCreate) SetAddress(s string) *WithdrawCreate {
+	wc.mutation.SetAddress(s)
+	return wc
+}
+
+// SetNillableAddress sets the "address" field if the given value is not nil.
+func (wc *WithdrawCreate) SetNillableAddress(s *string) *WithdrawCreate {
+	if s != nil {
+		wc.SetAddress(*s)
+	}
+	return wc
+}
+
 // SetPlatformTransactionID sets the "platform_transaction_id" field.
 func (wc *WithdrawCreate) SetPlatformTransactionID(u uuid.UUID) *WithdrawCreate {
 	wc.mutation.SetPlatformTransactionID(u)
@@ -320,6 +334,10 @@ func (wc *WithdrawCreate) defaults() error {
 		v := withdraw.DefaultAccountID()
 		wc.mutation.SetAccountID(v)
 	}
+	if _, ok := wc.mutation.Address(); !ok {
+		v := withdraw.DefaultAddress
+		wc.mutation.SetAddress(v)
+	}
 	if _, ok := wc.mutation.PlatformTransactionID(); !ok {
 		if withdraw.DefaultPlatformTransactionID == nil {
 			return fmt.Errorf("ent: uninitialized withdraw.DefaultPlatformTransactionID (forgotten import ent/runtime?)")
@@ -448,6 +466,14 @@ func (wc *WithdrawCreate) createSpec() (*Withdraw, *sqlgraph.CreateSpec) {
 			Column: withdraw.FieldAccountID,
 		})
 		_node.AccountID = value
+	}
+	if value, ok := wc.mutation.Address(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: withdraw.FieldAddress,
+		})
+		_node.Address = value
 	}
 	if value, ok := wc.mutation.PlatformTransactionID(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -658,6 +684,24 @@ func (u *WithdrawUpsert) UpdateAccountID() *WithdrawUpsert {
 // ClearAccountID clears the value of the "account_id" field.
 func (u *WithdrawUpsert) ClearAccountID() *WithdrawUpsert {
 	u.SetNull(withdraw.FieldAccountID)
+	return u
+}
+
+// SetAddress sets the "address" field.
+func (u *WithdrawUpsert) SetAddress(v string) *WithdrawUpsert {
+	u.Set(withdraw.FieldAddress, v)
+	return u
+}
+
+// UpdateAddress sets the "address" field to the value that was provided on create.
+func (u *WithdrawUpsert) UpdateAddress() *WithdrawUpsert {
+	u.SetExcluded(withdraw.FieldAddress)
+	return u
+}
+
+// ClearAddress clears the value of the "address" field.
+func (u *WithdrawUpsert) ClearAddress() *WithdrawUpsert {
+	u.SetNull(withdraw.FieldAddress)
 	return u
 }
 
@@ -933,6 +977,27 @@ func (u *WithdrawUpsertOne) UpdateAccountID() *WithdrawUpsertOne {
 func (u *WithdrawUpsertOne) ClearAccountID() *WithdrawUpsertOne {
 	return u.Update(func(s *WithdrawUpsert) {
 		s.ClearAccountID()
+	})
+}
+
+// SetAddress sets the "address" field.
+func (u *WithdrawUpsertOne) SetAddress(v string) *WithdrawUpsertOne {
+	return u.Update(func(s *WithdrawUpsert) {
+		s.SetAddress(v)
+	})
+}
+
+// UpdateAddress sets the "address" field to the value that was provided on create.
+func (u *WithdrawUpsertOne) UpdateAddress() *WithdrawUpsertOne {
+	return u.Update(func(s *WithdrawUpsert) {
+		s.UpdateAddress()
+	})
+}
+
+// ClearAddress clears the value of the "address" field.
+func (u *WithdrawUpsertOne) ClearAddress() *WithdrawUpsertOne {
+	return u.Update(func(s *WithdrawUpsert) {
+		s.ClearAddress()
 	})
 }
 
@@ -1387,6 +1452,27 @@ func (u *WithdrawUpsertBulk) UpdateAccountID() *WithdrawUpsertBulk {
 func (u *WithdrawUpsertBulk) ClearAccountID() *WithdrawUpsertBulk {
 	return u.Update(func(s *WithdrawUpsert) {
 		s.ClearAccountID()
+	})
+}
+
+// SetAddress sets the "address" field.
+func (u *WithdrawUpsertBulk) SetAddress(v string) *WithdrawUpsertBulk {
+	return u.Update(func(s *WithdrawUpsert) {
+		s.SetAddress(v)
+	})
+}
+
+// UpdateAddress sets the "address" field to the value that was provided on create.
+func (u *WithdrawUpsertBulk) UpdateAddress() *WithdrawUpsertBulk {
+	return u.Update(func(s *WithdrawUpsert) {
+		s.UpdateAddress()
+	})
+}
+
+// ClearAddress clears the value of the "address" field.
+func (u *WithdrawUpsertBulk) ClearAddress() *WithdrawUpsertBulk {
+	return u.Update(func(s *WithdrawUpsert) {
+		s.ClearAddress()
 	})
 }
 
