@@ -101,7 +101,6 @@ func CreateBulk(ctx context.Context, in []*npool.GeneralReq) ([]*ent.General, er
 	return rows, nil
 }
 
-// Caller info must be ForUpdate
 func UpdateSet(info *ent.General, in *npool.GeneralReq) (*ent.GeneralUpdateOne, error) { //nolint
 	incoming := decimal.NewFromInt(0)
 	if in.Incoming != nil {

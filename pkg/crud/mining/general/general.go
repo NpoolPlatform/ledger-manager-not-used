@@ -21,6 +21,23 @@ import (
 	"github.com/google/uuid"
 )
 
+func CreateSet(c *ent.MiningGeneralCreate, in *npool.GeneralReq) (*ent.MiningGeneralCreate, error) {
+	if in.ID != nil {
+		c.SetID(uuid.MustParse(in.GetID()))
+	}
+	if in.GoodID != nil {
+		c.SetGoodID(uuid.MustParse(in.GetGoodID()))
+	}
+	if in.CoinTypeID != nil {
+		c.SetCoinTypeID(uuid.MustParse(in.GetCoinTypeID()))
+	}
+
+	c.SetAmount(decimal.NewFromInt(0))
+	c.SetToPlatform(decimal.NewFromInt(0))
+	c.SetToUser(decimal.NewFromInt(0))
+	return c, nil
+}
+
 func Create(ctx context.Context, in *npool.GeneralReq) (*ent.MiningGeneral, error) {
 	var info *ent.MiningGeneral
 	var err error
@@ -38,21 +55,10 @@ func Create(ctx context.Context, in *npool.GeneralReq) (*ent.MiningGeneral, erro
 	span = tracer.Trace(span, in)
 
 	err = db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
-		c := cli.MiningGeneral.Create()
-
-		if in.ID != nil {
-			c.SetID(uuid.MustParse(in.GetID()))
+		c, err := CreateSet(cli.MiningGeneral.Create(), in)
+		if err != nil {
+			return err
 		}
-		if in.GoodID != nil {
-			c.SetGoodID(uuid.MustParse(in.GetGoodID()))
-		}
-		if in.CoinTypeID != nil {
-			c.SetCoinTypeID(uuid.MustParse(in.GetCoinTypeID()))
-		}
-
-		c.SetAmount(decimal.NewFromInt(0))
-		c.SetToPlatform(decimal.NewFromInt(0))
-		c.SetToUser(decimal.NewFromInt(0))
 
 		info, err = c.Save(_ctx)
 		return err
@@ -106,7 +112,60 @@ func CreateBulk(ctx context.Context, in []*npool.GeneralReq) ([]*ent.MiningGener
 	return rows, nil
 }
 
-func AddFields(ctx context.Context, in *npool.GeneralReq) (*ent.MiningGeneral, error) { //nolint
+func AddFieldsSet(info *ent.MiningGeneral, in *npool.GeneralReq) (*ent.MiningGeneralUpdateOne, error) {
+	var err error
+
+	amount := decimal.NewFromInt(0)
+	if in.Amount != nil {
+		amount, err = decimal.NewFromString(in.GetAmount())
+		if err != nil {
+			return nil, err
+		}
+	}
+	toPlatform := decimal.NewFromInt(0)
+	if in.ToPlatform != nil {
+		toPlatform, err = decimal.NewFromString(in.GetToPlatform())
+		if err != nil {
+			return nil, err
+		}
+	}
+	toUser := decimal.NewFromInt(0)
+	if in.ToUser != nil {
+		toUser, err = decimal.NewFromString(in.GetToUser())
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if amount.Cmp(toPlatform.Add(toUser)) < 0 {
+		return nil, fmt.Errorf("amount < toPlatform + toUser")
+	}
+	if amount.Cmp(decimal.NewFromInt(0)) < 0 {
+		return nil, fmt.Errorf("amount < 0")
+	}
+	if toPlatform.Cmp(decimal.NewFromInt(0)) < 0 {
+		return nil, fmt.Errorf("toPlatform < 0")
+	}
+	if toUser.Cmp(decimal.NewFromInt(0)) < 0 {
+		return nil, fmt.Errorf("toUser < 0")
+	}
+
+	stm := info.Update()
+
+	if in.Amount != nil {
+		stm = stm.AddAmount(amount)
+	}
+	if in.ToUser != nil {
+		stm = stm.AddToUser(toUser)
+	}
+	if in.ToPlatform != nil {
+		stm = stm.AddToPlatform(toPlatform)
+	}
+
+	return stm, nil
+}
+
+func AddFields(ctx context.Context, in *npool.GeneralReq) (*ent.MiningGeneral, error) {
 	var info *ent.MiningGeneral
 	var err error
 
@@ -128,51 +187,9 @@ func AddFields(ctx context.Context, in *npool.GeneralReq) (*ent.MiningGeneral, e
 			return fmt.Errorf("fail query general: %v", err)
 		}
 
-		amount := decimal.NewFromInt(0)
-		if in.Amount != nil {
-			amount, err = decimal.NewFromString(in.GetAmount())
-			if err != nil {
-				return err
-			}
-		}
-		toPlatform := decimal.NewFromInt(0)
-		if in.ToPlatform != nil {
-			toPlatform, err = decimal.NewFromString(in.GetToPlatform())
-			if err != nil {
-				return err
-			}
-		}
-		toUser := decimal.NewFromInt(0)
-		if in.ToUser != nil {
-			toUser, err = decimal.NewFromString(in.GetToUser())
-			if err != nil {
-				return err
-			}
-		}
-
-		if amount.Cmp(toPlatform.Add(toUser)) < 0 {
-			return fmt.Errorf("amount < toPlatform + toUser")
-		}
-		if amount.Cmp(decimal.NewFromInt(0)) < 0 {
-			return fmt.Errorf("amount < 0")
-		}
-		if toPlatform.Cmp(decimal.NewFromInt(0)) < 0 {
-			return fmt.Errorf("toPlatform < 0")
-		}
-		if toUser.Cmp(decimal.NewFromInt(0)) < 0 {
-			return fmt.Errorf("toUser < 0")
-		}
-
-		stm := info.Update()
-
-		if in.Amount != nil {
-			stm = stm.AddAmount(amount)
-		}
-		if in.ToUser != nil {
-			stm = stm.AddToUser(toUser)
-		}
-		if in.ToPlatform != nil {
-			stm = stm.AddToPlatform(toPlatform)
+		stm, err := AddFieldsSet(info, in)
+		if err != nil {
+			return err
 		}
 
 		info, err = stm.Save(_ctx)
