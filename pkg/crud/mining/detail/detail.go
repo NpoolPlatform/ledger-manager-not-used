@@ -21,6 +21,32 @@ import (
 	"github.com/google/uuid"
 )
 
+func CreateSet(c *ent.MiningDetailCreate, in *npool.DetailReq) (*ent.MiningDetailCreate, error) {
+	if in.ID != nil {
+		c.SetID(uuid.MustParse(in.GetID()))
+	}
+	if in.GoodID != nil {
+		c.SetGoodID(uuid.MustParse(in.GetGoodID()))
+	}
+	if in.CoinTypeID != nil {
+		c.SetCoinTypeID(uuid.MustParse(in.GetCoinTypeID()))
+	}
+	if in.Amount != nil {
+		amount, err := decimal.NewFromString(in.GetAmount())
+		if err != nil {
+			return nil, err
+		}
+		c.SetAmount(amount)
+	}
+	if in.BenefitDate != nil {
+		c.SetBenefitDate(in.GetBenefitDate())
+	}
+	if in.CreatedAt != nil {
+		c.SetCreatedAt(in.GetCreatedAt())
+	}
+	return c, nil
+}
+
 func Create(ctx context.Context, in *npool.DetailReq) (*ent.MiningDetail, error) {
 	var info *ent.MiningDetail
 	var err error
@@ -38,29 +64,9 @@ func Create(ctx context.Context, in *npool.DetailReq) (*ent.MiningDetail, error)
 	span = tracer.Trace(span, in)
 
 	err = db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
-		c := cli.MiningDetail.Create()
-
-		if in.ID != nil {
-			c.SetID(uuid.MustParse(in.GetID()))
-		}
-		if in.GoodID != nil {
-			c.SetGoodID(uuid.MustParse(in.GetGoodID()))
-		}
-		if in.CoinTypeID != nil {
-			c.SetCoinTypeID(uuid.MustParse(in.GetCoinTypeID()))
-		}
-		if in.Amount != nil {
-			amount, err := decimal.NewFromString(in.GetAmount())
-			if err != nil {
-				return err
-			}
-			c.SetAmount(amount)
-		}
-		if in.BenefitDate != nil {
-			c.SetBenefitDate(in.GetBenefitDate())
-		}
-		if in.CreatedAt != nil {
-			c.SetCreatedAt(in.GetCreatedAt())
+		c, err := CreateSet(cli.MiningDetail.Create(), in)
+		if err != nil {
+			return err
 		}
 
 		info, err = c.Save(_ctx)
@@ -92,28 +98,9 @@ func CreateBulk(ctx context.Context, in []*npool.DetailReq) ([]*ent.MiningDetail
 	err = db.WithTx(ctx, func(_ctx context.Context, tx *ent.Tx) error {
 		bulk := make([]*ent.MiningDetailCreate, len(in))
 		for i, info := range in {
-			bulk[i] = tx.MiningDetail.Create()
-			if info.ID != nil {
-				bulk[i].SetID(uuid.MustParse(info.GetID()))
-			}
-			if info.GoodID != nil {
-				bulk[i].SetGoodID(uuid.MustParse(info.GetGoodID()))
-			}
-			if info.CoinTypeID != nil {
-				bulk[i].SetCoinTypeID(uuid.MustParse(info.GetCoinTypeID()))
-			}
-			if info.Amount != nil {
-				amount, err := decimal.NewFromString(info.GetAmount())
-				if err != nil {
-					return err
-				}
-				bulk[i].SetAmount(amount)
-			}
-			if info.BenefitDate != nil {
-				bulk[i].SetBenefitDate(info.GetBenefitDate())
-			}
-			if info.CreatedAt != nil {
-				bulk[i].SetCreatedAt(info.GetCreatedAt())
+			bulk[i], err = CreateSet(tx.MiningDetail.Create(), info)
+			if err != nil {
+				return err
 			}
 		}
 		rows, err = tx.MiningDetail.CreateBulk(bulk...).Save(_ctx)
