@@ -94,6 +94,7 @@ func validate(info *npool.DetailReq) error { //nolint
 		case npool.IOSubType_TechniqueFeeCommission:
 		case npool.IOSubType_Deposit:
 		case npool.IOSubType_Transfer:
+		case npool.IOSubType_OrderRevoke:
 		default:
 			logger.Sugar().Errorw("validate", "IOType", info.GetIOType(), "IOSubType", info.GetIOSubType())
 			return status.Error(codes.InvalidArgument, "Incoming IOSubType is invalid")
@@ -103,6 +104,7 @@ func validate(info *npool.DetailReq) error { //nolint
 		case npool.IOSubType_Payment:
 		case npool.IOSubType_Withdrawal:
 		case npool.IOSubType_Transfer:
+		case npool.IOSubType_CommissionRevoke:
 		default:
 			logger.Sugar().Errorw("validate", "IOType", info.GetIOType(), "IOSubType", info.GetIOSubType())
 			return status.Error(codes.InvalidArgument, "Outcoming IOSubType is invalid")
